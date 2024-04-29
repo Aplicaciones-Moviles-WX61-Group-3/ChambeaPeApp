@@ -1,5 +1,5 @@
-import 'package:chambeape/model/Login.dart';
-import 'package:chambeape/services/login/login.dart';
+import 'package:chambeape/model/login.dart';
+import 'package:chambeape/services/login/login_service.dart';
 import 'package:flutter/material.dart';
 
 class LoginWdget extends StatefulWidget {
@@ -30,26 +30,38 @@ class _LoginWdgetState extends State<LoginWdget> {
             ),
             TextField(
               controller: emailController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Ingresa tu correo',
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
                 fillColor: Colors.white,
                 filled: true,
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.amber.shade700),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.amber.shade700),
+                ),
               ),
             ),
             const SizedBox(height: 10),
             TextField(
               controller: passwordController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Ingresa tu contraseña',
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
                 fillColor: Colors.white,
                 filled: true,
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.amber.shade700),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.amber.shade700),
+                ),
               ),
               obscureText: true,
             ),
             const SizedBox(height: 10),
-            Button(
+            LoginButton(
               text: 'Iniciar sesión',
               onPressed: () {
                 setState(() {
@@ -61,7 +73,7 @@ class _LoginWdgetState extends State<LoginWdget> {
               },
             ),
             const SizedBox(height: 10),
-            const Button(text: 'Registrarse'),
+            const LoginButton(text: 'Registrarse'),
             TextButton(
               onPressed: () {
                 // ! Implementar la funcionalidad de recuperación de contraseña aquí
@@ -104,11 +116,11 @@ class _LoginWdgetState extends State<LoginWdget> {
   }
 }
 
-class Button extends StatelessWidget {
+class LoginButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
   
-  const Button({
+  const LoginButton({
     super.key, 
     required this.text,
     this.onPressed, 
