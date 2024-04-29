@@ -1,0 +1,140 @@
+import 'package:chambeape/model/Login.dart';
+import 'package:chambeape/services/login/login.dart';
+import 'package:flutter/material.dart';
+
+class LoginWdget extends StatefulWidget {
+  const LoginWdget({super.key});
+
+  @override
+  State<LoginWdget> createState() => _LoginWdgetState();
+}
+
+class _LoginWdgetState extends State<LoginWdget> {
+  Future<Login?>? _login;
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            // Agregar el logo de la aplicación
+            Image.asset(
+              'assets/images/logo.png',
+              width: 300,
+              height: 300,  
+            ),
+            TextField(
+              controller: emailController,
+              decoration: const InputDecoration(
+                labelText: 'Ingresa tu correo',
+                border: OutlineInputBorder(),
+                fillColor: Colors.white,
+                filled: true,
+              ),
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: passwordController,
+              decoration: const InputDecoration(
+                labelText: 'Ingresa tu contraseña',
+                border: OutlineInputBorder(),
+                fillColor: Colors.white,
+                filled: true,
+              ),
+              obscureText: true,
+            ),
+            const SizedBox(height: 10),
+            Button(
+              text: 'Iniciar sesión',
+              onPressed: () {
+                setState(() {
+                  _login = login(
+                    emailController.text,
+                    passwordController.text,
+                  );
+                });
+              },
+            ),
+            const SizedBox(height: 10),
+            const Button(text: 'Registrarse'),
+            TextButton(
+              onPressed: () {
+                // ! Implementar la funcionalidad de recuperación de contraseña aquí
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.amber.shade700,
+              ),
+              child: const Text('¿Olvidaste tu contraseña?'),
+            ),
+            FutureBuilder<Login?>(
+              future: _login,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                } 
+                else if (snapshot.hasError) {
+                  return const Text('Ingrese un correo y contraseña válidos');
+                } 
+                else if (snapshot.hasData) {
+                  return Text('Email: ${snapshot.data!.email}');
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.amber.shade700,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            '© ${DateTime.now().year} DigitalDart Todos los derechos reservados',
+            style: const TextStyle(color: Colors.white),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class Button extends StatelessWidget {
+  final String text;
+  final VoidCallback? onPressed;
+  
+  const Button({
+    super.key, 
+    required this.text,
+    this.onPressed, 
+  });
+
+  @override
+  Widget build(BuildContext context) {
+
+    return ElevatedButton(
+      onPressed: onPressed,
+
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.amber.shade700,
+        foregroundColor: Colors.white,
+        minimumSize: const Size(double.infinity, 50),
+
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5),
+        ),
+
+        textStyle: const TextStyle(          
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+        ),
+      ),
+      child: Text(text),
+    );
+  }
+}

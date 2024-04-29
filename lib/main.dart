@@ -1,3 +1,4 @@
+import 'package:chambeape/modules/0_login/login_widget.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -15,8 +16,9 @@ class MyApp extends StatelessWidget {
       title: 'ChambeaPe',
       theme: ThemeData(
         colorSchemeSeed: Colors.amber.shade700,
+        
       ),
-      home: const MyHomePage(),
+      home: const LoginWdget(),
     );
   }
 }
