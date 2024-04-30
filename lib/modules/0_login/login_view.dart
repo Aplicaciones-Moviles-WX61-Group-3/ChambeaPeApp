@@ -1,5 +1,6 @@
 import 'package:chambeape/model/log_in.dart';
 import 'package:chambeape/modules/5_profile/profile_view.dart';
+import 'package:chambeape/modules/navigation_menu.dart';
 import 'package:chambeape/services/login/login_service.dart';
 import 'package:flutter/material.dart';
 
@@ -98,7 +99,7 @@ class _LoginViewState extends State<LoginView> {
                         WidgetsBinding.instance.addPostFrameCallback((_) {
                           Navigator.pushReplacementNamed (
                             context,
-                            ProfileView.routeName,
+                            NavigationMenu.routeName,
                           );
                         });
                       }

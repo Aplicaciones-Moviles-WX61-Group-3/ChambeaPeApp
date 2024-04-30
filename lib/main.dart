@@ -1,5 +1,5 @@
 import 'package:chambeape/modules/0_login/login_view.dart';
-import 'package:chambeape/modules/5_profile/profile_view.dart';
+import 'package:chambeape/modules/navigation_menu.dart';
 import 'package:chambeape/services/login/session_service.dart';
 import 'package:chambeape/shared/routes/routes.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorSchemeSeed: Colors.amber.shade700,
       ),
-      initialRoute: hasSession ? ProfileView.routeName : LoginView.routeName,
+      initialRoute: hasSession ? NavigationMenu.routeName : LoginView.routeName,
       routes: customRoutes,
     );
   }
