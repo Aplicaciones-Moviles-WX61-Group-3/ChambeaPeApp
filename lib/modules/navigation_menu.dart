@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class NavigationMenu extends StatelessWidget {
-
   static const String routeName = 'navigation_menu';
 
   const NavigationMenu({super.key});
@@ -24,25 +23,35 @@ class NavigationMenu extends StatelessWidget {
         leading: Container(
           margin: const EdgeInsets.symmetric(horizontal: 10),
           child: Image.asset('assets/images/logo_white.png'),
-          
         ),
       ),
-      bottomNavigationBar: Obx(
-        () => NavigationBar(
-          // Hacer que el texto del indicador seleccionado sea de color blanco
-          height: 60,
-          elevation: 30,
-          selectedIndex: controller.selectedIndex.value,
-          onDestinationSelected: (index) => controller.selectedIndex.value = index,
-          destinations: const [
-            NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
-            NavigationDestination(icon: Icon(Icons.post_add), label: 'Posts'),
-            NavigationDestination(icon: Icon(Icons.work), label: 'Workers', enabled: false,),
-            NavigationDestination(icon: Icon(Icons.notifications), label: 'Notifications', enabled: false,),
-            NavigationDestination(icon: Icon(Icons.person), label: 'Profile', enabled: false,),
-          ],
-        )
-      ),
+      bottomNavigationBar: Obx(() => NavigationBar(
+            // Hacer que el texto del indicador seleccionado sea de color blanco
+            height: 60,
+            elevation: 30,
+            selectedIndex: controller.selectedIndex.value,
+            onDestinationSelected: (index) =>
+                controller.selectedIndex.value = index,
+            destinations: const [
+              NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
+              NavigationDestination(icon: Icon(Icons.post_add), label: 'Posts'),
+              NavigationDestination(
+                icon: Icon(Icons.work),
+                label: 'Workers',
+                enabled: false,
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.notifications),
+                label: 'Notifications',
+                enabled: false,
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.person),
+                label: 'Profile',
+                enabled: false,
+              ),
+            ],
+          )),
       body: Obx(
         () => controller.screens[controller.selectedIndex.value],
       ),

@@ -1,9 +1,9 @@
-import 'package:chambeape/model/Employers.dart';
+import 'package:chambeape/model/Workers.dart';
 import 'package:flutter/material.dart';
 
 class UserCardWidget extends StatefulWidget {
-  final List<Employers> employers;
-  const UserCardWidget({required this.employers, Key? key}) : super(key: key);
+  final Workers worker;
+  const UserCardWidget({required this.worker, Key? key}) : super(key: key);
 
   @override
   State<UserCardWidget> createState() => _UserCardWidgetState();
@@ -13,7 +13,7 @@ class _UserCardWidgetState extends State<UserCardWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        margin: const EdgeInsets.symmetric(vertical: 24.0),
+        margin: const EdgeInsets.symmetric(vertical: 12.0),
         width: double.infinity,
         height: 115,
         decoration: BoxDecoration(
@@ -42,7 +42,7 @@ class _UserCardWidgetState extends State<UserCardWidget> {
                 ),
                 child: CircleAvatar(
                   radius: 50,
-                  backgroundImage: NetworkImage(widget.employers[0].profilePic),
+                  backgroundImage: NetworkImage(widget.worker.profilePic),
                 ),
               ),
               Flexible(
@@ -54,7 +54,7 @@ class _UserCardWidgetState extends State<UserCardWidget> {
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          '${widget.employers[0].firstName} ${widget.employers[0].lastName}',
+                          '${widget.worker.firstName} ${widget.worker.lastName}',
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16.0,
@@ -62,7 +62,7 @@ class _UserCardWidgetState extends State<UserCardWidget> {
                         ),
                       ),
                       Text(
-                        widget.employers[0].description,
+                        widget.worker.description,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
