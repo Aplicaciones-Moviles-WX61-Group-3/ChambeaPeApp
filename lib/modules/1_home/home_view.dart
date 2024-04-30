@@ -1,13 +1,15 @@
 import 'package:chambeape/model/Employers.dart';
 import 'package:chambeape/model/Workers.dart';
-import 'package:chambeape/modules/1_home/user_card_widget.dart';
-import 'package:chambeape/modules/1_home/user_grid_widget.dart';
+import 'package:chambeape/modules/1_home/widgets/user_card_widget.dart';
+import 'package:chambeape/modules/1_home/widgets/user_grid_widget.dart';
 import 'package:chambeape/services/users/worker_service.dart';
 import 'package:flutter/material.dart';
 import 'package:chambeape/services/users/employer_service.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
+
+  static const String routeName = 'home_view';
 
   @override
   State<HomeView> createState() => _HomeViewState();
@@ -27,10 +29,7 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('ChambeaPe'),
-          backgroundColor: Colors.amber.shade700,
-        ),
+
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: FutureBuilder(
@@ -106,7 +105,7 @@ class SearchWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
+      margin: const EdgeInsets.all(20.0),
       padding: const EdgeInsets.only(left: 16.0),
       decoration: BoxDecoration(
         color: Colors.white,
