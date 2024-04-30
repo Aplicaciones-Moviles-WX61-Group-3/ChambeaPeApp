@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         colorSchemeSeed: Colors.amber.shade700,
         
       ),
-      home: const LoginWdget(),
+      home: const LoginWidget(),
     );
   }
 }

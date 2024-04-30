@@ -1,15 +1,15 @@
-import 'package:chambeape/model/login.dart';
+import 'package:chambeape/model/log_in.dart';
 import 'package:chambeape/services/login/login_service.dart';
 import 'package:flutter/material.dart';
 
-class LoginWdget extends StatefulWidget {
-  const LoginWdget({super.key});
+class LoginWidget extends StatefulWidget {
+  const LoginWidget({super.key});
 
   @override
-  State<LoginWdget> createState() => _LoginWdgetState();
+  State<LoginWidget> createState() => _LoginWidgetState();
 }
 
-class _LoginWdgetState extends State<LoginWdget> {
+class _LoginWidgetState extends State<LoginWidget> {
   Future<Login?>? _login;
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
