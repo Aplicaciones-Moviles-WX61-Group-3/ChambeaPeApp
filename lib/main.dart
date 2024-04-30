@@ -1,7 +1,8 @@
 import 'package:chambeape/modules/0_login/login_view.dart';
-import 'package:chambeape/modules/5_profile/profile_view.dart';
+import 'package:chambeape/modules/navigation_menu.dart';
 import 'package:chambeape/services/login/session_service.dart';
 import 'package:chambeape/shared/routes/routes.dart';
+import 'package:chambeape/shared/utils/app_theme.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
@@ -24,10 +25,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'ChambeaPe',
-      theme: ThemeData(
-        colorSchemeSeed: Colors.amber.shade700,
-      ),
-      initialRoute: hasSession ? ProfileView.routeName : LoginView.routeName,
+      theme: AppTheme.darkTheme(),
+      initialRoute: hasSession ? NavigationMenu.routeName : LoginView.routeName,
       routes: customRoutes,
     );
   }

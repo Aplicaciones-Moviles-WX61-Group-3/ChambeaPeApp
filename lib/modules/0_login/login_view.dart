@@ -1,5 +1,5 @@
 import 'package:chambeape/model/log_in.dart';
-import 'package:chambeape/modules/5_profile/profile_view.dart';
+import 'package:chambeape/modules/navigation_menu.dart';
 import 'package:chambeape/services/login/login_service.dart';
 import 'package:flutter/material.dart';
 
@@ -29,39 +29,22 @@ class _LoginViewState extends State<LoginView> {
               children: <Widget>[
                 // Agregar el logo de la aplicación
                 Image.asset(
+                  Theme.of(context).brightness == Brightness.dark ? 'assets/images/logo_white_letters.png' :
                   'assets/images/logo.png',
                   width: 200,
                   height: 200,  
                 ),
                 TextField(
                   controller: emailController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Ingresa tu correo',
-                    border: const OutlineInputBorder(),
-                    fillColor: Colors.white,
-                    filled: true,
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.amber.shade700),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.amber.shade700),
-                    ),
                   ),
                 ),
                 const SizedBox(height: 10),
                 TextField(
                   controller: passwordController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Ingresa tu contraseña',
-                    border: const OutlineInputBorder(),
-                    fillColor: Colors.white,
-                    filled: true,
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.amber.shade700),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.amber.shade700),
-                    ),
                   ),
                   obscureText: true,
                 ),
@@ -98,7 +81,7 @@ class _LoginViewState extends State<LoginView> {
                         WidgetsBinding.instance.addPostFrameCallback((_) {
                           Navigator.pushReplacementNamed (
                             context,
-                            ProfileView.routeName,
+                            NavigationMenu.routeName,
                           );
                         });
                       }
@@ -111,15 +94,13 @@ class _LoginViewState extends State<LoginView> {
           ),
         ),
         bottomNavigationBar: BottomAppBar(
+          height: 45,
           color: Colors.amber.shade700,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
+          child: Text(
               '© ${DateTime.now().year} DigitalDart Todos los derechos reservados',
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
               textAlign: TextAlign.center,
             ),
-          ),
         ),
       ),
     );
