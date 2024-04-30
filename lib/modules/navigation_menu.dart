@@ -1,7 +1,7 @@
 import 'package:chambeape/modules/1_home/home_test_view.dart';
-import 'package:chambeape/modules/2_workers/workers_view.dart';
+// import 'package:chambeape/modules/2_workers/workers_view.dart';
 import 'package:chambeape/modules/3_posts/post_creation_widget.dart';
-import 'package:chambeape/modules/3_posts/posts_test_view.dart';
+import 'package:chambeape/modules/3_posts/post_view.dart';
 import 'package:chambeape/modules/4_notifications/notifications_view.dart';
 import 'package:chambeape/modules/5_profile/profile_view.dart';
 import 'package:flutter/material.dart';
@@ -56,7 +56,7 @@ class NavigationController extends GetxController {
 
   final screens = [
     const HomeView(),
-    const PostsView(),
+    const PostViewWidget(),
     const PostCreationWidget(),
     // const WorkersView(),
     const NotificationsView(),

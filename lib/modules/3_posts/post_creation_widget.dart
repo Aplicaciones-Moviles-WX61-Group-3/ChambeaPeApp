@@ -1,15 +1,29 @@
 import 'dart:io';
 
 import 'package:chambeape/model/Post.dart';
+import 'package:chambeape/modules/3_posts/post_view.dart';
 import 'package:chambeape/services/posts/post_service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+//Step 1
 final TextEditingController titleController = TextEditingController();
 final TextEditingController descriptionController = TextEditingController();
 String dropdownCurrValue = 'Jardinería';
-//TEMPORAL
+final TextEditingController retributionController = TextEditingController();
+//Temp
 final TextEditingController imgUrlController = TextEditingController();
+
+//Step 2
+final TextEditingController locationController = TextEditingController();
+String dropdownDeparmentCurrVal = 'Departamento';
+
+//Step 3
+bool highlightPost = false;
+bool onlySameCityWorkers = true;
+bool notifyMessages = true;
+
+Future<Post?>? post;
 
 class PostCreationWidget extends StatefulWidget {
   const PostCreationWidget({super.key});
@@ -21,7 +35,6 @@ class PostCreationWidget extends StatefulWidget {
 }
 
 class _PostCreationWidgetState extends State<PostCreationWidget> {
-  Future<Post?>? post;
   int currStep = 0;
   final int totalSteps = 4;
 
@@ -29,7 +42,7 @@ class _PostCreationWidgetState extends State<PostCreationWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-          padding: const EdgeInsets.fromLTRB(0.0, 16.0, 0.0, 16.0),
+          padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 16.0),
           child: Stepper(
             controlsBuilder: (context, details) {
               return Row(
@@ -37,7 +50,7 @@ class _PostCreationWidgetState extends State<PostCreationWidget> {
                 children: <Widget>[
                   ElevatedButton(
                       onPressed: currStep == totalSteps - 1
-                          ? createPost()
+                          ? () => createPost()
                           : details.onStepContinue,
                       style: ElevatedButton.styleFrom(
                           minimumSize: const Size(300, 50),
@@ -48,9 +61,6 @@ class _PostCreationWidgetState extends State<PostCreationWidget> {
                       child: currStep == totalSteps - 1
                           ? const Text("Publicar")
                           : const Text("Siguiente")),
-                  // ElevatedButton(
-                  //   onPressed: details.onStepCancel,
-                  //   child: const Text("GO BACK"))
                 ],
               );
             },
@@ -65,22 +75,22 @@ class _PostCreationWidgetState extends State<PostCreationWidget> {
               Step(
                   isActive: currStep >= 0,
                   title: const SizedBox(width: 0),
-                  content: const DetailsStepWidget(),
+                  content: DetailsStepWidget(),
                   state: switchStepState(0)),
               Step(
                   isActive: currStep >= 1,
                   title: const SizedBox(width: 0),
-                  content: const LocationStepWidget(),
+                  content: LocationStepWidget(),
                   state: switchStepState(1)),
               Step(
                   isActive: currStep >= 2,
                   title: const SizedBox(width: 0),
-                  content: const SettingsStepWidget(),
+                  content: SettingsStepWidget(),
                   state: switchStepState(2)),
               Step(
                   isActive: currStep >= 3,
                   title: const SizedBox(width: 0),
-                  content: const ConfirmStepWidget(),
+                  content: ConfirmStepWidget(),
                   state: switchStepState(3))
             ],
             type: StepperType.horizontal,
@@ -121,6 +131,7 @@ class _PostCreationWidgetState extends State<PostCreationWidget> {
     final PostService postService = PostService();
     post = postService.createPost(titleController.text,
         descriptionController.text, dropdownCurrValue, imgUrlController.text);
+    Navigator.pushNamed(context, PostViewWidget.routeName);   
   }
 }
 
@@ -132,7 +143,6 @@ class DetailsStepWidget extends StatefulWidget {
 }
 
 class _DetailsStepWidgetState extends State<DetailsStepWidget> {
-  final TextEditingController retributionController = TextEditingController();
 
   File? selectedImage;
   Future getImage() async {
@@ -201,6 +211,7 @@ class _DetailsStepWidgetState extends State<DetailsStepWidget> {
               value: dropdownCurrValue,
               isExpanded: true,
               menuMaxHeight: 300,
+              dropdownColor: Colors.white,
               items: dropdownItems.map((dropdownItem) {
                 return DropdownMenuItem(
                     value: dropdownItem, child: Text(dropdownItem));
@@ -211,7 +222,7 @@ class _DetailsStepWidgetState extends State<DetailsStepWidget> {
                 });
               },
               decoration: const InputDecoration(
-                  contentPadding: EdgeInsets.fromLTRB(10, 0, 10, 10),                  
+                  contentPadding: EdgeInsets.fromLTRB(10, 0, 10, 10),              
                   ),
             ),
           ),
@@ -294,13 +305,84 @@ class LocationStepWidget extends StatefulWidget {
 }
 
 class _LocationStepWidgetState extends State<LocationStepWidget> {
+
+  List<String> dropdownDepartments = [
+    'Departamento',
+    'Lima',
+    'Ancash',
+    'Apurimac',
+    'Arequipa',
+    'Ayacucho',
+    'Cajamarca',
+    'Callao',
+    'Cusco',
+    'Huancavelica',
+    'Huanuco',
+    'Ica',
+    'Junin',
+    'La Libertad',
+    'Lambayeque',
+    'Lima Region',
+    'Loreto',
+    'Madre de Dios',
+    'Moquegua',
+    'Pasco',
+    'Piura',
+    'Puno',
+    'San Martin',
+    'Tacna',
+    'Tumbes',
+    'Ucayali',
+  ];
+
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[Text("Step 2")],
+        children: <Widget>[
+          const Text("Ubicación del trabajo",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          const SizedBox(
+            height: 10,
+          ),
+          SizedBox(
+            height: 60,
+            width: double.infinity,
+            child: DropdownButtonFormField(
+              hint: const Text('Selecciona un departamento'),
+              icon: const Icon(Icons.arrow_drop_down),
+              iconSize: 36,
+              value: dropdownDeparmentCurrVal,
+              isExpanded: true,
+              menuMaxHeight: 300,
+              dropdownColor: Colors.white,
+              items: dropdownDepartments.map((dropdownItem) {
+                return DropdownMenuItem(
+                    value: dropdownItem, child: Text(dropdownItem));
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  dropdownDeparmentCurrVal = value!;
+                });
+              },
+              decoration: const InputDecoration(
+                  contentPadding: EdgeInsets.fromLTRB(10, 0, 10, 10),              
+                  ),
+            ),
+          ),
+          TextField(
+            controller: locationController,
+            decoration: const InputDecoration(
+              labelText: 'Dirección',
+              contentPadding: EdgeInsets.fromLTRB(10.0, 12.0, 10.0, 12.0),
+            ),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+        ],
       ),
     );
   }
@@ -314,13 +396,57 @@ class SettingsStepWidget extends StatefulWidget {
 }
 
 class _SettingsStepWidgetState extends State<SettingsStepWidget> {
+
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[Text("Step 3")],
+        children: <Widget>[
+          const Text("Configura tu publicación",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          const SizedBox(
+            height: 10,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              const Text("Destacar anuncio",
+              style: TextStyle(fontSize: 16)),
+              const SizedBox(width: 10,),
+              Switch(
+                value: highlightPost,
+                activeColor: Colors.amber.shade700,
+                onChanged: (bool value) {
+                setState(() {
+                  highlightPost = value;
+                });
+              },
+                      ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              const Text("Notificar mensajes",
+              style: TextStyle(fontSize: 16,),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(width: 10,),
+              Switch(
+                value: notifyMessages,
+                activeColor: Colors.amber.shade700,
+                onChanged: (bool value) {
+                setState(() {
+                  notifyMessages = value;
+                });
+              },
+                      ),
+            ],
+          )
+        ],
       ),
     );
   }
@@ -336,12 +462,99 @@ class ConfirmStepWidget extends StatefulWidget {
 class _ConfirmStepWidgetState extends State<ConfirmStepWidget> {
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[Text("Step 4")],
-      ),
-    );
+    return Padding(
+        padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Text("Confirmar publicación",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            const SizedBox(
+              height: 10,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text("Título",
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                const SizedBox(width: 10,),
+                Text(titleController.text,
+                style: const TextStyle(fontSize: 12)),
+                const SizedBox(width: 10,),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text("Categoría",
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                const SizedBox(width: 10,),
+                Text(dropdownCurrValue,
+                style: const TextStyle(fontSize: 12)),
+                const SizedBox(width: 10,),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text("Remuneración",
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                const SizedBox(width: 10,),
+                Text('S/ ${retributionController.text}',
+                style: const TextStyle(fontSize: 12)),
+                const SizedBox(width: 10,),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text("Departamento",
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                const SizedBox(width: 10,),
+                Text(dropdownDeparmentCurrVal,
+                style: const TextStyle(fontSize: 12)),
+                const SizedBox(width: 10,),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text("Dirección",
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                const SizedBox(width: 10,),
+                Text(locationController.text,
+                style: const TextStyle(fontSize: 12)),
+                const SizedBox(width: 10,),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text("Destacar anuncio",
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                const SizedBox(width: 10,),
+                Text(highlightPost ? "Sí" : "No",
+                style: const TextStyle(fontSize: 12)),
+                const SizedBox(width: 10,),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text("Notificar mensajes",
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                const SizedBox(width: 10,),
+                Text(notifyMessages ? "Sí" : "No",
+                style: const TextStyle(fontSize: 12)),
+                const SizedBox(width: 10,),
+              ],
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+          ],
+        ),
+      );
   }
+
 }

@@ -26,7 +26,20 @@ class PostService{
       return Post.fromJson(json.decode(response.body));
     }
     else {
-      throw Exception('Failed to login: Status Code ${response.statusCode}, Response Body: ${response.body}');
+      throw Exception('Failed to create post: Status Code ${response.statusCode}, Response Body: ${response.body}');
+    }
+  }
+
+  Future<List<Post>> getPosts() async{
+    final response = await http.get(uri);
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      List<dynamic> body = json.decode(response.body);
+      List<Post> posts = body.map((dynamic item) => Post.fromJson(item)).toList();
+      return posts;
+    }
+    else {
+      throw Exception('Failed to fetch posts: Status Code ${response.statusCode}, Response Body: ${response.body}');
     }
   }
 }
