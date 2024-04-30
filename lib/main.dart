@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'ChambeaPe',
-      theme: AppTheme.darkTheme(),
+      theme: AppTheme.lightTheme(),
       initialRoute: hasSession ? NavigationMenu.routeName : LoginView.routeName,
       routes: customRoutes,
     );
