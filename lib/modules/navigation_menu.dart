@@ -24,13 +24,11 @@ class NavigationMenu extends StatelessWidget {
         leading: Container(
           margin: const EdgeInsets.symmetric(horizontal: 10),
           child: Image.asset('assets/images/logo_white.png'),
+          
         ),
       ),
       bottomNavigationBar: Obx(
         () => NavigationBar(
-          backgroundColor: Colors.amber.shade50,
-          surfaceTintColor: Colors.amber.shade600,
-          indicatorColor: Colors.amber.shade400,
           // Hacer que el texto del indicador seleccionado sea de color blanco
           height: 60,
           elevation: 30,
