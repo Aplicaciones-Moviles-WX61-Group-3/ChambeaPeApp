@@ -1,5 +1,6 @@
 import 'package:chambeape/modules/1_home/home_test_view.dart';
 import 'package:chambeape/modules/2_workers/workers_view.dart';
+import 'package:chambeape/modules/3_posts/post_creation_widget.dart';
 import 'package:chambeape/modules/3_posts/posts_test_view.dart';
 import 'package:chambeape/modules/4_notifications/notifications_view.dart';
 import 'package:chambeape/modules/5_profile/profile_view.dart';
@@ -37,7 +38,7 @@ class NavigationMenu extends StatelessWidget {
           destinations: const [
             NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
             NavigationDestination(icon: Icon(Icons.post_add), label: 'Posts'),
-            NavigationDestination(icon: Icon(Icons.work), label: 'Workers', enabled: false,),
+            NavigationDestination(icon: Icon(Icons.work), label: 'Workers'),
             NavigationDestination(icon: Icon(Icons.notifications), label: 'Notifications', enabled: false,),
             NavigationDestination(icon: Icon(Icons.person), label: 'Profile', enabled: false,),
           ],
@@ -56,7 +57,8 @@ class NavigationController extends GetxController {
   final screens = [
     const HomeView(),
     const PostsView(),
-    const WorkersView(),
+    const PostCreationWidget(),
+    // const WorkersView(),
     const NotificationsView(),
     const ProfileView(),
   ];
