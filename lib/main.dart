@@ -1,12 +1,22 @@
-import 'package:chambeape/modules/0_login/login_widget.dart';
+import 'package:chambeape/modules/0_login/login_view.dart';
+import 'package:chambeape/modules/5_profile/profile_view.dart';
+import 'package:chambeape/services/login/session_service.dart';
+import 'package:chambeape/shared/routes/routes.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Cargar la sesión del usuario al iniciar la aplicación
+  bool hasSession = await SessionService().loadSession();
+
+  runApp(MyApp(hasSession: hasSession));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool hasSession;
+
+  const MyApp({super.key, required this.hasSession});
 
   // This widget is the root of your application.
   @override
@@ -16,25 +26,9 @@ class MyApp extends StatelessWidget {
       title: 'ChambeaPe',
       theme: ThemeData(
         colorSchemeSeed: Colors.amber.shade700,
-        
       ),
-      home: const LoginWidget(),
-    );
-  }
-}
-
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('ChambeaPe'),
-      ),
-      body: const Center(
-        child: Text('Hola Mundo'),
-      ),
+      initialRoute: hasSession ? ProfileView.routeName : LoginView.routeName,
+      routes: customRoutes,
     );
   }
 }
