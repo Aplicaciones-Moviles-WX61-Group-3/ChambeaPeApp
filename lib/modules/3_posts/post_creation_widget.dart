@@ -1,7 +1,15 @@
 import 'dart:io';
 
+import 'package:chambeape/model/Post.dart';
+import 'package:chambeape/services/posts/post_service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+
+final TextEditingController titleController = TextEditingController();
+final TextEditingController descriptionController = TextEditingController();
+String dropdownCurrValue = 'Jardinería';
+//TEMPORAL
+final TextEditingController imgUrlController = TextEditingController();
 
 class PostCreationWidget extends StatefulWidget {
   const PostCreationWidget({super.key});
@@ -11,6 +19,7 @@ class PostCreationWidget extends StatefulWidget {
 }
 
 class _PostCreationWidgetState extends State<PostCreationWidget> {
+  Future<Post?>? post;
   int currStep = 0;
   final int totalSteps = 4;
 
@@ -33,7 +42,7 @@ class _PostCreationWidgetState extends State<PostCreationWidget> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           ElevatedButton(
-                            onPressed: details.onStepContinue,
+                            onPressed: currStep== totalSteps-1 ? createPost() : details.onStepContinue,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.amber.shade700,
                               foregroundColor: Colors.white,
@@ -43,7 +52,7 @@ class _PostCreationWidgetState extends State<PostCreationWidget> {
                                 fontSize: 18,
                               )
                             ),
-                            child: const Text("Siguiente")
+                            child: currStep == totalSteps-1 ? const Text("Publicar") : const Text("Siguiente")
                             ),
                           // ElevatedButton(
                           //   onPressed: details.onStepCancel,
@@ -62,25 +71,25 @@ class _PostCreationWidgetState extends State<PostCreationWidget> {
                       Step(
                         isActive: currStep >= 0,
                         title: const SizedBox(width: 0),
-                        content: DetailsStepWidget(),
+                        content: const DetailsStepWidget(),
                         state: switchStepState(0)
                         ),
                       Step(
                         isActive: currStep >= 1,
                         title: const SizedBox(width: 0),
-                        content: LocationStepWidget(),
+                        content: const LocationStepWidget(),
                         state: switchStepState(1)
                       ),
                       Step(
                         isActive: currStep >= 2,
                         title: const SizedBox(width: 0),
-                        content: SettingsStepWidget(),
+                        content: const SettingsStepWidget(),
                         state: switchStepState(2)
                       ),
                       Step(
                         isActive: currStep >= 3,
                         title: const SizedBox(width: 0),
-                        content: ConfirmStepWidget(),
+                        content: const ConfirmStepWidget(),
                         state: switchStepState(3)
                       )
                     ],
@@ -119,6 +128,11 @@ class _PostCreationWidgetState extends State<PostCreationWidget> {
       return StepState.editing;
     }
   }
+  
+  createPost() {
+    final PostService postService = PostService();
+    post = postService.createPost(titleController.text, descriptionController.text, dropdownCurrValue, imgUrlController.text);
+  }
 }
 
 class DetailsStepWidget extends StatefulWidget {
@@ -129,9 +143,8 @@ class DetailsStepWidget extends StatefulWidget {
 }
 
 class _DetailsStepWidgetState extends State<DetailsStepWidget> {
-  final TextEditingController titleController = TextEditingController();
+  
   final TextEditingController retributionController = TextEditingController();
-  String dropdownCurrValue = 'Jardinería';
 
   File? selectedImage;
   Future getImage() async{
@@ -234,6 +247,7 @@ class _DetailsStepWidgetState extends State<DetailsStepWidget> {
               ),
             ),
             TextField(
+              controller: descriptionController,
               maxLines: null,
               keyboardType: TextInputType.multiline,
               minLines: 5,
@@ -300,8 +314,26 @@ class _DetailsStepWidgetState extends State<DetailsStepWidget> {
               ),
               
             ),
-              const SizedBox(height: 100,),
-              // 
+              const SizedBox(height: 10,),
+              TextField(
+              controller: imgUrlController,
+              style: const TextStyle(color: Colors.black),
+              decoration: InputDecoration(
+                labelText: 'URL de la imagen',
+                labelStyle: const TextStyle(color: Colors.black),
+                contentPadding: const EdgeInsets.fromLTRB(10.0, 12.0, 10.0, 12.0),
+                border: const OutlineInputBorder(),
+                fillColor: Colors.white,
+                filled: true,
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.amber.shade700),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.amber.shade700),
+                ),
+              ),
+            ),
+            const SizedBox(height: 40,),
 
           ],
         ),
