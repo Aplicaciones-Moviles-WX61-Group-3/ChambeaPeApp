@@ -1,10 +1,13 @@
 import 'package:chambeape/model/Workers.dart';
-import 'package:chambeape/modules/1_home/user_card_widget.dart';
+import 'package:chambeape/modules/1_home/widgets/user_card_widget.dart';
 import 'package:chambeape/services/users/worker_service.dart';
 import 'package:flutter/material.dart';
 
 class WorkersView extends StatefulWidget {
   const WorkersView({super.key});
+
+
+  static const String routeName = 'workers_view';
 
   @override
   State<WorkersView> createState() => _WorkersViewState();
@@ -40,6 +43,7 @@ class _WorkersViewState extends State<WorkersView> {
           }
         },
       ),
+      
     );
   }
 }
