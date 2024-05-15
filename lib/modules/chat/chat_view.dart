@@ -1,7 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:chambeape/model/ChatMessage.dart' as Message;
+import 'package:crypto/crypto.dart';
 import 'package:chambeape/model/Users.dart';
+import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
@@ -20,26 +23,36 @@ class ChatView extends StatefulWidget {
 class _ChatViewState extends State<ChatView> {
   StompClient? stompClient;
   final TextEditingController _controller = TextEditingController();
-  final String roomId = "testing";
-  String lastMessage = '';
-  late Users? currentUser;
-  late Users? otherUser;
+  late String roomId;
+  late Message.ChatMessage lastMessage = Message.ChatMessage(message: '', user: '', timestamp: '');
+  late List<Message.ChatMessage> messages = [];
+  late Users? currentUser, otherUser;
+  late ChatUser? chatCurrentUser, chatOtherUser;
+  late Future<Users?> currentUserFuture;
 
   @override
-  void initState() {
+  void initState(){
     super.initState();
-    otherUser = widget.otherUser;
     stompClient = StompClient(
       config: StompConfig.sockJS(
-        url: 'http://192.168.0.10:8080/ws',
+        url: 'http://chambeape.azurewebsites.net/websocket',
         onConnect: onConnect,
         onWebSocketError: (dynamic error) => print(error.toString()),
       ),
     );
 
     stompClient?.activate();
+    otherUser = widget.otherUser;
+    currentUserFuture = getCurrentUser();
+  }
 
-    loadUser();
+  String generateChatRoomId(String currentUserId, String otherUserId) {
+    List<String> ids = [currentUserId, otherUserId];
+    ids.sort();
+    String combinedIds = '${ids[0]}_${ids[1]}';
+    var bytes = utf8.encode(combinedIds);
+    var digest = sha256.convert(bytes);
+    return digest.toString();
   }
 
   Future<Users?> getCurrentUser() async {
@@ -51,12 +64,22 @@ class _ChatViewState extends State<ChatView> {
     return null;
   }
 
-  Future<void> loadUser() async {
-    Users? loadedUser = await getCurrentUser();
-    setState(() {
+  void loadChatUsers(Users? loadedUser) {
       currentUser = loadedUser;
-    });
-    print(currentUser!.firstName + " " + otherUser!.firstName);
+      chatCurrentUser = ChatUser(
+        id: currentUser!.id.toString(), 
+        firstName: currentUser!.firstName.split(' ')[0], 
+        lastName: currentUser!.lastName.split(' ')[0],
+        profileImage: currentUser!.profilePic,
+    );
+      chatOtherUser = ChatUser(
+        id: otherUser!.id.toString(), 
+        firstName: otherUser!.firstName.split(' ')[0], 
+        lastName: otherUser!.lastName.split(' ')[0],
+        profileImage: otherUser!.profilePic,
+    );
+
+    roomId = generateChatRoomId(currentUser!.id.toString(), otherUser!.id.toString());
   }
 
   void onConnect(StompFrame frame) {
@@ -65,21 +88,34 @@ class _ChatViewState extends State<ChatView> {
       callback: (frame) {
         if (frame.body != null) {
           setState(() {
-            lastMessage = jsonDecode(frame.body!)['message'];
+            lastMessage = Message.ChatMessage.fromJson(jsonDecode(frame.body!));
+            messages.add(lastMessage);
           });
-          print(lastMessage);
         }
       },
     );
   }
 
-  void sendMessage(String message) {
+  void sendMessage(ChatMessage chatMessage) {
+    String message = chatMessage.text;
+
     if (stompClient != null && stompClient!.connected) {
       stompClient?.send(
         destination: '/app/chat/$roomId',
         body: '{"message":"$message","user":"${currentUser!.id.toString()}"}',
-      );
+      );  
     }
+  }
+
+  List<ChatMessage> getMessagesList(){
+    List<ChatMessage> chatMessages = messages.map((e) => ChatMessage(
+                  text: e.message,
+                  user: e.user == chatCurrentUser!.id ? chatCurrentUser! : chatOtherUser!,
+                  createdAt: DateTime.parse(e.timestamp),
+    )).toList();
+
+    chatMessages.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return chatMessages;
   }
 
   @override
@@ -92,31 +128,37 @@ class _ChatViewState extends State<ChatView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: Container(
-                // Aquí puedes agregar un widget para mostrar los mensajes
-                child: Text(lastMessage),
-              ),
-            ),
-            TextField(
-              controller: _controller,
-              decoration: InputDecoration(
-                labelText: 'Escribe tu mensaje',
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                sendMessage(_controller.text);
-                _controller.clear();
-              },
-              child: Text('Enviar'),
-            ),
-          ],
-        ),
+      appBar: AppBar(
+        title: Text('${widget.otherUser.firstName.split(' ')[0]} ${widget.otherUser.lastName.split(' ')[0]}'),
+      ),
+      body: FutureBuilder<Users?>(
+        future: currentUserFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } 
+          else if (snapshot.hasError) {
+            return const Center(child: Text('Error loading user'));
+          } 
+          else {
+            Users? loadedUser = snapshot.data;
+            if (loadedUser != null) {
+              loadChatUsers(loadedUser);
+              return DashChat(
+                messageOptions: const MessageOptions(
+                  showOtherUsersAvatar: true,
+                  showTime: true
+                  ),
+                inputOptions: const InputOptions(alwaysShowSend: true),
+                currentUser: chatCurrentUser!,
+                onSend: sendMessage,
+                messages: getMessagesList(),
+              );
+            } else {
+              return const Center(child: Text('User not found'));
+            }
+          }
+        },
       ),
     );
   }

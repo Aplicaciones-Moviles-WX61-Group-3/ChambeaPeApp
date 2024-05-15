@@ -59,7 +59,7 @@ class _ChatListViewState extends State<ChatListView> {
               },
             );
           } else {
-            return Center(child: Text('No users found'));
+            return const Center(child: Text('No users found'));
           }
         }
         ),
