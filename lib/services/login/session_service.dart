@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:chambeape/model/Users.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SessionService {
@@ -5,11 +8,12 @@ class SessionService {
     return DateTime.now().millisecondsSinceEpoch.toString();
   }
 
-  Future<void> saveSession() async {
+  Future<void> saveSession(Users loggedUser) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('token', generateToken());
     final expiryDate = DateTime.now().add(const Duration(days: 30));
-
+    String userJson = jsonEncode(loggedUser.toJson());
+    await prefs.setString('user', userJson);
     await prefs.setString('expiryDate', expiryDate.toIso8601String());
   }
 

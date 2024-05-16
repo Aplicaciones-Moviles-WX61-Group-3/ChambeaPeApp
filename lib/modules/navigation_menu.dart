@@ -5,6 +5,8 @@ import 'package:chambeape/modules/3_posts/post_creation_widget.dart';
 import 'package:chambeape/modules/3_posts/post_view.dart';
 import 'package:chambeape/modules/4_notifications/notifications_view.dart';
 import 'package:chambeape/modules/5_profile/profile_view.dart';
+import 'package:chambeape/modules/chat/chat_list_view.dart';
+import 'package:chambeape/modules/chat/chat_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -39,6 +41,7 @@ class NavigationMenu extends StatelessWidget {
               NavigationDestination(icon: Icon(Icons.post_add), label: 'Posts'),
               NavigationDestination(icon: Icon(Icons.add_circle), label: 'Agregar'),
               NavigationDestination(icon: Icon(Icons.work), label: 'Workers'),
+              NavigationDestination(icon: Icon(Icons.chat), label: 'Chat'),
             ],
           )),
       body: Obx(
@@ -57,6 +60,7 @@ class NavigationController extends GetxController {
     const PostCreationWidget(),
     // const WorkersView(),
     const WorkersView(),
+    const ChatListView()
     // const ProfileView(),
   ];
 }

@@ -1,3 +1,4 @@
+import 'package:chambeape/model/Users.dart';
 import 'package:chambeape/model/log_in.dart';
 import 'package:chambeape/services/login/session_service.dart';
 
@@ -23,8 +24,8 @@ Future<Login> login(String email, String password) async {
 
   if (response.statusCode == 200) {
     Login login = Login.fromJson(json.decode(response.body));
-
-    SessionService().saveSession();
+    Users user  = Users.fromJson(json.decode(response.body));
+    SessionService().saveSession(user);
 
     return login;
   } else {

@@ -16,6 +16,9 @@ dependencies:
 
   cupertino_icons: ^1.0.2
   image_picker: ^1.1.0
+  stomp_dart_client: ^2.0.0
+  crypto: ^3.0.3
+  dash_chat_2: ^0.0.20
 
 dev_dependencies:
   flutter_test:
