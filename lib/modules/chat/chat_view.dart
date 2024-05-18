@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:chambeape/model/ChatMessage.dart' as Message;
+import 'package:chambeape/services/chat/message_service.dart';
 import 'package:crypto/crypto.dart';
 import 'package:chambeape/model/Users.dart';
 import 'package:dash_chat_2/dash_chat_2.dart';
@@ -24,18 +25,19 @@ class _ChatViewState extends State<ChatView> {
   StompClient? stompClient;
   final TextEditingController _controller = TextEditingController();
   late String roomId;
-  late Message.ChatMessage lastMessage = Message.ChatMessage(message: '', user: '', timestamp: '');
+  late Message.ChatMessage lastMessage = Message.ChatMessage(content: '', type: '', user: '', timestamp: '');
   late List<Message.ChatMessage> messages = [];
   late Users? currentUser, otherUser;
   late ChatUser? chatCurrentUser, chatOtherUser;
   late Future<Users?> currentUserFuture;
+  // late Future<void> loadPreviousMessagesFuture;
 
   @override
   void initState(){
     super.initState();
     stompClient = StompClient(
       config: StompConfig.sockJS(
-        url: 'http://chambeape.azurewebsites.net/websocket',
+        url: 'https://chambeape-chat.azurewebsites.net/websocket',
         onConnect: onConnect,
         onWebSocketError: (dynamic error) => print(error.toString()),
       ),
@@ -44,6 +46,7 @@ class _ChatViewState extends State<ChatView> {
     stompClient?.activate();
     otherUser = widget.otherUser;
     currentUserFuture = getCurrentUser();
+    // loadPreviousMessagesFuture = loadMessages();
   }
 
   String generateChatRoomId(String currentUserId, String otherUserId) {
@@ -82,6 +85,13 @@ class _ChatViewState extends State<ChatView> {
     roomId = generateChatRoomId(currentUser!.id.toString(), otherUser!.id.toString());
   }
 
+  Future<void> loadMessages() async{
+    List<Message.ChatMessage> loadedMessages = await MessageService().getMessages(roomId);
+    setState(() {
+      messages = loadedMessages;
+    });
+  }
+
   void onConnect(StompFrame frame) {
     stompClient?.subscribe(
       destination: '/topic/$roomId',
@@ -98,18 +108,19 @@ class _ChatViewState extends State<ChatView> {
 
   void sendMessage(ChatMessage chatMessage) {
     String message = chatMessage.text;
+    // String type = chatMessage.medias!.isNotEmpty ? 'media' : 'text';
 
     if (stompClient != null && stompClient!.connected) {
       stompClient?.send(
         destination: '/app/chat/$roomId',
-        body: '{"message":"$message","user":"${currentUser!.id.toString()}"}',
+        body: '{"content":"$message","type":"text","user":"${currentUser!.id.toString()}"}',
       );  
     }
   }
 
   List<ChatMessage> getMessagesList(){
     List<ChatMessage> chatMessages = messages.map((e) => ChatMessage(
-                  text: e.message,
+                  text: e.content,
                   user: e.user == chatCurrentUser!.id ? chatCurrentUser! : chatOtherUser!,
                   createdAt: DateTime.parse(e.timestamp),
     )).toList();
@@ -144,15 +155,19 @@ class _ChatViewState extends State<ChatView> {
             Users? loadedUser = snapshot.data;
             if (loadedUser != null) {
               loadChatUsers(loadedUser);
+              loadMessages();
               return DashChat(
                 messageOptions: const MessageOptions(
                   showOtherUsersAvatar: true,
                   showTime: true
                   ),
-                inputOptions: const InputOptions(alwaysShowSend: true),
+                inputOptions: InputOptions(
+                  alwaysShowSend: true,
+                  trailing: [mediaMessageButton()]
+                  ),
                 currentUser: chatCurrentUser!,
                 onSend: sendMessage,
-                messages: getMessagesList(),
+                messages: getMessagesList()
               );
             } else {
               return const Center(child: Text('User not found'));
@@ -160,6 +175,15 @@ class _ChatViewState extends State<ChatView> {
           }
         },
       ),
+    );
+  }
+
+  Widget mediaMessageButton() {
+    return IconButton(
+      icon: Icon(Icons.image, color: Theme.of(context).colorScheme.primary,),
+      onPressed: () {
+        // Implement media message sending
+      },
     );
   }
 }
