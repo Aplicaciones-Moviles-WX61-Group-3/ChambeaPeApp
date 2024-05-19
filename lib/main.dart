@@ -4,13 +4,14 @@ import 'package:chambeape/services/login/session_service.dart';
 import 'package:chambeape/shared/routes/routes.dart';
 import 'package:chambeape/shared/utils/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Cargar la sesión del usuario al iniciar la aplicación
   bool hasSession = await SessionService().loadSession();
-
+  tz.initializeTimeZones();
+  
   runApp(MyApp(hasSession: hasSession));
 }
 
@@ -19,7 +20,6 @@ class MyApp extends StatelessWidget {
 
   const MyApp({super.key, required this.hasSession});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
