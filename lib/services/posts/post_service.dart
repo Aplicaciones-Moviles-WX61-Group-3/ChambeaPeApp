@@ -34,7 +34,7 @@ class PostService{
     final response = await http.get(uri);
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      List<dynamic> body = json.decode(response.body);
+      List<dynamic> body = json.decode(utf8.decode(response.bodyBytes));
       List<Post> posts = body.map((dynamic item) => Post.fromJson(item)).toList();
       return posts;
     }

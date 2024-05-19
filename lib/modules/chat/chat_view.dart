@@ -9,7 +9,7 @@ import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
-
+import 'package:timezone/standalone.dart' as tz;
 
 class ChatView extends StatefulWidget {
   final Users otherUser;
@@ -23,14 +23,12 @@ class ChatView extends StatefulWidget {
 
 class _ChatViewState extends State<ChatView> {
   StompClient? stompClient;
-  final TextEditingController _controller = TextEditingController();
   late String roomId;
-  late Message.ChatMessage lastMessage = Message.ChatMessage(content: '', type: '', user: '', timestamp: '');
+  late Message.ChatMessage lastMessage;
   late List<Message.ChatMessage> messages = [];
   late Users? currentUser, otherUser;
   late ChatUser? chatCurrentUser, chatOtherUser;
-  late Future<Users?> currentUserFuture;
-  // late Future<void> loadPreviousMessagesFuture;
+  late Future<void> loadChatFuture;
 
   @override
   void initState(){
@@ -43,19 +41,16 @@ class _ChatViewState extends State<ChatView> {
       ),
     );
 
-    stompClient?.activate();
-    otherUser = widget.otherUser;
-    currentUserFuture = getCurrentUser();
-    // loadPreviousMessagesFuture = loadMessages();
+    stompClient?.activate(); 
+    loadChatFuture = loadChat();
   }
 
-  String generateChatRoomId(String currentUserId, String otherUserId) {
-    List<String> ids = [currentUserId, otherUserId];
-    ids.sort();
-    String combinedIds = '${ids[0]}_${ids[1]}';
-    var bytes = utf8.encode(combinedIds);
-    var digest = sha256.convert(bytes);
-    return digest.toString();
+  Future<void> loadChat() async{
+    otherUser = widget.otherUser;
+    currentUser = await getCurrentUser();
+    loadChatUsers();
+    roomId = generateChatRoomId(currentUser!.id.toString(), otherUser!.id.toString());
+    await loadMessages();
   }
 
   Future<Users?> getCurrentUser() async {
@@ -67,8 +62,7 @@ class _ChatViewState extends State<ChatView> {
     return null;
   }
 
-  void loadChatUsers(Users? loadedUser) {
-      currentUser = loadedUser;
+  void loadChatUsers() {
       chatCurrentUser = ChatUser(
         id: currentUser!.id.toString(), 
         firstName: currentUser!.firstName.split(' ')[0], 
@@ -81,8 +75,15 @@ class _ChatViewState extends State<ChatView> {
         lastName: otherUser!.lastName.split(' ')[0],
         profileImage: otherUser!.profilePic,
     );
+  }
 
-    roomId = generateChatRoomId(currentUser!.id.toString(), otherUser!.id.toString());
+  String generateChatRoomId(String currentUserId, String otherUserId) {
+    List<String> ids = [currentUserId, otherUserId];
+    ids.sort();
+    String combinedIds = '${ids[0]}_${ids[1]}';
+    var bytes = utf8.encode(combinedIds);
+    var digest = sha256.convert(bytes);
+    return digest.toString();
   }
 
   Future<void> loadMessages() async{
@@ -119,20 +120,29 @@ class _ChatViewState extends State<ChatView> {
   }
 
   List<ChatMessage> getMessagesList(){
-    List<ChatMessage> chatMessages = messages.map((e) => ChatMessage(
+    List<ChatMessage> chatMessages = messages.map((e) {
+      DateTime localTime = convertToLocalTime(e.timestamp);
+
+      return ChatMessage(
                   text: e.content,
                   user: e.user == chatCurrentUser!.id ? chatCurrentUser! : chatOtherUser!,
-                  createdAt: DateTime.parse(e.timestamp),
-    )).toList();
+                  createdAt: localTime
+                  );
+    }).toList();
 
     chatMessages.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return chatMessages;
   }
 
+  DateTime convertToLocalTime(String timestamp) {
+    final lima = tz.getLocation('America/Lima');
+    DateTime localizedLimaDt = tz.TZDateTime.from(DateTime.parse(timestamp), lima);
+    return localizedLimaDt;
+  }
+
   @override
   void dispose() {
     stompClient?.deactivate();
-    _controller.dispose();
     super.dispose();
   }
 
@@ -142,20 +152,16 @@ class _ChatViewState extends State<ChatView> {
       appBar: AppBar(
         title: Text('${widget.otherUser.firstName.split(' ')[0]} ${widget.otherUser.lastName.split(' ')[0]}'),
       ),
-      body: FutureBuilder<Users?>(
-        future: currentUserFuture,
+      body: FutureBuilder<void>(
+        future: loadChatFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } 
           else if (snapshot.hasError) {
-            return const Center(child: Text('Error loading user'));
+            return const Center(child: Text('Error loading chat. Please try again later'));
           } 
-          else {
-            Users? loadedUser = snapshot.data;
-            if (loadedUser != null) {
-              loadChatUsers(loadedUser);
-              loadMessages();
+          else {   
               return DashChat(
                 messageOptions: const MessageOptions(
                   showOtherUsersAvatar: true,
@@ -169,9 +175,6 @@ class _ChatViewState extends State<ChatView> {
                 onSend: sendMessage,
                 messages: getMessagesList()
               );
-            } else {
-              return const Center(child: Text('User not found'));
-            }
           }
         },
       ),
