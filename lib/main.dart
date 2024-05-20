@@ -10,8 +10,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   bool hasSession = await SessionService().loadSession();
-  tz.initializeTimeZones();
   
+  tz.initializeTimeZones();
   runApp(MyApp(hasSession: hasSession));
 }
 
