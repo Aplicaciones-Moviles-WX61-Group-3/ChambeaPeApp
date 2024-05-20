@@ -1,15 +1,22 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:chambeape/model/ChatMessage.dart' as Message;
 import 'package:chambeape/services/chat/message_service.dart';
+import 'package:chambeape/services/media/MediaService.dart';
+import 'package:chambeape/shared/utils/CloudApi.dart';
 import 'package:crypto/crypto.dart';
 import 'package:chambeape/model/Users.dart';
 import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 import 'package:timezone/standalone.dart' as tz;
+import 'package:timezone/timezone.dart';
 
 class ChatView extends StatefulWidget {
   final Users otherUser;
@@ -29,6 +36,9 @@ class _ChatViewState extends State<ChatView> {
   late Users? currentUser, otherUser;
   late ChatUser? chatCurrentUser, chatOtherUser;
   late Future<void> loadChatFuture;
+  MediaService mediaService = MediaService();
+  late CloudApi cloudApi;
+  late String imageName;
 
   @override
   void initState(){
@@ -43,6 +53,7 @@ class _ChatViewState extends State<ChatView> {
 
     stompClient?.activate(); 
     loadChatFuture = loadChat();
+    initApi();
   }
 
   Future<void> loadChat() async{
@@ -93,6 +104,11 @@ class _ChatViewState extends State<ChatView> {
     });
   }
 
+  Future<void> initApi() async{
+    String json = await rootBundle.loadString('assets/gcloud_credentials.json');
+    cloudApi = CloudApi(json);
+  }
+
   void onConnect(StompFrame frame) {
     stompClient?.subscribe(
       destination: '/topic/$roomId',
@@ -108,14 +124,37 @@ class _ChatViewState extends State<ChatView> {
   }
 
   void sendMessage(ChatMessage chatMessage) {
-    String message = chatMessage.text;
-    // String type = chatMessage.medias!.isNotEmpty ? 'media' : 'text';
+    String message;
+    String type;
 
-    if (stompClient != null && stompClient!.connected) {
+    if (stompClient != null && stompClient!.connected){
+      if(chatMessage.medias != null && chatMessage.medias!.isNotEmpty){
+        if(chatMessage.medias!.first.type == MediaType.image){
+          message = chatMessage.medias!.first.url;
+          type = 'media';
+        }
+        else{
+          Fluttertoast.showToast(
+              msg: "This file type is not supported.",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.grey[800],
+              textColor: Colors.white,
+              fontSize: 16.0
+          );
+          return;
+        }
+      }
+      else{
+        message = chatMessage.text;
+        type = 'text';
+      }
+
       stompClient?.send(
-        destination: '/app/chat/$roomId',
-        body: '{"content":"$message","type":"text","user":"${currentUser!.id.toString()}"}',
-      );  
+          destination: '/app/chat/$roomId',
+          body: '{"content":"$message","type":"$type","user":"${currentUser!.id.toString()}"}',
+        );
     }
   }
 
@@ -123,8 +162,21 @@ class _ChatViewState extends State<ChatView> {
     List<ChatMessage> chatMessages = messages.map((e) {
       DateTime localTime = convertToLocalTime(e.timestamp);
 
+      String messageText;
+      List<ChatMedia>? messageMedias;
+      
+      if(e.type == 'text'){
+        messageText = e.content;
+        messageMedias = null;
+      }
+      else{
+        messageText = '';
+        messageMedias = [ChatMedia(url: e.content, fileName: '', type: MediaType.image)];
+      }
+
       return ChatMessage(
-                  text: e.content,
+                  text: messageText,
+                  medias: messageMedias,
                   user: e.user == chatCurrentUser!.id ? chatCurrentUser! : chatOtherUser!,
                   createdAt: localTime
                   );
@@ -135,9 +187,11 @@ class _ChatViewState extends State<ChatView> {
   }
 
   DateTime convertToLocalTime(String timestamp) {
+    final utcTime = DateTime.parse('${timestamp}Z');
     final lima = tz.getLocation('America/Lima');
-    DateTime localizedLimaDt = tz.TZDateTime.from(DateTime.parse(timestamp), lima);
-    return localizedLimaDt;
+    tz.setLocalLocation(lima);
+    TZDateTime limaTime = TZDateTime.from(utcTime, lima);
+    return limaTime;
   }
 
   @override
@@ -150,7 +204,14 @@ class _ChatViewState extends State<ChatView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.otherUser.firstName.split(' ')[0]} ${widget.otherUser.lastName.split(' ')[0]}'),
+        title: Row(
+          children: [
+            CircleAvatar(
+              backgroundImage: NetworkImage(otherUser!.profilePic),
+            ),
+            const SizedBox(width: 10),
+            Text(otherUser!.firstName),
+          ]),
       ),
       body: FutureBuilder<void>(
         future: loadChatFuture,
@@ -165,11 +226,28 @@ class _ChatViewState extends State<ChatView> {
               return DashChat(
                 messageOptions: const MessageOptions(
                   showOtherUsersAvatar: true,
-                  showTime: true
+                  showTime: true,
                   ),
                 inputOptions: InputOptions(
                   alwaysShowSend: true,
-                  trailing: [mediaMessageButton()]
+                  sendOnEnter: true,
+                  trailing: [mediaMessageButton()],
+                  inputDecoration: InputDecoration(
+                    hintText: 'Escribe un mensaje...',
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    hintStyle: TextStyle(color: Colors.grey[600]),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey[200]!),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey[200]!),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    )
                   ),
                 currentUser: chatCurrentUser!,
                 onSend: sendMessage,
@@ -184,9 +262,31 @@ class _ChatViewState extends State<ChatView> {
   Widget mediaMessageButton() {
     return IconButton(
       icon: Icon(Icons.image, color: Theme.of(context).colorScheme.primary,),
-      onPressed: () {
-        // Implement media message sending
+      onPressed: () async{
+        File? file = await mediaService.getImageFromGallery();
+        if(file != null){
+          Uint8List fileBytes = await file.readAsBytes();
+          imageName = mediaService.getImageName(file.path); 
+          Uri fileUrl = await saveImageToCloud(fileBytes);
+
+          ChatMessage chatMessage = ChatMessage(
+            user: chatCurrentUser!,
+            createdAt: DateTime.now(),
+            medias: [ChatMedia(url: fileUrl.toString(), fileName: imageName, type: MediaType.image)]
+          );
+
+          sendMessage(chatMessage);
+          
+        }
+        else{
+          //No image selected
+        }
       },
     );
+  }
+
+  Future<Uri> saveImageToCloud(Uint8List fileBytes) async{
+    final response = await cloudApi.save(imageName, fileBytes);
+    return response.downloadLink;
   }
 }
