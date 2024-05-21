@@ -7,8 +7,14 @@ import 'package:chambeape/model/ChatMessage.dart';
 class MessageService{
   final String baseUrl = 'https://chambeape-chat.azurewebsites.net/api/chat/messages';
 
-  Future<List<ChatMessage>> getMessages(String roomId) async{
-    final uri = Uri.parse(baseUrl).replace(queryParameters: {'roomId': roomId});
+  Future<List<ChatMessage>> getMessages(String roomId, {bool latest=false}) async{
+    final queryParameters = {
+      'roomId': roomId,
+    };
+    if(latest){
+      queryParameters['latest'] = 'true';
+    }
+    final uri = Uri.parse(baseUrl).replace(queryParameters: queryParameters);
     final response = await http.get(uri);
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
