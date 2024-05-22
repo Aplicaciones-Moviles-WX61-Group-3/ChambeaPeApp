@@ -82,23 +82,6 @@ class _ChatListViewState extends State<ChatListView> {
                       subtitle: Row(
                         children: [
                           Expanded(child: LastMessage(otherUserIndex: index)),
-                          unreadMessagesCount > 0 ?
-                          Container(
-                            width: 24,
-                            height: 24,
-                            decoration: BoxDecoration(
-                              color: Colors.amber.shade700, 
-                              shape: BoxShape.circle,
-                            ),
-                            child: Center(
-                              child: Text(
-                                unreadMessagesCount.toString(), 
-                                style: const TextStyle(
-                                  color: Colors.white, 
-                                ),
-                              ),
-                            )
-                          ): Container(),
                         ],
                       ), 
                       onTap: () {
@@ -177,24 +160,39 @@ class _LastMessageState extends State<LastMessage> {
                   color: Colors.grey.shade900,
                   fontSize: 15,
                 );
-            return lastMessage.type.compareTo('text') == 0 ? 
-            Text(
-              lastMessage.content,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: textStyle,
-              ) : 
-            Row(children: [
-              Icon(
-                Icons.image,
-                size: 22,
-                color: Colors.grey.shade800,
-                ), 
-              Text(
-                'Foto',
-                style: textStyle
-                )
-              ],);
+            switch(lastMessage.type){
+              case 'text':
+                return Text(
+                  lastMessage.content,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: textStyle,
+                );
+              case 'image':
+                return Row(children: [
+                Icon(
+                  Icons.image,
+                  size: 22,
+                  color: Colors.grey.shade800,
+                  ), 
+                Text(
+                  'Foto',
+                  style: textStyle
+                  )
+                ],);
+              default:
+                return Row(children: [
+                Icon(
+                  Icons.file_copy,
+                  size: 22,
+                  color: Colors.grey.shade800,
+                  ), 
+                Text(
+                  'Archivo',
+                  style: textStyle
+                  )
+                ],);
+            }  
           }
         }
       );
