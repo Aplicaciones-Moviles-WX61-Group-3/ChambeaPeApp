@@ -21,51 +21,47 @@ class _PostViewWidgetState extends State<PostViewWidget> {
     super.initState();
     posts = PostService().getPosts();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Posts'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add_circle_rounded, color: Colors.orange,),
-            iconSize: 30,
-            onPressed: () {
-              Navigator.pushNamed(context, PostCreationWidget.routeName);
+        appBar: AppBar(
+          title: const Text('Posts'),
+          actions: [
+            IconButton(
+              icon: const Icon(
+                Icons.add_circle_rounded,
+                color: Colors.orange,
+              ),
+              iconSize: 30,
+              onPressed: () {
+                Navigator.pushNamed(context, PostCreationWidget.routeName);
+              },
+            ),
+          ],
+        ),
+        body: Center(
+          child: FutureBuilder<List<Post>>(
+            future: posts,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              } else if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.hasData) {
+                  return SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        PostCardWidget(postSnapshot: snapshot),
+                      ],
+                    ),
+                  );
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                }
+              }
+              return const Text('Aún no has creado ningún post.');
             },
           ),
-        ],
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            FutureBuilder(
-              future: posts,
-              builder: ((context, snapshot) {
-                if(snapshot.connectionState == ConnectionState.waiting){
-                  return const CircularProgressIndicator();
-                }
-                else if(snapshot.connectionState == ConnectionState.none){
-                  return Container();
-                }
-                else{
-                  if(snapshot.hasData){
-                    return PostCardWidget(postSnapshot: snapshot);
-                  }
-                  else if(snapshot.hasError){
-                    return Text('Error: ${snapshot.error}');
-                  }
-                  else{
-                    return const Text('Aún no has creado ningún post.');
-                  }
-                }
-              })
-              )
-          ],
-      ),
-    )
-    );
+        ));
   }
 }
