@@ -6,6 +6,8 @@ import 'package:chambeape/services/posts/post_service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+Post? post;
+
 //Step 1
 final TextEditingController titleController = TextEditingController();
 final TextEditingController descriptionController = TextEditingController();
@@ -23,20 +25,48 @@ bool highlightPost = false;
 bool onlySameCityWorkers = true;
 bool notifyMessages = true;
 
-Future<Post?>? post;
+class PostEditWidget extends StatefulWidget {
+  final Post postRecived;
 
-class PostCreationWidget extends StatefulWidget {
-  const PostCreationWidget({super.key});
+  const PostEditWidget({required this.postRecived, super.key});
 
-  static const String routeName = 'post_creation_widget';
+  static const String routeName = 'post_edit_widget';
 
   @override
-  State<PostCreationWidget> createState() => _PostCreationWidgetState();
+  State<PostEditWidget> createState() => _PostEditWidgetState();
 }
 
-class _PostCreationWidgetState extends State<PostCreationWidget> {
+class _PostEditWidgetState extends State<PostEditWidget> {
+  bool isLoading = false;
+
   int currStep = 0;
   final int totalSteps = 4;
+
+  @override
+  void initState() {
+    super.initState();
+
+    post = Post(
+      id: widget.postRecived.id,
+      title: widget.postRecived.title,
+      description: widget.postRecived.description,
+      subtitle: widget.postRecived.subtitle,
+      imgUrl: widget.postRecived.imgUrl,
+    );
+
+    print("Post received");
+    print(post!.toJson());
+
+    titleController.text = post!.title;
+    descriptionController.text = post!.description;
+    dropdownCurrValue = post!.subtitle;
+    imgUrlController.text = post!.imgUrl;
+  }
+
+  void handleEditPost() async {
+    Post? updatedPost = await editPost();
+    Navigator.pop(context, updatedPost);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +80,7 @@ class _PostCreationWidgetState extends State<PostCreationWidget> {
                 children: <Widget>[
                   ElevatedButton(
                       onPressed: currStep == totalSteps - 1
-                          ? () => createPost()
+                          ? () => handleEditPost()
                           : details.onStepContinue,
                       style: ElevatedButton.styleFrom(
                           minimumSize: const Size(300, 50),
@@ -59,7 +89,7 @@ class _PostCreationWidgetState extends State<PostCreationWidget> {
                             fontSize: 18,
                           )),
                       child: currStep == totalSteps - 1
-                          ? const Text("Publicar")
+                          ? const Text("Actualizar")
                           : const Text("Siguiente")),
                 ],
               );
@@ -127,11 +157,50 @@ class _PostCreationWidgetState extends State<PostCreationWidget> {
     }
   }
 
-  createPost() {
-    final PostService postService = PostService();
-    postService.createPost(titleController.text, descriptionController.text,
-        dropdownCurrValue, imgUrlController.text);
-    Navigator.pushNamed(context, PostViewWidget.routeName);
+  Future<Post?> editPost() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+
+    try {
+      final PostService postService = PostService();
+
+      Post postEdited = Post(
+          id: post!.id,
+          title: titleController.text,
+          description: descriptionController.text,
+          subtitle: dropdownCurrValue,
+          imgUrl: imgUrlController.text);
+
+      postEdited = await postService.updatePost(
+          postEdited.id.toString(),
+          postEdited.title,
+          postEdited.description,
+          postEdited.subtitle,
+          postEdited.imgUrl);
+
+      Navigator.pop(context);
+
+      return postEdited;
+    } catch (e) {
+      Navigator.pop(context);
+      print('Error updating post: $e');
+      return null;
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 }
 
