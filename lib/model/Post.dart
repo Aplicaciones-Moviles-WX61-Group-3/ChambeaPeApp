@@ -1,27 +1,29 @@
-class Post{
+class Post {
+  int id;
   String title;
   String description;
   String subtitle;
   String imgUrl;
 
-  Post({
-    required this.title,
-    required this.description,
-    required this.subtitle,
-    required this.imgUrl
-  });
+  Post(
+      {required this.id,
+      required this.title,
+      required this.description,
+      required this.subtitle,
+      required this.imgUrl});
 
-  factory Post.fromJson(Map<String, dynamic> json){
+  factory Post.fromJson(Map<String, dynamic> json) {
     return Post(
-      title: json['title'],
-      description: json['description'],
-      subtitle: json['subtitle'],
-      imgUrl: json['imgUrl']
-    );
+        id: json['id'],
+        title: json['title'],
+        description: json['description'],
+        subtitle: json['subtitle'],
+        imgUrl: json['imgUrl']);
   }
 
-  Map<String, dynamic> toJson(){
+  Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'title': title,
       'description': description,
       'subtitle': subtitle,
