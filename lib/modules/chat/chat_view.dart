@@ -13,10 +13,12 @@ import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:mime/mime.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 import 'package:timezone/standalone.dart' as tz;
 import 'package:timezone/timezone.dart';
+import 'package:photo_view/photo_view.dart';
 
 class ChatView extends StatefulWidget {
   final Users otherUser;
@@ -38,7 +40,7 @@ class _ChatViewState extends State<ChatView> {
   late Future<void> loadChatFuture;
   MediaService mediaService = MediaService();
   late CloudApi cloudApi;
-  late String imageName;
+  late String fileName;
 
   @override
   void initState(){
@@ -129,21 +131,27 @@ class _ChatViewState extends State<ChatView> {
 
     if (stompClient != null && stompClient!.connected){
       if(chatMessage.medias != null && chatMessage.medias!.isNotEmpty){
-        if(chatMessage.medias!.first.type == MediaType.image){
-          message = chatMessage.medias!.first.url;
-          type = 'media';
-        }
-        else{
-          Fluttertoast.showToast(
-              msg: "This file type is not supported.",
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.BOTTOM,
-              timeInSecForIosWeb: 1,
-              backgroundColor: Colors.grey[800],
-              textColor: Colors.white,
-              fontSize: 16.0
-          );
-          return;
+        message = chatMessage.medias!.first.url;
+        switch(chatMessage.medias!.first.type){
+          case MediaType.image:
+            type = 'media/image';
+            break;
+          case MediaType.video:
+            type = 'media/video';
+            break;
+          default:
+            type = 'media/file';
+            // Fluttertoast.showToast(
+            //     msg: "This file type is not supported.",
+            //     toastLength: Toast.LENGTH_SHORT,
+            //     gravity: ToastGravity.BOTTOM,
+            //     timeInSecForIosWeb: 1,
+            //     backgroundColor: Colors.grey[800],
+            //     textColor: Colors.white,
+            //     fontSize: 16.0
+            // );
+            // return;
+            break;
         }
       }
       else{
@@ -171,7 +179,27 @@ class _ChatViewState extends State<ChatView> {
       }
       else{
         messageText = '';
-        messageMedias = [ChatMedia(url: e.content, fileName: '', type: MediaType.image)];
+        String fileType = e.type.split('/')[1];
+        MediaType mediaType;
+        switch(fileType){
+          case 'image':
+            mediaType = MediaType.image;
+            break;
+          case 'video':
+            mediaType = MediaType.video;
+            break;
+          default:
+            mediaType = MediaType.file;
+            break;
+        }
+        String fileName = e.content.split('/').last;
+        fileName = fileName.split('?').first;
+
+        messageMedias = [
+          ChatMedia(
+            url: e.content, 
+            fileName: mediaType == MediaType.file ? fileName : '', 
+            type: mediaType)];
       }
 
       return ChatMessage(
@@ -224,9 +252,18 @@ class _ChatViewState extends State<ChatView> {
           } 
           else {   
               return DashChat(
-                messageOptions: const MessageOptions(
+                messageOptions: MessageOptions(
                   showOtherUsersAvatar: true,
                   showTime: true,
+                  onTapMedia: (media) {
+                    if(media.type == MediaType.image){
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => Container(
+                        child: PhotoView(
+                          imageProvider: NetworkImage(media.url),
+                        )
+                      )));
+                    }
+                  },
                   ),
                 inputOptions: InputOptions(
                   alwaysShowSend: true,
@@ -251,7 +288,7 @@ class _ChatViewState extends State<ChatView> {
                   ),
                 currentUser: chatCurrentUser!,
                 onSend: sendMessage,
-                messages: getMessagesList()
+                messages: getMessagesList(),
               );
           }
         },
@@ -263,16 +300,21 @@ class _ChatViewState extends State<ChatView> {
     return IconButton(
       icon: Icon(Icons.image, color: Theme.of(context).colorScheme.primary,),
       onPressed: () async{
-        File? file = await mediaService.getImageFromGallery();
+        File? file = await mediaService.getImageOrVideoFromGallery();
         if(file != null){
           Uint8List fileBytes = await file.readAsBytes();
-          imageName = mediaService.getImageName(file.path); 
-          Uri fileUrl = await saveImageToCloud(fileBytes);
+          fileName = mediaService.getFileName(file.path); 
+          Uri fileUrl = await saveFileToGoogleCloud(fileBytes);
+          MediaType mediaType = mediaService.getMessageMediaType(fileName);
 
           ChatMessage chatMessage = ChatMessage(
             user: chatCurrentUser!,
             createdAt: DateTime.now(),
-            medias: [ChatMedia(url: fileUrl.toString(), fileName: imageName, type: MediaType.image)]
+            medias: [ChatMedia(
+              url: fileUrl.toString(), 
+              fileName: fileName, 
+              type: mediaType
+              )]
           );
 
           sendMessage(chatMessage);
@@ -285,8 +327,8 @@ class _ChatViewState extends State<ChatView> {
     );
   }
 
-  Future<Uri> saveImageToCloud(Uint8List fileBytes) async{
-    final response = await cloudApi.save(imageName, fileBytes);
+  Future<Uri> saveFileToGoogleCloud(Uint8List fileBytes) async{
+    final response = await cloudApi.save(fileName, fileBytes);
     return response.downloadLink;
   }
 }

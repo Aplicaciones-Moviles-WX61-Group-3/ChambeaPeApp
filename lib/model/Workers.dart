@@ -1,3 +1,5 @@
+import 'package:chambeape/model/Users.dart';
+
 class Workers {
   final int id;
   final String firstName;
@@ -50,4 +52,19 @@ class Workers {
         'description': description,
         'occupation': occupation,
       };
+
+  Users toUser() {
+    return Users(
+      id: id,
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      phoneNumber: phoneNumber,
+      birthdate: DateTime.now(), 
+      gender: 'M',
+      profilePic: profilePic,
+      description: description,
+      userRole: 'W'
+      );
+  }
 }

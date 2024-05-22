@@ -1,4 +1,5 @@
 import 'package:chambeape/model/Workers.dart';
+import 'package:chambeape/modules/chat/chat_view.dart';
 import 'package:flutter/material.dart';
 
 class UserCardWidget extends StatefulWidget {
@@ -84,7 +85,14 @@ class _UserCardWidgetState extends State<UserCardWidget> {
                           ),
                           ButtonTheme(
                             child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ChatView(otherUser: widget.worker.toUser(),),
+                                  ),
+                                );
+                              },
                               style: ElevatedButton.styleFrom(
                                 foregroundColor: Colors.white,
                                 backgroundColor: Colors.amber.shade600,
