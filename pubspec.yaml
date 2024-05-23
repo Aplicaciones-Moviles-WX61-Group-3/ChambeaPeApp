@@ -8,29 +8,29 @@ environment:
   sdk: ">=3.2.3 <4.0.0"
 
 dependencies:
+  crypto: ^3.0.3
+  cupertino_icons: ^1.0.2
+  dash_chat_2: ^0.0.20
   flutter:
     sdk: flutter
-  http: ^1.1.0
-  shared_preferences: ^2.2.3
-  get: ^4.6.6
-
-  cupertino_icons: ^1.0.2
-  image_picker: ^1.1.0
-  stomp_dart_client: ^2.0.0
-  crypto: ^3.0.3
-  dash_chat_2: ^0.0.20
-  timezone: ^0.9.3
-  gcloud: ^0.8.12
-  googleapis_auth: ^1.6.0
-  mime: ^1.0.5
+  flutter_riverpod: ^2.5.1
   fluttertoast: ^8.2.5
+  gcloud: ^0.8.12
+  get: ^4.6.6
+  googleapis_auth: ^1.6.0
+  http: ^1.1.0
+  image_picker: ^1.1.0
+  mime: ^1.0.5
   photo_view: ^0.15.0
+  shared_preferences: ^2.2.3
+  stomp_dart_client: ^2.0.0
+  timezone: ^0.9.3
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
 
   flutter_lints: ^2.0.0
+  flutter_test:
+    sdk: flutter
 
 flutter:
   uses-material-design: true
@@ -38,5 +38,3 @@ flutter:
   assets:
     - assets/images/
     - assets/gcloud_credentials.json
-
-  #
