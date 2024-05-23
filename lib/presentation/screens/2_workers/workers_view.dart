@@ -1,5 +1,5 @@
 import 'package:chambeape/infrastructure/models/workers.dart';
-import 'package:chambeape/modules/1_home/widgets/user_card_widget.dart';
+import 'package:chambeape/presentation/screens/1_home/widgets/user_card_widget.dart';
 import 'package:chambeape/services/users/worker_service.dart';
 import 'package:flutter/material.dart';
 

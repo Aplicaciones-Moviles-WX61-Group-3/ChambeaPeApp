@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:chambeape/infrastructure/models/users.dart';
-import 'package:chambeape/modules/chat/chat_view.dart';
+import 'package:chambeape/presentation/screens/chat/chat_view.dart';
 import 'package:chambeape/services/chat/message_service.dart';
 import 'package:chambeape/services/users/user_service.dart';
 import 'package:crypto/crypto.dart';

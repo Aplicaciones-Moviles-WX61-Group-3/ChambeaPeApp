@@ -14,6 +14,8 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.5.1
+  go_router: ^14.1.1
+  riverpod_annotation: ^2.3.5
   fluttertoast: ^8.2.5
   gcloud: ^0.8.12
   get: ^4.6.6
@@ -27,8 +29,7 @@ dependencies:
   timezone: ^0.9.3
 
 dev_dependencies:
-
-  flutter_lints: ^2.0.0
+  flutter_lints: ^3.0.0
   flutter_test:
     sdk: flutter
 

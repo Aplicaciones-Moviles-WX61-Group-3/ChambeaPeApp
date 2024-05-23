@@ -1,6 +1,6 @@
 import 'package:chambeape/infrastructure/models/post.dart';
-import 'package:chambeape/modules/3_posts/post_card_widget.dart';
-import 'package:chambeape/modules/3_posts/post_creation_widget.dart';
+import 'package:chambeape/presentation/screens/3_posts/widgets/post_card_widget.dart';
+import 'package:chambeape/presentation/screens/3_posts/widgets/post_creation_widget.dart';
 import 'package:chambeape/services/posts/post_service.dart';
 import 'package:flutter/material.dart';
 

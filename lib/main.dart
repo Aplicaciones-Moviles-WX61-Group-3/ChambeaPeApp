@@ -1,5 +1,5 @@
-import 'package:chambeape/modules/0_login/login_view.dart';
-import 'package:chambeape/modules/navigation_menu.dart';
+import 'package:chambeape/presentation/screens/0_login/login_view.dart';
+import 'package:chambeape/presentation/screens/navigation_menu.dart';
 import 'package:chambeape/presentation/providers/theme_provider.dart';
 import 'package:chambeape/services/login/session_service.dart';
 import 'package:chambeape/config/routes/routes.dart';

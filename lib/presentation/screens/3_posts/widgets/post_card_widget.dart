@@ -1,7 +1,7 @@
 import 'package:chambeape/infrastructure/models/post.dart';
 import 'package:flutter/material.dart';
-import "package:chambeape/modules/3_posts/dialog_confirmation_widget.dart";
-import 'package:chambeape/modules/3_posts/post_edit_widget.dart';
+import "package:chambeape/presentation/screens/3_posts/widgets/dialog_confirmation_widget.dart";
+import 'package:chambeape/presentation/screens/3_posts/widgets/post_edit_widget.dart';
 import 'package:chambeape/services/posts/post_service.dart';
 
 class PostCardWidget extends StatefulWidget {
