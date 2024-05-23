@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
+  final bool isDarkMode;
+
+  AppTheme({
+      this.isDarkMode = false
+  });
+
   static ThemeData lightTheme() {
     return ThemeData(
+      useMaterial3: true,
       colorScheme: ColorScheme.light(
         primary: Colors.amber.shade700,
         secondary: Colors.amber.shade400,
-        background: Colors.white,
+        surface: Colors.white,
       ),
       brightness: Brightness.light,
       primaryColor: Colors.amber.shade700,
@@ -29,23 +36,22 @@ class AppTheme {
       ),
       canvasColor: Colors.amber.shade50,
       primarySwatch: Colors.amber,
-
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(Colors.amber.shade700),
-          foregroundColor: MaterialStateProperty.all(Colors.white),
+          backgroundColor: WidgetStateProperty.all(Colors.amber.shade700),
+          foregroundColor: WidgetStateProperty.all(Colors.white),
         ),
       ),
-      
     );
   }
 
   static ThemeData darkTheme() {
     return ThemeData(
+      useMaterial3: true,
       colorScheme: ColorScheme.dark(
         primary: Colors.amber.shade700,
         secondary: Colors.amber.shade700,
-        background: Colors.grey.shade900,
+        surface: Colors.grey.shade900,
       ),
       brightness: Brightness.dark,
       primaryColor: Colors.amber.shade700,
@@ -73,13 +79,22 @@ class AppTheme {
 
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(Colors.amber.shade700),
-          foregroundColor: MaterialStateProperty.all(Colors.white),
+          backgroundColor: WidgetStateProperty.all(Colors.amber.shade700),
+          foregroundColor: WidgetStateProperty.all(Colors.white),
         ),
       ),
-
-      
     );
+  }
 
+  ThemeData getTheme() {
+    return isDarkMode ? darkTheme() : lightTheme();
+  }
+
+  AppTheme copyWith({
+    bool? isDarkMode,
+  }) {
+    return AppTheme(
+      isDarkMode: isDarkMode ?? this.isDarkMode,
+    );
   }
 }
