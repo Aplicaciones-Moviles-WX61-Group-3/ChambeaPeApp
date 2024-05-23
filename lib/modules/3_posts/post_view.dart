@@ -29,15 +29,25 @@ class _PostViewWidgetState extends State<PostViewWidget> {
           title: const Text('Posts'),
           actions: [
             IconButton(
-              icon: const Icon(
-                Icons.add_circle_rounded,
-                color: Colors.orange,
-              ),
-              iconSize: 30,
-              onPressed: () {
-                Navigator.pushNamed(context, PostCreationWidget.routeName);
-              },
-            ),
+                icon: const Icon(
+                  Icons.add_circle_rounded,
+                  color: Colors.orange,
+                ),
+                iconSize: 30,
+                onPressed: () async {
+                  Post? newPost = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PostCreationWidget(),
+                    ),
+                  );
+
+                  if (newPost != null) {
+                    setState(() {
+                      posts = PostService().getPosts();
+                    });
+                  }
+                }),
           ],
         ),
         body: Center(

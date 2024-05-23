@@ -23,7 +23,7 @@ bool highlightPost = false;
 bool onlySameCityWorkers = true;
 bool notifyMessages = true;
 
-Future<Post?>? post;
+Post? post;
 
 class PostCreationWidget extends StatefulWidget {
   const PostCreationWidget({super.key});
@@ -35,8 +35,28 @@ class PostCreationWidget extends StatefulWidget {
 }
 
 class _PostCreationWidgetState extends State<PostCreationWidget> {
+  bool isLoading = false;
+
   int currStep = 0;
   final int totalSteps = 4;
+
+  void handleEditPost() async {
+    Post? updatedPost = await editPost();
+    Navigator.pop(context, updatedPost);
+  }
+
+  void resetFields() {
+    titleController.clear();
+    descriptionController.clear();
+    dropdownCurrValue = 'Jardinería';
+    retributionController.clear();
+    imgUrlController.clear();
+    locationController.clear();
+    dropdownDeparmentCurrVal = 'Departamento';
+    highlightPost = false;
+    onlySameCityWorkers = true;
+    notifyMessages = true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +70,7 @@ class _PostCreationWidgetState extends State<PostCreationWidget> {
                 children: <Widget>[
                   ElevatedButton(
                       onPressed: currStep == totalSteps - 1
-                          ? () => createPost()
+                          ? () => handleEditPost()
                           : details.onStepContinue,
                       style: ElevatedButton.styleFrom(
                           minimumSize: const Size(300, 50),
@@ -127,11 +147,36 @@ class _PostCreationWidgetState extends State<PostCreationWidget> {
     }
   }
 
-  createPost() {
-    final PostService postService = PostService();
-    postService.createPost(titleController.text, descriptionController.text,
-        dropdownCurrValue, imgUrlController.text);
-    Navigator.pushNamed(context, PostViewWidget.routeName);
+  Future<Post?> editPost() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+
+    try {
+      final PostService postService = PostService();
+      post = await postService.createPost(titleController.text,
+          descriptionController.text, dropdownCurrValue, imgUrlController.text);
+
+      Navigator.pop(context);
+      return post;
+    } catch (e) {
+      Navigator.pop(context);
+    } finally {
+      setState(() {
+        resetFields();
+        isLoading = false;
+      });
+    }
   }
 }
 
