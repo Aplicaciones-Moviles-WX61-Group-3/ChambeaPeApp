@@ -1,4 +1,4 @@
-import 'package:chambeape/model/Post.dart';
+import 'package:chambeape/model/post.dart';
 import 'package:chambeape/modules/3_posts/post_card_widget.dart';
 import 'package:chambeape/modules/3_posts/post_creation_widget.dart';
 import 'package:chambeape/services/posts/post_service.dart';

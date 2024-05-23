@@ -1,4 +1,4 @@
-import 'package:chambeape/model/Post.dart';
+import 'package:chambeape/model/post.dart';
 import 'package:flutter/material.dart';
 import "package:chambeape/modules/3_posts/dialog_confirmation_widget.dart";
 import 'package:chambeape/modules/3_posts/post_edit_widget.dart';

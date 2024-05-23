@@ -1,4 +1,4 @@
-import 'package:chambeape/model/Users.dart';
+import 'package:chambeape/model/users.dart';
 
 class Workers {
   final int id;

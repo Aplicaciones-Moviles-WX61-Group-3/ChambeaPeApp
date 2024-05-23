@@ -1,5 +1,5 @@
-import 'package:chambeape/model/Employers.dart';
-import 'package:chambeape/model/Workers.dart';
+import 'package:chambeape/model/employers.dart';
+import 'package:chambeape/model/workers.dart';
 import 'package:chambeape/modules/1_home/widgets/user_card_widget.dart';
 import 'package:chambeape/modules/1_home/widgets/user_grid_widget.dart';
 import 'package:chambeape/services/users/worker_service.dart';

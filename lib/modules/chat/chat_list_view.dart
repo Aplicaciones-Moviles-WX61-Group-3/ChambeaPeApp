@@ -1,13 +1,13 @@
 import 'dart:convert';
 
-import 'package:chambeape/model/Users.dart';
+import 'package:chambeape/model/users.dart';
 import 'package:chambeape/modules/chat/chat_view.dart';
 import 'package:chambeape/services/chat/message_service.dart';
 import 'package:chambeape/services/users/user_service.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:chambeape/model/ChatMessage.dart' as Message;
+import 'package:chambeape/model/chat_message.dart' as Message;
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 
 late List<Users> users;

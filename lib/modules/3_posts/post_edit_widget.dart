@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:chambeape/model/Post.dart';
+import 'package:chambeape/model/post.dart';
 import 'package:chambeape/services/posts/post_service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
