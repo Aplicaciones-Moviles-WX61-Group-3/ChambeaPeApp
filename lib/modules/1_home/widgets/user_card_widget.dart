@@ -1,4 +1,4 @@
-import 'package:chambeape/model/workers.dart';
+import 'package:chambeape/infrastructure/models/workers.dart';
 import 'package:chambeape/modules/chat/chat_view.dart';
 import 'package:flutter/material.dart';
 

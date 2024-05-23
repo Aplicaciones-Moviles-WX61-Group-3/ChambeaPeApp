@@ -1,4 +1,4 @@
-import 'package:chambeape/model/log_in.dart';
+import 'package:chambeape/infrastructure/models/log_in.dart';
 import 'package:chambeape/modules/navigation_menu.dart';
 import 'package:chambeape/services/login/login_service.dart';
 import 'package:flutter/material.dart';

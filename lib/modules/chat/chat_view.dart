@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:chambeape/model/chat_message.dart' as Message;
+import 'package:chambeape/infrastructure/models/chat_message.dart' as Message;
 import 'package:chambeape/services/chat/message_service.dart';
 import 'package:chambeape/services/media/MediaService.dart';
 import 'package:chambeape/config/utils/CloudApi.dart';
 import 'package:crypto/crypto.dart';
-import 'package:chambeape/model/users.dart';
+import 'package:chambeape/infrastructure/models/users.dart';
 import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
