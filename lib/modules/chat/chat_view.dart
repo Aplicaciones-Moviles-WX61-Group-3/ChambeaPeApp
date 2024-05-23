@@ -1,19 +1,16 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:chambeape/model/ChatMessage.dart' as Message;
 import 'package:chambeape/services/chat/message_service.dart';
 import 'package:chambeape/services/media/MediaService.dart';
-import 'package:chambeape/shared/utils/CloudApi.dart';
+import 'package:chambeape/config/utils/CloudApi.dart';
 import 'package:crypto/crypto.dart';
 import 'package:chambeape/model/Users.dart';
 import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:mime/mime.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 import 'package:timezone/standalone.dart' as tz;

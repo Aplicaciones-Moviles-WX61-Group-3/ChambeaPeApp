@@ -3,10 +3,7 @@ import 'package:chambeape/modules/2_workers/workers_view.dart';
 // import 'package:chambeape/modules/2_workers/workers_view.dart';
 import 'package:chambeape/modules/3_posts/post_creation_widget.dart';
 import 'package:chambeape/modules/3_posts/post_view.dart';
-import 'package:chambeape/modules/4_notifications/notifications_view.dart';
-import 'package:chambeape/modules/5_profile/profile_view.dart';
 import 'package:chambeape/modules/chat/chat_list_view.dart';
-import 'package:chambeape/modules/chat/chat_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

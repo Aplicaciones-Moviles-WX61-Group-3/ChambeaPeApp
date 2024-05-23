@@ -64,7 +64,7 @@ class _LoginViewState extends State<LoginView> {
                 const LoginButton(text: 'Registrarse'),
                 TextButton(
                   onPressed: () {
-                    // ! Implementar la funcionalidad de recuperación de contraseña aquí
+                    // TODO Implementar la funcionalidad de recuperación de contraseña aquí
                   },
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.amber.shade700,
