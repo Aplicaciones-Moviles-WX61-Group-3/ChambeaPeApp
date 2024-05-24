@@ -6,11 +6,11 @@ class UserGridWidget extends StatelessWidget {
   final String title;
 
   const UserGridWidget({
-    Key? key,
+    super.key,
     required this.crossAxisCount,
     required this.imageUrls,
     required this.title,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,11 +31,14 @@ class UserGridWidget extends StatelessWidget {
           crossAxisSpacing: 20,
           mainAxisSpacing: 20,
           children: imageUrls.map((imageUrl) {
-            return AspectRatio(
-              aspectRatio: 1.0,
-              child: Image.network(
-                imageUrl,
-                fit: BoxFit.cover,
+            return ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: AspectRatio(
+                aspectRatio: 1.0,
+                child: Image.network(
+                  imageUrl,
+                  fit: BoxFit.cover,
+                ),
               ),
             );
           }).toList(),

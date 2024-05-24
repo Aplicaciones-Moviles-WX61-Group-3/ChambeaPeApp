@@ -1,6 +1,6 @@
 import 'package:chambeape/infrastructure/models/employers.dart';
 import 'package:chambeape/infrastructure/models/workers.dart';
-import 'package:chambeape/presentation/screens/1_home/widgets/user_card_widget.dart';
+import 'package:chambeape/presentation/shared/widgets/user_card_widget.dart';
 import 'package:chambeape/presentation/screens/1_home/widgets/user_grid_widget.dart';
 import 'package:chambeape/services/users/worker_service.dart';
 import 'package:flutter/material.dart';
@@ -67,18 +67,27 @@ class _HomeViewState extends State<HomeView> {
                       ),
                     ),
                     UserCardWidget(worker: workers[0]),
+                    const SizedBox(height: 5.0),
                     Divider(
                       color: Colors.amber.shade700.withOpacity(0.2),
                       thickness: 3,
                     ),
                     UserGridWidget(
-                        crossAxisCount: 3,
-                        imageUrls: employerImageUrls,
-                        title: 'Top Empleadores'),
+                      crossAxisCount: 3,
+                      imageUrls: employerImageUrls,
+                      title: 'Top Empleadores'
+                    ),
+                    const SizedBox(height: 20.0),
+                    Divider(
+                      color: Colors.amber.shade700.withOpacity(0.2),
+                      thickness: 3,
+                    ),
                     UserGridWidget(
-                        crossAxisCount: 3,
-                        imageUrls: workerImageUrls,
-                        title: 'Top Chambeadores'),
+                      crossAxisCount: 3,
+                      imageUrls: workerImageUrls,
+                      title: 'Top Chambeadores'
+                    ),
+                    const SizedBox(height: 20.0),
                   ],
                 ),
               );
