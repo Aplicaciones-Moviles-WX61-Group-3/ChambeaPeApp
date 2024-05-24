@@ -1,4 +1,5 @@
 import 'package:chambeape/presentation/screens/screens.dart';
+import 'package:chambeape/presentation/shared/custom_navbar.dart';
 import 'package:go_router/go_router.dart';
 
 final appRouterLogged = GoRouter(
@@ -14,6 +15,11 @@ final appRouterNotLogged = GoRouter(
 final routes = <GoRoute>[
     GoRoute(
       path: '/',
+      name: CustomNavbar.routeName,
+      builder: (context, state) => const CustomNavbar(),
+    ),
+    GoRoute(
+      path: '/home',
       name: HomeView.routeName,
       builder: (context, state) => const HomeView(),
     ),
