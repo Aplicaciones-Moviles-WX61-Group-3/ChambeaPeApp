@@ -1,8 +1,6 @@
-import 'package:chambeape/presentation/screens/0_login/login_view.dart';
-import 'package:chambeape/presentation/screens/navigation_menu.dart';
+import 'package:chambeape/config/routes/app_routes.dart';
 import 'package:chambeape/presentation/providers/theme_provider.dart';
 import 'package:chambeape/services/login/session_service.dart';
-import 'package:chambeape/config/routes/routes.dart';
 import 'package:chambeape/config/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,12 +28,11 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
 
     final AppTheme appTheme = ref.watch(themeNotifierProvider);
-    return MaterialApp(
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'ChambeaPe',
-      theme: appTheme.getTheme(), 
-      initialRoute: hasSession ? NavigationMenu.routeName : LoginView.routeName,
-      routes: customRoutes,
+      theme: appTheme.getTheme(),
+      routerConfig: hasSession ? appRouterLogged : appRouterNotLogged,
     );
   }
 }

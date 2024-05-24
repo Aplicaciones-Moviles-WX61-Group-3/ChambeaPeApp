@@ -53,7 +53,7 @@ class NavigationController extends GetxController {
 
   final screens = [
     const HomeView(),
-    const PostViewWidget(),
+    const PostView(),
     const PostCreationWidget(),
     // const WorkersView(),
     const WorkersView(),

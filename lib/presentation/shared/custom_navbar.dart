@@ -16,6 +16,12 @@ class _CustomNavbarState extends State<CustomNavbar> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
+        currentIndex: selectedIndex,
+        onTap: (index) {
+          setState(() {
+            selectedIndex = index;
+          });
+        },
         items: appMenuItems.map((item) => BottomNavigationBarItem(
           icon: Icon(item.icon),
           label: item.title

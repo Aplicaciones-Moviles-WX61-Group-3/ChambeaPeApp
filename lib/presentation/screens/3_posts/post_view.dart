@@ -4,16 +4,16 @@ import 'package:chambeape/presentation/screens/3_posts/widgets/post_creation_wid
 import 'package:chambeape/services/posts/post_service.dart';
 import 'package:flutter/material.dart';
 
-class PostViewWidget extends StatefulWidget {
-  const PostViewWidget({super.key});
+class PostView extends StatefulWidget {
+  const PostView({super.key});
 
   static const String routeName = 'post_view';
 
   @override
-  State<PostViewWidget> createState() => _PostViewWidgetState();
+  State<PostView> createState() => _PostViewState();
 }
 
-class _PostViewWidgetState extends State<PostViewWidget> {
+class _PostViewState extends State<PostView> {
   late Future<List<Post>> posts;
 
   @override

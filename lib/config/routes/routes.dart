@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 var customRoutes = <String, WidgetBuilder>{
   LoginView.routeName: (context) => const LoginView(),
-  PostViewWidget.routeName: (context) => const PostViewWidget(),
+  PostView.routeName: (context) => const PostView(),
   PostCreationWidget.routeName: (context) => const PostCreationWidget(),
   NavigationMenu.routeName: (context) => const NavigationMenu(),
 };
