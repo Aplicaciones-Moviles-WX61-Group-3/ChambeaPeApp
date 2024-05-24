@@ -49,7 +49,8 @@ class _CustomNavbarState extends State<CustomNavbar> {
           });
         },
         items: appMenuItems.map((item) => BottomNavigationBarItem(
-          icon: Icon(item.icon),
+          icon: Icon(item.iconDeactivated),
+          activeIcon: Icon(item.iconActive),
           label: item.title
         )).toList(),
       )

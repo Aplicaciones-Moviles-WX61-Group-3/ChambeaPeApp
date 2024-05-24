@@ -3,24 +3,21 @@ import 'package:flutter/material.dart';
 class AppTheme {
   final bool isDarkMode;
 
-  AppTheme({
-      this.isDarkMode = false
-  });
+  AppTheme({this.isDarkMode = false});
 
   static ThemeData lightTheme() {
     return ThemeData(
       useMaterial3: true,
       colorScheme: ColorScheme.light(
         primary: Colors.amber.shade700,
-        secondary: Colors.amber.shade400,
         surface: Colors.white,
       ),
       brightness: Brightness.light,
       primaryColor: Colors.amber.shade700,
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        backgroundColor: Colors.amber.shade50,
-        selectedItemColor: Colors.amber.shade900,
+        selectedItemColor: Colors.amber.shade700,
         unselectedItemColor: Colors.black87,
+        elevation: 0.0,
       ),
       inputDecorationTheme: InputDecorationTheme(
         border: const OutlineInputBorder(),
@@ -36,12 +33,6 @@ class AppTheme {
       ),
       canvasColor: Colors.amber.shade50,
       primarySwatch: Colors.amber,
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ButtonStyle(
-          backgroundColor: WidgetStateProperty.all(Colors.amber.shade700),
-          foregroundColor: WidgetStateProperty.all(Colors.white),
-        ),
-      ),
     );
   }
 
@@ -50,7 +41,6 @@ class AppTheme {
       useMaterial3: true,
       colorScheme: ColorScheme.dark(
         primary: Colors.amber.shade700,
-        secondary: Colors.amber.shade700,
         surface: Colors.grey.shade900,
       ),
       brightness: Brightness.dark,
@@ -59,6 +49,7 @@ class AppTheme {
         backgroundColor: Colors.grey.shade800,
         selectedItemColor: Colors.amber.shade700,
         unselectedItemColor: Colors.white70,
+        elevation: 0.0,
       ),
       inputDecorationTheme: InputDecorationTheme(
         border: const OutlineInputBorder(),
@@ -74,16 +65,8 @@ class AppTheme {
       ),
       canvasColor: Colors.grey.shade900, // ca
       primarySwatch: Colors.amber,
-
       dropdownMenuTheme: const DropdownMenuThemeData(
         textStyle: TextStyle(color: Colors.white70),
-      ),
-
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ButtonStyle(
-          backgroundColor: WidgetStateProperty.all(Colors.amber.shade700),
-          foregroundColor: WidgetStateProperty.all(Colors.white),
-        ),
       ),
     );
   }

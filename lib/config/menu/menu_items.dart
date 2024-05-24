@@ -2,40 +2,40 @@ import 'package:flutter/material.dart';
 
 class MenuItem {
   final String title;
-  final String link;
-  final IconData icon;
+  final IconData iconActive;
+  final IconData? iconDeactivated;
 
   const MenuItem({
     required this.title,
-    required this.link,
-    required this.icon
+    required this.iconActive,
+    this.iconDeactivated,
   });
 }
 
 const appMenuItems = <MenuItem>[
   MenuItem(
     title: 'Inicio',
-    link: '/',
-    icon: Icons.home
+    iconActive: Icons.home,
+    iconDeactivated: Icons.home_outlined
   ),
   MenuItem(
     title: 'Posts',
-    link: '/posts',
-    icon: Icons.post_add
+    iconActive: Icons.post_add,
+    iconDeactivated: Icons.post_add_outlined
   ),
   MenuItem(
     title: 'Chat',
-    link: '/chat',
-    icon: Icons.chat
+    iconActive: Icons.chat,
+    iconDeactivated: Icons.chat_outlined
   ),
   MenuItem(
     title: 'Workers',
-    link: '/workers',
-    icon: Icons.work
+    iconActive: Icons.work,
+    iconDeactivated: Icons.work_outline
   ),
   MenuItem(
     title: 'Perfil',
-    link: '/profile',
-    icon: Icons.person
+    iconActive: Icons.person,
+    iconDeactivated: Icons.person_outline
   )
 ];
