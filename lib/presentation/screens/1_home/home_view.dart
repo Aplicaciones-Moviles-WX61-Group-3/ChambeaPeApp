@@ -29,64 +29,64 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: FutureBuilder(
-            future: Future.wait([futureEmployers, futureWorkers]),
-            builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              } else {
-                List<Employers> employers = snapshot.data![0];
-                List<Workers> workers = snapshot.data![1];
-                List<String> employerImageUrls = employers
-                    .map((employer) => employer.profilePic)
-                    .take(6)
-                    .toList();
-                List<String> workerImageUrls =
-                    workers.map((worker) => worker.profilePic).take(6).toList();
-                return SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      SearchWidget(
-                        controller: TextEditingController(),
-                        hintText: 'Buscar',
-                        trailing: [
-                          IconButton(
-                              onPressed: () {}, icon: const Icon(Icons.search))
-                        ],
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: FutureBuilder(
+          future: Future.wait([futureEmployers, futureWorkers]),
+          builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else {
+              List<Employers> employers = snapshot.data![0];
+              List<Workers> workers = snapshot.data![1];
+              List<String> employerImageUrls = employers
+                  .map((employer) => employer.profilePic)
+                  .take(6)
+                  .toList();
+              List<String> workerImageUrls =
+                  workers.map((worker) => worker.profilePic).take(6).toList();
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    SearchWidget(
+                      controller: TextEditingController(),
+                      hintText: 'Buscar',
+                      trailing: [
+                        IconButton(
+                            onPressed: () {}, icon: const Icon(Icons.search))
+                      ],
+                    ),
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Últimas Búsquedas',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16.0),
                       ),
-                      const Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          'Últimas Búsquedas',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16.0),
-                        ),
-                      ),
-                      UserCardWidget(worker: workers[0]),
-                      Divider(
-                        color: Colors.amber.shade700.withOpacity(0.2),
-                        thickness: 3,
-                      ),
-                      UserGridWidget(
-                          crossAxisCount: 3,
-                          imageUrls: employerImageUrls,
-                          title: 'Top Empleadores'),
-                      UserGridWidget(
-                          crossAxisCount: 3,
-                          imageUrls: workerImageUrls,
-                          title: 'Top Chambeadores'),
-                    ],
-                  ),
-                );
-              }
-            },
-          ),
-        ));
+                    ),
+                    UserCardWidget(worker: workers[0]),
+                    Divider(
+                      color: Colors.amber.shade700.withOpacity(0.2),
+                      thickness: 3,
+                    ),
+                    UserGridWidget(
+                        crossAxisCount: 3,
+                        imageUrls: employerImageUrls,
+                        title: 'Top Empleadores'),
+                    UserGridWidget(
+                        crossAxisCount: 3,
+                        imageUrls: workerImageUrls,
+                        title: 'Top Chambeadores'),
+                  ],
+                ),
+              );
+            }
+          },
+        ),
+      ),
+    );
   }
 }
 
@@ -99,8 +99,8 @@ class SearchWidget extends StatelessWidget {
     required this.controller,
     required this.hintText,
     required this.trailing,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
