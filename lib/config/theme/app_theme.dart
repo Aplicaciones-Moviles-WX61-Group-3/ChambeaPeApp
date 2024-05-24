@@ -17,10 +17,10 @@ class AppTheme {
       ),
       brightness: Brightness.light,
       primaryColor: Colors.amber.shade700,
-      navigationBarTheme: NavigationBarThemeData(
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: Colors.amber.shade50,
-        surfaceTintColor: Colors.amber.shade600,
-        indicatorColor: Colors.amber.shade400,
+        selectedItemColor: Colors.amber.shade900,
+        unselectedItemColor: Colors.black87,
       ),
       inputDecorationTheme: InputDecorationTheme(
         border: const OutlineInputBorder(),
@@ -55,8 +55,10 @@ class AppTheme {
       ),
       brightness: Brightness.dark,
       primaryColor: Colors.amber.shade700,
-      navigationBarTheme: NavigationBarThemeData(
-        indicatorColor: Colors.amber.shade800,
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: Colors.grey.shade800,
+        selectedItemColor: Colors.amber.shade700,
+        unselectedItemColor: Colors.white70,
       ),
       inputDecorationTheme: InputDecorationTheme(
         border: const OutlineInputBorder(),
