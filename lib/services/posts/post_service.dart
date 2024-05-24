@@ -1,7 +1,6 @@
 import 'dart:convert';
-import 'dart:ffi';
 
-import 'package:chambeape/model/Post.dart';
+import 'package:chambeape/infrastructure/models/post.dart';
 import 'package:http/http.dart' as http;
 
 class PostService {

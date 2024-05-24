@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-import 'package:chambeape/model/ChatMessage.dart';
+import 'package:chambeape/infrastructure/models/chat_message.dart';
 
 
 class MessageService{

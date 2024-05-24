@@ -1,6 +1,6 @@
 import 'dart:convert';
+import 'package:chambeape/infrastructure/models/workers.dart';
 import 'package:http/http.dart' as http;
-import 'package:chambeape/model/Workers.dart';
 
 Future<List<Workers>> getWorkers() async {
   final uri = Uri.parse('https://chambeape.azurewebsites.net/api/v1/workers');

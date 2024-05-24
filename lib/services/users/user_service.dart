@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:chambeape/model/Users.dart';
+import 'package:chambeape/infrastructure/models/users.dart';
 import 'package:http/http.dart' as http;
 
 class UserService{

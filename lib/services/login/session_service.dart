@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:chambeape/model/Users.dart';
+import 'package:chambeape/infrastructure/models/users.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SessionService {
