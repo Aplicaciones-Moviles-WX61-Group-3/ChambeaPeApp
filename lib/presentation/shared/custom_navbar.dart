@@ -36,10 +36,7 @@ class _CustomNavbarState extends State<CustomNavbar> {
           child: Image.asset('assets/images/logo_white.png'),
         ),
       ),
-      body: IndexedStack(
-        index: selectedIndex,
-        children: screens,
-      ),
+      body: screens[selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.shifting,
         currentIndex: selectedIndex,
