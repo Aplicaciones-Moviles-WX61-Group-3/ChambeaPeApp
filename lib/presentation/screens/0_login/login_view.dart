@@ -1,5 +1,5 @@
-import 'package:chambeape/infrastructure/models/log_in.dart';
-import 'package:chambeape/presentation/screens/navigation_menu.dart';
+import 'package:chambeape/config/routes/app_routes.dart';
+import 'package:chambeape/presentation/shared/custom_navbar.dart';
 import 'package:chambeape/services/login/login_service.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +13,6 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
-  Future<Login?>? _login;
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
@@ -51,13 +50,13 @@ class _LoginViewState extends State<LoginView> {
                 const SizedBox(height: 10),
                 LoginButton(
                   text: 'Iniciar sesión',
-                  onPressed: () {
-                    setState(() {
-                      _login = login(
-                        emailController.text,
-                        passwordController.text,
-                      );
-                    });
+                  onPressed: () async {
+                    try {
+                      await login(emailController.text, passwordController.text);
+                      appRouterNotLogged.replaceNamed(CustomNavbar.routeName);
+                    } catch (e) {
+                      // TODO Implementar la funcionalidad de mostrar un mensaje de error aquí
+                    }
                   },
                 ),
                 const SizedBox(height: 10),
@@ -70,25 +69,7 @@ class _LoginViewState extends State<LoginView> {
                     foregroundColor: Colors.amber.shade700,
                   ),
                   child: const Text('¿Olvidaste tu contraseña?'),
-                ),
-                FutureBuilder<Login?>(
-                  future: _login,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.done) {
-                      if (snapshot.hasError) {
-                        return const Text('Error al iniciar sesión');
-                      } else if (snapshot.hasData) {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          Navigator.pushReplacementNamed (
-                            context,
-                            NavigationMenu.routeName,
-                          );
-                        });
-                      }
-                    }
-                    return const SizedBox.shrink();
-                  },
-                ),
+                )
               ],
             ),
           ),
