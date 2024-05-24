@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 
 class DialogConfirmationDialogWidget extends StatelessWidget {
   final String title;
-  final String content;
+  final String descrpition;
   final String postTitle;
 
   const DialogConfirmationDialogWidget({
-    Key? key,
+    super.key,
     required this.title,
-    required this.content,
+    required this.descrpition,
     required this.postTitle,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,17 +25,17 @@ class DialogConfirmationDialogWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                content,
-                style: TextStyle(fontSize: 14),
+                descrpition,
+                style: const TextStyle(fontSize: 14),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
               //Centrar el texto
               Center(
                 child: Text(
                   postTitle,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: Colors.red,
@@ -51,13 +51,13 @@ class DialogConfirmationDialogWidget extends StatelessWidget {
           onPressed: () {
             Navigator.of(context).pop(false);
           },
-          child: Text('Cancelar'),
+          child: const Text('Cancelar'),
         ),
         TextButton(
           onPressed: () {
             Navigator.of(context).pop(true);
           },
-          child: Text('Eliminar'),
+          child: const Text('Eliminar'),
         ),
       ],
     );

@@ -1,6 +1,6 @@
 import 'package:chambeape/infrastructure/models/post.dart';
 import 'package:flutter/material.dart';
-import "package:chambeape/presentation/screens/3_posts/widgets/dialog_confirmation_widget.dart";
+import "package:chambeape/presentation/shared/widgets/dialog_confirmation_widget.dart";
 import 'package:chambeape/presentation/screens/3_posts/widgets/post_edit_widget.dart';
 import 'package:chambeape/services/posts/post_service.dart';
 
@@ -142,14 +142,15 @@ class _PostCardWidgetState extends State<PostCardWidget> {
                                         "Confirmar eliminación";
                                     String messageDialog =
                                         "¿Estás seguro de eliminar este post?";
-                                    String postTitle = "${post.title}";
+                                    String postTitle = post.title;
 
                                     showDialog<bool>(
+                                      barrierDismissible: false,
                                       context: context,
                                       builder: (BuildContext context) {
                                         return DialogConfirmationDialogWidget(
                                           title: titleDialog,
-                                          content: messageDialog,
+                                          descrpition: messageDialog,
                                           postTitle: postTitle,
                                         );
                                       },
