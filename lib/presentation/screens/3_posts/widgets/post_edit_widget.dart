@@ -1,11 +1,11 @@
 import 'dart:io';
 
-import 'package:chambeape/infrastructure/models/post.dart';
+import 'package:chambeape/infrastructure/models/post_model.dart';
 import 'package:chambeape/services/posts/post_service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-Post? post;
+PostModel? post;
 
 //Step 1
 final TextEditingController titleController = TextEditingController();
@@ -25,7 +25,7 @@ bool onlySameCityWorkers = true;
 bool notifyMessages = true;
 
 class PostEditWidget extends StatefulWidget {
-  final Post postRecived;
+  final PostModel postRecived;
 
   const PostEditWidget({required this.postRecived, super.key});
 
@@ -45,7 +45,7 @@ class _PostEditWidgetState extends State<PostEditWidget> {
   void initState() {
     super.initState();
 
-    post = Post(
+    post = PostModel(
       id: widget.postRecived.id,
       title: widget.postRecived.title,
       description: widget.postRecived.description,
@@ -63,7 +63,7 @@ class _PostEditWidgetState extends State<PostEditWidget> {
   }
 
   void handleEditPost() async {
-    Post? updatedPost = await editPost();
+    PostModel? updatedPost = await editPost();
     Navigator.pop(context, updatedPost);
   }
 
@@ -156,7 +156,7 @@ class _PostEditWidgetState extends State<PostEditWidget> {
     }
   }
 
-  Future<Post?> editPost() async {
+  Future<PostModel?> editPost() async {
     setState(() {
       isLoading = true;
     });
@@ -174,7 +174,7 @@ class _PostEditWidgetState extends State<PostEditWidget> {
     try {
       final PostService postService = PostService();
 
-      Post postEdited = Post(
+      PostModel postEdited = PostModel(
           id: post!.id,
           title: titleController.text,
           description: descriptionController.text,

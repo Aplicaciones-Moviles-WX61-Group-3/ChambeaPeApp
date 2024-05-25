@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:chambeape/infrastructure/models/post.dart';
+import 'package:chambeape/infrastructure/models/post_model.dart';
 import 'package:chambeape/services/posts/post_service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -22,7 +22,7 @@ bool highlightPost = false;
 bool onlySameCityWorkers = true;
 bool notifyMessages = true;
 
-Post? post;
+PostModel? post;
 
 class PostCreationWidget extends StatefulWidget {
   const PostCreationWidget({super.key});
@@ -40,7 +40,7 @@ class _PostCreationWidgetState extends State<PostCreationWidget> {
   final int totalSteps = 4;
 
   void handleEditPost() async {
-    Post? updatedPost = await editPost();
+    PostModel? updatedPost = await editPost();
     Navigator.pop(context, updatedPost);
   }
 
@@ -146,7 +146,7 @@ class _PostCreationWidgetState extends State<PostCreationWidget> {
     }
   }
 
-  Future<Post?> editPost() async {
+  Future<PostModel?> editPost() async {
     setState(() {
       isLoading = true;
     });

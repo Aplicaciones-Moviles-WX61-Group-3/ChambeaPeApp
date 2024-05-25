@@ -1,11 +1,11 @@
-import 'package:chambeape/infrastructure/models/post.dart';
+import 'package:chambeape/infrastructure/models/post_model.dart';
 import 'package:flutter/material.dart';
 import "package:chambeape/presentation/shared/widgets/dialog_confirmation_widget.dart";
 import 'package:chambeape/presentation/screens/3_posts/widgets/post_edit_widget.dart';
 import 'package:chambeape/services/posts/post_service.dart';
 
 class PostCardWidget extends StatefulWidget {
-  final AsyncSnapshot<List<Post>> postSnapshot;
+  final AsyncSnapshot<List<PostModel>> postSnapshot;
   const PostCardWidget({required this.postSnapshot, super.key});
 
   @override
@@ -109,7 +109,7 @@ class _PostCardWidgetState extends State<PostCardWidget> {
                                     color: Colors.amber,
                                   ),
                                   onPressed: () async {
-                                    Post? updatedPost = await Navigator.push(
+                                    PostModel? updatedPost = await Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>

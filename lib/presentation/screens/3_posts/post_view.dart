@@ -1,77 +1,46 @@
-import 'package:chambeape/infrastructure/models/post.dart';
-import 'package:chambeape/presentation/screens/3_posts/widgets/post_card_widget.dart';
-import 'package:chambeape/presentation/screens/3_posts/widgets/post_creation_widget.dart';
-import 'package:chambeape/services/posts/post_service.dart';
+import 'package:chambeape/presentation/providers/posts/post_provider.dart';
+import 'package:chambeape/presentation/screens/3_posts/widgets/post_card_widget2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class PostView extends StatefulWidget {
-  const PostView({super.key});
+
+class PostView extends StatelessWidget {
 
   static const String routeName = 'post_view';
 
-  @override
-  State<PostView> createState() => _PostViewState();
-}
-
-class _PostViewState extends State<PostView> {
-  late Future<List<Post>> posts;
-
-  @override
-  void initState() {
-    super.initState();
-    posts = PostService().getPosts();
-  }
+  const PostView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Posts'),
-          actions: [
-            IconButton(
-                icon: const Icon(
-                  Icons.add_circle_rounded,
-                  color: Colors.orange,
-                ),
-                iconSize: 30,
-                onPressed: () async {
-                  Post? newPost = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const PostCreationWidget(),
-                    ),
-                  );
+      appBar: AppBar(
+        title: const Text('Posts'),
+      ),
+      body: const _PostView(),
+    );
+  }
+}
 
-                  if (newPost != null) {
-                    setState(() {
-                      posts = PostService().getPosts();
-                    });
-                  }
-                }),
-          ],
-        ),
-        body: Center(
-          child: FutureBuilder<List<Post>>(
-            future: posts,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
-              } else if (snapshot.connectionState == ConnectionState.done) {
-                if (snapshot.hasData) {
-                  return SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        PostCardWidget(postSnapshot: snapshot),
-                      ],
-                    ),
-                  );
-                } else if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                }
-              }
-              return const Text('Aún no has creado ningún post.');
-            },
-          ),
-        ));
+class _PostView extends ConsumerStatefulWidget {
+  const _PostView();
+
+  @override
+  createState() => _PostViewState();
+}
+
+class _PostViewState extends ConsumerState<_PostView> {
+
+
+  @override
+  void initState() {
+    super.initState();
+    ref.read(postsProvider.notifier).getPosts();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final posts = ref.watch(postsProvider);
+
+    return PostCardWidget2(posts: posts);
   }
 }
