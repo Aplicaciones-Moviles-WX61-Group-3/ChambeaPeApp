@@ -18,19 +18,18 @@ class SessionService {
   }
 
   Future<bool> loadSession() async {
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  final String? token = prefs.getString('token');
-  final String? expiryDateString = prefs.getString('expiryDate');
+    final String? token = prefs.getString('token');
+    final String? expiryDateString = prefs.getString('expiryDate');
 
-  if (token != null && expiryDateString != null) {
-    final expiryDate = DateTime.parse(expiryDateString);
+    if (token != null && expiryDateString != null) {
+      final expiryDate = DateTime.parse(expiryDateString);
 
-    if (expiryDate.isAfter(DateTime.now())) {
-      return true;
+      if (expiryDate.isAfter(DateTime.now())) {
+        return true;
+      }
     }
+    return false;
   }
-  return false;
-}
-
 }

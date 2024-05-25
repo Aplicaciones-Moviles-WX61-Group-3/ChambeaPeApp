@@ -1,5 +1,5 @@
 import 'package:chambeape/infrastructure/models/users.dart';
-import 'package:chambeape/infrastructure/models/log_in.dart';
+import 'package:chambeape/infrastructure/models/login/log_in.dart';
 import 'package:chambeape/services/login/session_service.dart';
 
 import 'dart:async';
