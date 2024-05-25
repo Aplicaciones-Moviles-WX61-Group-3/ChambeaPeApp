@@ -33,16 +33,23 @@ class _PostViewState extends ConsumerState<PostView> {
   Widget build(BuildContext context) {
     final posts = ref.watch(postsProvider);
 
+    final role = user.userRole;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Posts'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.add_circle),
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const StepperPost()));
-            },
-          ),
+          role == 'E'
+              ? IconButton(
+                  icon: const Icon(Icons.add_circle),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const StepperPost()));
+                  },
+                )
+              : const SizedBox(),
         ],
       ),
       body: PostCardWidget2(posts: posts),
