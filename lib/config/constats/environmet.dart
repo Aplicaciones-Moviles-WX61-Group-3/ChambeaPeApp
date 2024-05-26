@@ -13,9 +13,7 @@ class UriEnvironment {
 
     int id = userDataJson['id'];
 
-    final Uri uri = Uri.parse('$baseUrl/employers/30/posts');
-    // final Uri uri = Uri.parse('$baseUrl/employers/$id/posts');
-
+    final Uri uri = Uri.parse('$baseUrl/employers/$id/posts');
 
     return uri;
   }
