@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -13,7 +12,16 @@ class StepperPostNotifier extends StateNotifier<TextEditingController> {
   TextEditingController descriptionController = TextEditingController();
   File? selectedImage;
 
-  GlobalKey<FormState> formKeyPost = GlobalKey<FormState>();
+  TextEditingController categoryController = TextEditingController();
+  TextEditingController locationController = TextEditingController();
+
+  bool hasNotification = false;
+
+  int hasPremium = 0;
+  
+
+  GlobalKey<FormState> formKeyPostDetails = GlobalKey<FormState>();
+  GlobalKey<FormState> formKeyPostLocation = GlobalKey<FormState>();
 
   StepperPostNotifier() : super(TextEditingController());
 
@@ -29,20 +37,40 @@ class StepperPostNotifier extends StateNotifier<TextEditingController> {
     selectedImage = image;
   }
 
+  void setCategory(String category) {
+    categoryController.text = category;
+  }
+
+  void setLocation(String location) {
+    locationController.text = location;
+  }
+
+  void setNotification(bool notification) {
+    hasNotification = notification;
+  }
+
+  void setPremium(bool premium) {
+    hasPremium = premium ? 1 : 0;
+  }
+
   void clear() {
     titleController.clear();
     descriptionController.clear();
     selectedImage = null;
+    hasNotification = false;
   }
 
-  //Get para el key del formulario
-  GlobalKey<FormState> get formKey => formKeyPost;
-  // getAll
+  GlobalKey<FormState> get formKeyDetails => formKeyPostDetails;
+  GlobalKey<FormState> get formKeyLocation => formKeyPostLocation;
+
   Map<String, dynamic> getAll() {
     return {
       'title': titleController.text,
       'description': descriptionController.text,
+      'category': categoryController.text,
+      'location': locationController.text,
       'image': selectedImage,
+      'notificationsEnabled': hasNotification,
     };
   }
 }
