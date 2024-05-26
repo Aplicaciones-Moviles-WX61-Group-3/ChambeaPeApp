@@ -1,4 +1,6 @@
+import 'package:chambeape/config/utils/login_user_data.dart';
 import 'package:chambeape/domain/entities/posts_entity.dart';
+import 'package:chambeape/infrastructure/models/login/login_response.dart';
 import 'package:chambeape/presentation/screens/3_posts/widgets/stepper_post.dart';
 import 'package:flutter/material.dart';
 
@@ -12,22 +14,43 @@ class PostCardWidget2 extends StatefulWidget {
 }
 
 class _PostCardWidget2State extends State<PostCardWidget2> {
+  LoginResponse user = LoginData().user;
+
+  @override
+  void initState() {
+    super.initState();
+    LoginData().loadSession().then((value) {
+      setState(() {
+        user = value;
+      });
+    });
+  }
+  
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
+    final role = user.userRole;
+
     if (widget.posts.isEmpty) {
-      return const Center(
-        child: CircularProgressIndicator(),
+      return Center(
+        child: Text(
+          'No existen Posts registrados',
+          style: textTheme.bodyMedium,
+        ),
       );
     } else {
-      return ListView.builder(
-        itemCount: widget.posts.length,
-        itemBuilder: (context, index) {
-          final post = widget.posts[index];
-          return _PostCard(post: post, textTheme: textTheme);
-        },
-      );
+      return widget.posts.isNotEmpty
+          ? ListView.builder(
+              itemCount: widget.posts.length,
+              itemBuilder: (context, index) {
+                final post = widget.posts[index];
+                return _PostCard(post: post, textTheme: textTheme, role: role);
+              },
+            )
+          : const Center(
+              child: CircularProgressIndicator(),
+            );
     }
   }
 }
@@ -36,10 +59,12 @@ class _PostCard extends StatelessWidget {
   const _PostCard({
     required this.post,
     required this.textTheme,
+    required this.role
   });
 
   final Post post;
   final TextTheme textTheme;
+  final String role;
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +91,8 @@ class _PostCard extends StatelessWidget {
                   Text(
                     post.title,
                     style: textTheme.titleMedium,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 5),
                   Text(
@@ -86,25 +113,28 @@ class _PostCard extends StatelessWidget {
                 ],
               ),
             ),
-            Column(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.edit),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => StepperPost(post: post),
+            role == 'E'
+                ? Column(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.edit),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => StepperPost(post: post),
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.delete),
-                ),
-              ],
-            ),
+                      IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.delete),
+                      ),
+                    ],
+                  )
+                :
+                const SizedBox(),
           ],
         ),
       ),
