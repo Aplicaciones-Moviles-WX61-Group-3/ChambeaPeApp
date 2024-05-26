@@ -1,16 +1,17 @@
 import 'dart:io';
 
+import 'package:chambeape/config/utils/dropdown_items.dart';
 import 'package:chambeape/presentation/providers/posts/steps/step_provider.dart';
 import 'package:chambeape/presentation/screens/3_posts/widgets/stepper_post.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
-class DetailsStepWidget extends ConsumerStatefulWidget {
+class DetailsStep extends ConsumerStatefulWidget {
   final bool hasPost;
   final StepperPost widget;
 
-  const DetailsStepWidget({
+  const DetailsStep({
     super.key,
     required this.hasPost,
     required this.widget,
@@ -20,8 +21,9 @@ class DetailsStepWidget extends ConsumerStatefulWidget {
   createState() => _DetailsStepWidgetState();
 }
 
-class _DetailsStepWidgetState extends ConsumerState<DetailsStepWidget> {
+class _DetailsStepWidgetState extends ConsumerState<DetailsStep> {
   File? selectedImage;
+  String? dropdownValue;
 
   Future<File?> getImage() async {
     final pickedImage =
@@ -35,18 +37,20 @@ class _DetailsStepWidgetState extends ConsumerState<DetailsStepWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final stepperPost =
-        ref.watch(stepperPostProvider.notifier); // Obtener el StateNotifier
+    final stepperPost = ref.watch(stepperPostProvider.notifier);
 
+    final text = Theme.of(context).textTheme;
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
       child: Form(
         autovalidateMode: AutovalidateMode.onUserInteraction,
-        key: stepperPost.formKey,
+        key: stepperPost.formKeyDetails,
         child: Column(
           children: [
+            Text('Detalles de la Publicación', style: text.headlineSmall),
+            const SizedBox(height: 16),
             TextFormField(
-              decoration: const InputDecoration(labelText: 'Title'),
+              decoration: const InputDecoration(labelText: 'Título'),
               initialValue: widget.hasPost ? widget.widget.post?.title : '',
               validator: (String? value) {
                 if (value == '' || value == null) {
@@ -60,9 +64,15 @@ class _DetailsStepWidgetState extends ConsumerState<DetailsStepWidget> {
             ),
             const SizedBox(height: 16),
             TextFormField(
-              decoration: const InputDecoration(labelText: 'Description'),
+              decoration: const InputDecoration(
+                labelText: 'Descripción',
+                alignLabelWithHint: true,
+              ),
               initialValue:
                   widget.hasPost ? widget.widget.post?.description : '',
+              minLines: 5,
+              maxLines: null,
+              textAlignVertical: TextAlignVertical.top,
               validator: (String? value) {
                 if (value == '' || value == null) {
                   return 'Por favor, ingrese una descripción';
@@ -71,6 +81,31 @@ class _DetailsStepWidgetState extends ConsumerState<DetailsStepWidget> {
               },
               onChanged: (value) {
                 stepperPost.setDescription(value);
+              },
+            ),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              decoration: const InputDecoration(
+                labelText: 'Categoría',
+              ),
+              value: dropdownValue,
+              items: categories.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  dropdownValue = newValue;
+                });
+                stepperPost.setCategory(newValue!);
+              },
+              validator: (String? value) {
+                if (value == null || value.isEmpty) {
+                  return 'Por favor, seleccione una categoría';
+                }
+                return null;
               },
             ),
             const SizedBox(height: 16),
@@ -96,7 +131,9 @@ class _DetailsStepWidgetState extends ConsumerState<DetailsStepWidget> {
               ],
             ),
             const SizedBox(height: 16),
-            widget.hasPost ? _PrevImage(widget: widget) : const SizedBox.shrink(),
+            widget.hasPost
+                ? _PrevImage(widget: widget)
+                : const SizedBox.shrink(),
           ],
         ),
       ),
@@ -145,7 +182,7 @@ class _PrevImage extends StatelessWidget {
     required this.widget,
   });
 
-  final DetailsStepWidget widget;
+  final DetailsStep widget;
 
   @override
   Widget build(BuildContext context) {
