@@ -9,6 +9,7 @@ class LoginResponse {
   final String profilePic;
   final String description;
   final String userRole;
+  final int hasPremium;
 
   LoginResponse({
     required this.id,
@@ -21,6 +22,7 @@ class LoginResponse {
     required this.profilePic,
     required this.description,
     required this.userRole,
+    this.hasPremium = 0,
   });
 
   factory LoginResponse.fromJson(Map<String, dynamic> json) => LoginResponse(
@@ -34,6 +36,7 @@ class LoginResponse {
         profilePic: json["profilePic"],
         description: json["description"],
         userRole: json["userRole"],
+        hasPremium: json["hasPremium"] ?? 1,
       );
 
   Map<String, dynamic> toJson() => {
@@ -47,5 +50,6 @@ class LoginResponse {
         "profilePic": profilePic,
         "description": description,
         "userRole": userRole,
+        "hasPremium": hasPremium,
       };
 }
