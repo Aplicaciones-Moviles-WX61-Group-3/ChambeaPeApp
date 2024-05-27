@@ -1,7 +1,7 @@
 import 'package:chambeape/config/utils/login_user_data.dart';
 import 'package:chambeape/infrastructure/models/login/login_response.dart';
 import 'package:chambeape/presentation/providers/posts/post_provider.dart';
-import 'package:chambeape/presentation/screens/3_posts/widgets/post_card_widget2.dart';
+import 'package:chambeape/presentation/screens/3_posts/widgets/post_card_widget.dart';
 import 'package:chambeape/presentation/screens/3_posts/widgets/stepper_post.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -52,7 +52,7 @@ class _PostViewState extends ConsumerState<PostView> {
               : const SizedBox(),
         ],
       ),
-      body: PostCardWidget2(posts: posts),
+      body: PostCardWidget(posts: posts),
     );
   }
 }
