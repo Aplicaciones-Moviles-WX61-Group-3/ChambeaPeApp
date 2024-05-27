@@ -25,7 +25,7 @@ class _PostCardWidget2State extends State<PostCardWidget2> {
       });
     });
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -45,7 +45,12 @@ class _PostCardWidget2State extends State<PostCardWidget2> {
               itemCount: widget.posts.length,
               itemBuilder: (context, index) {
                 final post = widget.posts[index];
-                return _PostCard(post: post, textTheme: textTheme, role: role);
+                return _PostCard(
+                  post: post,
+                  textTheme: textTheme,
+                  role: role,
+                  onDelete: () => _showDeleteConfirmationDialog(context, post),
+                );
               },
             )
           : const Center(
@@ -53,18 +58,47 @@ class _PostCardWidget2State extends State<PostCardWidget2> {
             );
     }
   }
+
+  void _showDeleteConfirmationDialog(BuildContext context, Post post) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmar Eliminación'),
+          content: const Text('¿Estás seguro de que deseas eliminar esta publicación?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                // TODO Lógica para eliminar la publicación
+                Navigator.of(context).pop();
+              },
+              child: const Text('Eliminar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
 
 class _PostCard extends StatelessWidget {
   const _PostCard({
     required this.post,
     required this.textTheme,
-    required this.role
+    required this.role,
+    required this.onDelete,
   });
 
   final Post post;
   final TextTheme textTheme;
   final String role;
+  final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -128,13 +162,12 @@ class _PostCard extends StatelessWidget {
                         },
                       ),
                       IconButton(
-                        onPressed: () {},
+                        onPressed: onDelete,
                         icon: const Icon(Icons.delete),
                       ),
                     ],
                   )
-                :
-                const SizedBox(),
+                : const SizedBox(),
           ],
         ),
       ),
