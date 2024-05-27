@@ -56,21 +56,25 @@ class StepperPostNotifier extends StateNotifier<TextEditingController> {
   void clear() {
     titleController.clear();
     descriptionController.clear();
+    categoryController.clear();
+    locationController.clear();
     selectedImage = null;
     hasNotification = false;
+    hasPremium = 0;
   }
 
   GlobalKey<FormState> get formKeyDetails => formKeyPostDetails;
   GlobalKey<FormState> get formKeyLocation => formKeyPostLocation;
 
-  Map<String, dynamic> getAll() {
+   Map<String, dynamic> getAll() {
     return {
       'title': titleController.text,
       'description': descriptionController.text,
       'category': categoryController.text,
       'location': locationController.text,
       'image': selectedImage,
-      'notificationsEnabled': hasNotification,
+      'notification': hasNotification,
+      'premium': hasPremium,
     };
   }
 }
