@@ -1,9 +1,7 @@
 import 'package:chambeape/domain/entities/posts_entity.dart';
 import 'package:chambeape/presentation/providers/posts/steps/step_provider.dart';
-import 'package:chambeape/presentation/screens/3_posts/widgets/steps/confirm_step.dart';
-import 'package:chambeape/presentation/screens/3_posts/widgets/steps/details_step.dart';
-import 'package:chambeape/presentation/screens/3_posts/widgets/steps/location_step.dart';
-import 'package:chambeape/presentation/screens/3_posts/widgets/steps/settting_step.dart';
+import 'package:chambeape/presentation/screens/3_posts/widgets/step_barrel.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -28,6 +26,7 @@ class _StepperPostState extends ConsumerState<StepperPost> {
 
   @override
   Widget build(BuildContext context) {
+    final stepperPostState = ref.watch(stepperPostProvider);
     final stepperPostProv = ref.watch(stepperPostProvider.notifier);
 
     StepState switchStepState(int step) {
@@ -58,10 +57,10 @@ class _StepperPostState extends ConsumerState<StepperPost> {
               currentStep: currStep,
               onStepContinue: () async {
                 // Validar el formulario antes de pasar al siguiente paso
-                final formDetails = stepperPostProv.formKeyDetails.currentState;
-                final formLocation = stepperPostProv.formKeyLocation.currentState;
+                final formDetails = stepperPostState.formKeyPostDetails.currentState;
+                final formLocation = stepperPostState.formKeyPostLocation.currentState;
 
-                 if (currStep == 0 && formDetails != null && formDetails.validate()) {
+                if (currStep == 0 && formDetails != null && formDetails.validate()) {
                   setState(() {
                     currStep += 1;
                   });
@@ -146,4 +145,3 @@ class _StepperPostState extends ConsumerState<StepperPost> {
     );
   }
 }
-

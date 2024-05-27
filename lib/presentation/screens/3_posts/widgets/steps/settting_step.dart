@@ -5,6 +5,7 @@ import 'package:chambeape/presentation/providers/posts/steps/step_provider.dart'
 import 'package:chambeape/presentation/shared/widgets/premium_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 class SettingStep extends ConsumerStatefulWidget {
   const SettingStep({
     super.key,
@@ -33,9 +34,10 @@ class _SetttingStepState extends ConsumerState<SettingStep> {
   @override
   Widget build(BuildContext context) {
     final stepperPostProv = ref.watch(stepperPostProvider.notifier);
+    final stepperPostState = ref.watch(stepperPostProvider);
     final text = Theme.of(context).textTheme;
 
-    bool resPremium = stepperPostProv.hasPremium == 0 ? false : true;
+    bool resPremium = stepperPostState.hasPremium == 0 ? false : true;
 
     return SingleChildScrollView(
       child: Column(
@@ -47,7 +49,7 @@ class _SetttingStepState extends ConsumerState<SettingStep> {
             subtitle: Text('Función premium para destacar la publicación', style: text.bodySmall),
             value: resPremium,
             onChanged: (value) {
-              if (hasPremium == false) {
+              if (!hasPremium) {
                 showDialog(
                   context: context,
                   builder: (context) => const PremiumDialog(),
@@ -62,7 +64,7 @@ class _SetttingStepState extends ConsumerState<SettingStep> {
           SwitchListTile(
             title: Text('Notificaciones', style: text.headlineSmall),
             subtitle: Text('Recibir notificaciones de la publicación', style: text.bodySmall),
-            value: stepperPostProv.hasNotification,
+            value: stepperPostState.hasNotification,
             onChanged: (notification) {
               stepperPostProv.setNotification(notification);
               setState(() {});

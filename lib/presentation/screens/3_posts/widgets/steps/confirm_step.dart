@@ -7,20 +7,76 @@ class ConfirmStep extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final stepperPostProv = ref.watch(stepperPostProvider.notifier);
+    final stepperPostState = ref.watch(stepperPostProvider);
+    final textStyle = Theme.of(context).textTheme;
 
-    final data = stepperPostProv.getAll();
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Confirmación', style: textStyle.headlineSmall),
+          const SizedBox(height: 16),
+          _InfoLabel(
+              textStyle: textStyle,
+              data: stepperPostState.titleController.text,
+              title: 'Título'),
+          _InfoLabel(
+              textStyle: textStyle,
+              data: stepperPostState.descriptionController.text,
+              title: 'Descripción'),
+          _InfoLabel(
+              textStyle: textStyle,
+              data: stepperPostState.categoryController.text,
+              title: 'Categoría'),
+          _InfoLabel(
+              textStyle: textStyle,
+              data: stepperPostState.locationController.text,
+              title: 'Ubicación'),
+          _InfoLabel(
+              textStyle: textStyle,
+              data: stepperPostState.hasNotification ? 'Sí' : 'No',
+              title: 'Notificación'),
+          _InfoLabel(
+              textStyle: textStyle,
+              data: stepperPostState.hasPremium == 1 ? 'Sí' : 'No',
+              title: 'Premium'),
+        ],
+      ),
+    );
+  }
+}
 
-    return Column(
-      children: [
-        Text('Confirmar'),
-        Text('Título: ${data['title']}'),
-        Text('Descripción: ${data['description']}'),
-        Text('Categoría: ${data['category']}'),
-        Text('Ubicación: ${data['location']}'),
-        Text('Notificación: ${data['notification']}'),
-        Text('Premium: ${data['premium']}'),
-      ],
+class _InfoLabel extends StatelessWidget {
+  final String title;
+  final String data;
+  final TextTheme textStyle;
+
+  const _InfoLabel({
+    required this.textStyle,
+    required this.data,
+    required this.title,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: textStyle.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          Text(
+            data,
+            style: textStyle.bodyMedium,
+          ),
+          const Divider(color: Colors.grey),
+        ],
+      ),
     );
   }
 }

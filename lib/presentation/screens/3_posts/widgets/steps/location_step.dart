@@ -24,11 +24,12 @@ class _LocationStepState extends ConsumerState<LocationStep> {
   @override
   Widget build(BuildContext context) {
     final stepperPost = ref.watch(stepperPostProvider.notifier);
+    final stepperPostState = ref.watch(stepperPostProvider);
     final text = Theme.of(context).textTheme;
 
     return Form(
       autovalidateMode: AutovalidateMode.onUserInteraction,
-      key: stepperPost.formKeyLocation,
+      key: stepperPostState.formKeyPostLocation,
       child: Column(
         children: [
           Text('Ubicación del trabajo', style: text.headlineSmall),

@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:chambeape/config/utils/dropdown_items.dart';
 import 'package:chambeape/presentation/providers/posts/steps/step_provider.dart';
 import 'package:chambeape/presentation/screens/3_posts/widgets/stepper_post.dart';
@@ -26,8 +25,7 @@ class _DetailsStepWidgetState extends ConsumerState<DetailsStep> {
   String? dropdownValue;
 
   Future<File?> getImage() async {
-    final pickedImage =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedImage != null) {
       return File(pickedImage.path);
     } else {
@@ -38,13 +36,14 @@ class _DetailsStepWidgetState extends ConsumerState<DetailsStep> {
   @override
   Widget build(BuildContext context) {
     final stepperPost = ref.watch(stepperPostProvider.notifier);
-
+    final stepperPostState = ref.watch(stepperPostProvider);
     final text = Theme.of(context).textTheme;
+
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
       child: Form(
         autovalidateMode: AutovalidateMode.onUserInteraction,
-        key: stepperPost.formKeyDetails,
+        key: stepperPostState.formKeyPostDetails,
         child: Column(
           children: [
             Text('Detalles de la Publicación', style: text.headlineSmall),
@@ -68,8 +67,7 @@ class _DetailsStepWidgetState extends ConsumerState<DetailsStep> {
                 labelText: 'Descripción',
                 alignLabelWithHint: true,
               ),
-              initialValue:
-                  widget.hasPost ? widget.widget.post?.description : '',
+              initialValue: widget.hasPost ? widget.widget.post?.description : '',
               minLines: 5,
               maxLines: null,
               textAlignVertical: TextAlignVertical.top,
@@ -112,10 +110,10 @@ class _DetailsStepWidgetState extends ConsumerState<DetailsStep> {
             // Campo para elegir imagen del dispositivo
             Column(
               children: [
-                if (selectedImage != null)
+                if (stepperPostState.selectedImage != null)
                   SizedBox(
                     height: 200,
-                    child: Image.file(selectedImage!),
+                    child: Image.file(stepperPostState.selectedImage!),
                   ),
                 _ImagePickerWidget(
                   onTap: () async {
