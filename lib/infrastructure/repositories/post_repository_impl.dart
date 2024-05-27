@@ -12,4 +12,22 @@ class PostRepositoryImpl extends PostsRepository {
   Future<List<Post>> getPosts() {
     return datasource.getPosts();
   }
+  
+  @override
+  Future<Post> createPost(Post post) {
+    // TODO: implement createPost
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<void> deletePost(String id) {
+    // TODO: implement deletePost
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<Post> updatePost(Post post) {
+    // TODO: implement updatePost
+    throw UnimplementedError();
+  }
 }
