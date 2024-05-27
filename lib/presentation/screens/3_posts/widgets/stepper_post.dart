@@ -1,7 +1,6 @@
 import 'package:chambeape/domain/entities/posts_entity.dart';
 import 'package:chambeape/presentation/providers/posts/steps/step_provider.dart';
 import 'package:chambeape/presentation/screens/3_posts/widgets/step_barrel.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -40,9 +39,10 @@ class _StepperPostState extends ConsumerState<StepperPost> {
     }
 
     final buttonStyle = ButtonStyle(
-        minimumSize: WidgetStateProperty.resolveWith(
-      (states) => const Size(110, 40),
-    ));
+      minimumSize: WidgetStateProperty.resolveWith(
+        (states) => const Size(110, 40),
+      ),
+    );
 
     const totalSteps = 4;
     return Scaffold(
@@ -101,7 +101,6 @@ class _StepperPostState extends ConsumerState<StepperPost> {
                   state: switchStepState(2),
                 ),
                 Step(
-                  // Para confirmar los datos
                   title: const SizedBox.shrink(),
                   content: const ConfirmStep(),
                   isActive: currStep >= 3,
@@ -109,35 +108,60 @@ class _StepperPostState extends ConsumerState<StepperPost> {
                 ),
               ],
               controlsBuilder: (context, details) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    if (currStep > 0)
-                      FilledButton(
-                        style: buttonStyle,
-                        onPressed: details.onStepCancel,
-                        child: const Text('Volver'),
-                      ),
-                    if (currStep < totalSteps - 1)
-                      FilledButton(
-                        style: buttonStyle,
-                        onPressed: details.onStepContinue,
-                        child: const Text('Siguiente'),
-                      ),
-                    if (currStep == totalSteps - 1)
-                      FilledButton(
-                        style: buttonStyle,
-                        onPressed: () {
-                          // Guardar el post
-                          print('Guardando post...');
-                          final data = stepperPostProv.getAll();
-                          print(data);
-                        },
-                        child: const Text('Guardar'),
-                      ),
-                  ],
-                );
+                return Container();
               },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                if (currStep > 0)
+                  FilledButton(
+                    style: buttonStyle,
+                    onPressed: () {
+                      setState(() {
+                        currStep -= 1;
+                      });
+                    },
+                    child: const Text('Volver'),
+                  ),
+                if (currStep < totalSteps - 1)
+                  FilledButton(
+                    style: buttonStyle,
+                    onPressed: () async {
+                      final formDetails = stepperPostState.formKeyPostDetails.currentState;
+                      final formLocation = stepperPostState.formKeyPostLocation.currentState;
+
+                      if (currStep == 0 && formDetails != null && formDetails.validate()) {
+                        setState(() {
+                          currStep += 1;
+                        });
+                      } else if (currStep == 1 && formLocation != null && formLocation.validate()) {
+                        setState(() {
+                          currStep += 1;
+                        });
+                      } else if (currStep == 2) {
+                        setState(() {
+                          currStep += 1;
+                        });
+                      }
+                    },
+                    child: const Text('Siguiente'),
+                  ),
+                if (currStep == totalSteps - 1)
+                  FilledButton(
+                    style: buttonStyle,
+                    onPressed: () {
+                      // Guardar el post
+                      print('Guardando post...');
+                      final data = stepperPostProv.getAll();
+                      print(data);
+                    },
+                    child: const Text('Guardar'),
+                  ),
+              ],
             ),
           ),
         ],

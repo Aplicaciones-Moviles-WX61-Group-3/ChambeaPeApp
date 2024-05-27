@@ -2,11 +2,21 @@ import 'package:chambeape/presentation/providers/posts/steps/step_provider.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ConfirmStep extends ConsumerWidget {
+class ConfirmStep extends ConsumerStatefulWidget {
   const ConfirmStep({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  createState() => _ConfirmStepState();
+}
+
+class _ConfirmStepState extends ConsumerState<ConfirmStep> {
+  @override
+  void initState() {
+    super.initState();
+  }
+  
+  @override
+  Widget build(BuildContext context) {
     final stepperPostState = ref.watch(stepperPostProvider);
     final textStyle = Theme.of(context).textTheme;
 

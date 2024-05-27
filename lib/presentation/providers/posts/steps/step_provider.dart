@@ -7,6 +7,7 @@ final stepperPostProvider = StateNotifierProvider<StepperPostNotifier, StepperPo
   return StepperPostNotifier();
 });
 
+
 class StepperPostNotifier extends StateNotifier<StepperPostState> {
   StepperPostNotifier()
       : super(StepperPostState(
@@ -20,10 +21,12 @@ class StepperPostNotifier extends StateNotifier<StepperPostState> {
 
   void setTitle(String title) {
     state.titleController.text = title;
+    state = state.copyWith();
   }
 
   void setDescription(String description) {
     state.descriptionController.text = description;
+    state = state.copyWith();
   }
 
   void setImage(File image) {
@@ -32,10 +35,12 @@ class StepperPostNotifier extends StateNotifier<StepperPostState> {
 
   void setCategory(String category) {
     state.categoryController.text = category;
+    state = state.copyWith();
   }
 
   void setLocation(String location) {
     state.locationController.text = location;
+    state = state.copyWith();
   }
 
   void setNotification(bool notification) {
