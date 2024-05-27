@@ -1,5 +1,6 @@
 import 'package:chambeape/domain/entities/posts_entity.dart';
 import 'package:chambeape/presentation/providers/posts/steps/step_provider.dart';
+import 'package:chambeape/presentation/screens/3_posts/widgets/steps/confirm_step.dart';
 import 'package:chambeape/presentation/screens/3_posts/widgets/steps/details_step.dart';
 import 'package:chambeape/presentation/screens/3_posts/widgets/steps/location_step.dart';
 import 'package:chambeape/presentation/screens/3_posts/widgets/steps/settting_step.dart';
@@ -68,11 +69,10 @@ class _StepperPostState extends ConsumerState<StepperPost> {
                   setState(() {
                     currStep += 1;
                   });
-                } else if (currStep == totalSteps - 1) {
-                  // Guardar el post
-                  print('Guardando post...');
-                  final data = stepperPostProv.getAll();
-                  print(data);
+                } else if (currStep == 2) {
+                  setState(() {
+                    currStep += 1;
+                  });
                 }
               },
               onStepCancel: () {
@@ -102,8 +102,9 @@ class _StepperPostState extends ConsumerState<StepperPost> {
                   state: switchStepState(2),
                 ),
                 Step(
+                  // Para confirmar los datos
                   title: const SizedBox.shrink(),
-                  content: const Text('Contenido del paso 4'),
+                  content: const ConfirmStep(),
                   isActive: currStep >= 3,
                   state: switchStepState(3),
                 ),
