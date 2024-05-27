@@ -21,6 +21,23 @@ class _StepperPostState extends ConsumerState<StepperPost> {
   void initState() {
     super.initState();
     hasPost = widget.post != null;
+
+    if (hasPost && widget.post != null) {
+      Future.microtask(() {
+        final stepperPostProv = ref.read(stepperPostProvider.notifier);
+        stepperPostProv.setTitle(widget.post!.title);
+        stepperPostProv.setDescription(widget.post!.description);
+        stepperPostProv.setCategory(widget.post!.subtitle);
+        stepperPostProv.setLocation('');
+        stepperPostProv.setNotification(false);
+        stepperPostProv.setPremium(false);
+      });
+    } else {
+      Future.microtask(() {
+        final stepperPostProv = ref.read(stepperPostProvider.notifier);
+        stepperPostProv.clear();
+      });
+    }
   }
 
   @override
@@ -143,6 +160,8 @@ class _StepperPostState extends ConsumerState<StepperPost> {
                           currStep += 1;
                         });
                       } else if (currStep == 2) {
+                        // imprimir los datos del post
+                        print(stepperPostProv.getAll());                        
                         setState(() {
                           currStep += 1;
                         });

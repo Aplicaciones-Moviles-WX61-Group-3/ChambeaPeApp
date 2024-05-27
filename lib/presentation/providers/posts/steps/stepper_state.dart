@@ -33,8 +33,7 @@ class StepperPostState {
     bool? hasNotification,
     int? hasPremium,
     File? selectedImage,
-    GlobalKey<FormState>? formKeyPostDetails,
-    GlobalKey<FormState>? formKeyPostLocation,
+
   }) {
     return StepperPostState(
       titleController: titleController ?? this.titleController,
@@ -44,8 +43,8 @@ class StepperPostState {
       hasNotification: hasNotification ?? this.hasNotification,
       hasPremium: hasPremium ?? this.hasPremium,
       selectedImage: selectedImage ?? this.selectedImage,
-      formKeyPostDetails: formKeyPostDetails ?? this.formKeyPostDetails,
-      formKeyPostLocation: formKeyPostLocation ?? this.formKeyPostLocation,
+      formKeyPostDetails: formKeyPostDetails,
+      formKeyPostLocation: formKeyPostLocation,
     );
   }
 }
