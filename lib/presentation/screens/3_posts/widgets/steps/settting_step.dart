@@ -47,16 +47,14 @@ class _SetttingStepState extends ConsumerState<SettingStep> {
             subtitle: Text('Función premium para destacar la publicación', style: text.bodySmall),
             value: resPremium,
             onChanged: (value) {
-              print(user.hasPremium);
               if (hasPremium == false) {
                 showDialog(
                   context: context,
                   builder: (context) => const PremiumDialog(),
                 );
               } else {
-                setState(() {
-                  stepperPostProv.setPremium(value);
-                });
+                stepperPostProv.setPremium(value);
+                setState(() {});
               }
             },
           ),
@@ -66,9 +64,8 @@ class _SetttingStepState extends ConsumerState<SettingStep> {
             subtitle: Text('Recibir notificaciones de la publicación', style: text.bodySmall),
             value: stepperPostProv.hasNotification,
             onChanged: (notification) {
-              setState(() {
-                stepperPostProv.setNotification(notification);
-              });
+              stepperPostProv.setNotification(notification);
+              setState(() {});
             },
           ),
         ],
