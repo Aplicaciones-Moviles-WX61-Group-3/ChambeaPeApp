@@ -3,7 +3,6 @@ import 'package:chambeape/domain/entities/posts_entity.dart';
 import 'package:chambeape/domain/repositories/posts_repository.dart';
 
 class PostRepositoryImpl extends PostsRepository {
-
   final PostsDataSource datasource;
 
   PostRepositoryImpl(this.datasource);
@@ -15,19 +14,16 @@ class PostRepositoryImpl extends PostsRepository {
   
   @override
   Future<Post> createPost(Post post) {
-    // TODO: implement createPost
-    throw UnimplementedError();
+    return datasource.createPost(post);
   }
   
   @override
   Future<void> deletePost(String id) {
-    // TODO: implement deletePost
-    throw UnimplementedError();
+    return datasource.deletePost(id);
   }
   
   @override
   Future<Post> updatePost(Post post) {
-    // TODO: implement updatePost
-    throw UnimplementedError();
+    return datasource.updatePost(post);
   }
 }
