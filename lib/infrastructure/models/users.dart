@@ -7,7 +7,7 @@ class Users {
   final String phoneNumber;
   final DateTime birthdate;
   final String gender;
-  final String? hasPremium;
+  final int? hasPremium;
   final String profilePic;
   final String description;
   final String userRole;

@@ -1,77 +1,58 @@
-import 'package:chambeape/infrastructure/models/post.dart';
+import 'package:chambeape/config/utils/login_user_data.dart';
+import 'package:chambeape/infrastructure/models/login/login_response.dart';
+import 'package:chambeape/presentation/providers/posts/post_provider.dart';
 import 'package:chambeape/presentation/screens/3_posts/widgets/post_card_widget.dart';
-import 'package:chambeape/presentation/screens/3_posts/widgets/post_creation_widget.dart';
-import 'package:chambeape/services/posts/post_service.dart';
+import 'package:chambeape/presentation/screens/3_posts/widgets/stepper_post.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class PostView extends StatefulWidget {
-  const PostView({super.key});
-
+class PostView extends ConsumerStatefulWidget {
   static const String routeName = 'post_view';
 
+  const PostView({super.key});
+
   @override
-  State<PostView> createState() => _PostViewState();
+  createState() => _PostViewState();
 }
 
-class _PostViewState extends State<PostView> {
-  late Future<List<Post>> posts;
+class _PostViewState extends ConsumerState<PostView> {
+  LoginResponse user = LoginData().user;
 
   @override
   void initState() {
     super.initState();
-    posts = PostService().getPosts();
+    ref.read(postsProvider.notifier).getPosts();
+    LoginData().loadSession().then((value) {
+      setState(() {
+        user = value;
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Posts'),
-          actions: [
-            IconButton(
-                icon: const Icon(
-                  Icons.add_circle_rounded,
-                  color: Colors.orange,
-                ),
-                iconSize: 30,
-                onPressed: () async {
-                  Post? newPost = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const PostCreationWidget(),
-                    ),
-                  );
+    final posts = ref.watch(postsProvider);
 
-                  if (newPost != null) {
-                    setState(() {
-                      posts = PostService().getPosts();
-                    });
-                  }
-                }),
-          ],
-        ),
-        body: Center(
-          child: FutureBuilder<List<Post>>(
-            future: posts,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
-              } else if (snapshot.connectionState == ConnectionState.done) {
-                if (snapshot.hasData) {
-                  return SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        PostCardWidget(postSnapshot: snapshot),
-                      ],
-                    ),
-                  );
-                } else if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                }
-              }
-              return const Text('Aún no has creado ningún post.');
-            },
-          ),
-        ));
+    final role = user.userRole;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Posts'),
+        actions: [
+          role == 'E'
+              ? IconButton(
+                  icon: const Icon(Icons.add_circle),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const StepperPost()));
+                  },
+                )
+              : const SizedBox(),
+        ],
+      ),
+      body: PostCardWidget(posts: posts),
+    );
   }
 }

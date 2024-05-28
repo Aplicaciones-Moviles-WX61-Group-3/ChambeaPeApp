@@ -1,13 +1,13 @@
 import 'dart:convert';
 
-import 'package:chambeape/infrastructure/models/post.dart';
+import 'package:chambeape/infrastructure/models/post_model.dart';
 import 'package:http/http.dart' as http;
 
 class PostService {
   final uri = Uri.parse(
       'https://chambeape.azurewebsites.net/api/v1/employers/30/posts');
 
-  Future<Post> createPost(
+  Future<PostModel> createPost(
       String title, String description, String subtitle, String imgUrl) async {
     Map<String, dynamic> requestBody = {
       'title': title,
@@ -25,20 +25,20 @@ class PostService {
     );
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      return Post.fromJson(json.decode(response.body));
+      return PostModel.fromJson(json.decode(response.body));
     } else {
       throw Exception(
           'Failed to create post: Status Code ${response.statusCode}, Response Body: ${response.body}');
     }
   }
 
-  Future<List<Post>> getPosts() async {
+  Future<List<PostModel>> getPosts() async {
     final response = await http.get(uri);
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       List<dynamic> body = json.decode(utf8.decode(response.bodyBytes));
-      List<Post> posts =
-          body.map((dynamic item) => Post.fromJson(item)).toList();
+      List<PostModel> posts =
+          body.map((dynamic item) => PostModel.fromJson(item)).toList();
       return posts;
     } else {
       throw Exception(
@@ -47,7 +47,7 @@ class PostService {
   }
 
   //Update post
-  Future<Post> updatePost(String id, String title, String description,
+  Future<PostModel> updatePost(String id, String title, String description,
       String subtitle, String imgUrl) async {
     Map<String, dynamic> requestBody = {
       'id': id,
@@ -66,7 +66,7 @@ class PostService {
     );
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      return Post(
+      return PostModel(
           id: int.parse(id),
           title: title,
           description: description,

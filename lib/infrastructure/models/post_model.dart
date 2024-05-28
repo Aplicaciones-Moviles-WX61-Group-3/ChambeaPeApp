@@ -1,19 +1,19 @@
-class Post {
+class PostModel {
   int id;
   String title;
   String description;
   String subtitle;
   String imgUrl;
 
-  Post(
+  PostModel(
       {required this.id,
       required this.title,
       required this.description,
       required this.subtitle,
       required this.imgUrl});
 
-  factory Post.fromJson(Map<String, dynamic> json) {
-    return Post(
+  factory PostModel.fromJson(Map<String, dynamic> json) {
+    return PostModel(
         id: json['id'],
         title: json['title'],
         description: json['description'],
