@@ -3,17 +3,19 @@ import 'package:chambeape/domain/entities/posts_entity.dart';
 import 'package:chambeape/infrastructure/models/login/login_response.dart';
 import 'package:chambeape/presentation/screens/3_posts/widgets/stepper_post.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:chambeape/presentation/providers/posts/post_provider.dart';
 
-class PostCardWidget extends StatefulWidget {
+class PostCardWidget extends ConsumerStatefulWidget {
   final List<Post> posts;
 
   const PostCardWidget({super.key, required this.posts});
 
   @override
-  State<PostCardWidget> createState() => _PostCardWidgetState();
+  ConsumerState<PostCardWidget> createState() => _PostCardWidgetState();
 }
 
-class _PostCardWidgetState extends State<PostCardWidget> {
+class _PostCardWidgetState extends ConsumerState<PostCardWidget> {
   LoginResponse user = LoginData().user;
 
   @override
@@ -29,8 +31,8 @@ class _PostCardWidgetState extends State<PostCardWidget> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-
     final role = user.userRole;
+    final isDeleting = ref.watch(postsProvider.notifier.select((notifier) => notifier.isDeleting));
 
     if (widget.posts.isEmpty) {
       return Center(
@@ -40,22 +42,19 @@ class _PostCardWidgetState extends State<PostCardWidget> {
         ),
       );
     } else {
-      return widget.posts.isNotEmpty
-          ? ListView.builder(
-              itemCount: widget.posts.length,
-              itemBuilder: (context, index) {
-                final post = widget.posts[index];
-                return _PostCard(
-                  post: post,
-                  textTheme: textTheme,
-                  role: role,
-                  onDelete: () => _showDeleteConfirmationDialog(context, post),
-                );
-              },
-            )
-          : const Center(
-              child: CircularProgressIndicator(),
-            );
+      return ListView.builder(
+        itemCount: widget.posts.length,
+        itemBuilder: (context, index) {
+          final post = widget.posts[index];
+          return _PostCard(
+            post: post,
+            textTheme: textTheme,
+            role: role,
+            onDelete: () => _showDeleteConfirmationDialog(context, post),
+            isDeleting: isDeleting,
+          );
+        },
+      );
     }
   }
 
@@ -75,8 +74,9 @@ class _PostCardWidgetState extends State<PostCardWidget> {
               child: const Text('Cancelar'),
             ),
             TextButton(
-              onPressed: () {
-                // TODO Lógica para eliminar la publicación
+              onPressed: () async {
+                await ref.read(postsProvider.notifier).deletePost(post.id.toString());
+                // ignore: use_build_context_synchronously
                 Navigator.of(context).pop();
               },
               child: const Text('Eliminar'),
@@ -88,18 +88,21 @@ class _PostCardWidgetState extends State<PostCardWidget> {
   }
 }
 
+
 class _PostCard extends StatelessWidget {
   const _PostCard({
     required this.post,
     required this.textTheme,
     required this.role,
     required this.onDelete,
+    required this.isDeleting,
   });
 
   final Post post;
   final TextTheme textTheme;
   final String role;
   final VoidCallback onDelete;
+  final bool isDeleting;
 
   @override
   Widget build(BuildContext context) {
@@ -110,67 +113,75 @@ class _PostCard extends StatelessWidget {
       shadowColor: Colors.amber.shade700.withOpacity(0.35),
       elevation: 5.0,
       margin: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 10.0),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
-        child: Row(
-          children: [
-            CircleAvatar(
-              radius: 30,
-              backgroundImage: NetworkImage(post.imgUrl),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    post.title,
-                    style: textTheme.titleMedium,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    post.description,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
+      child: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 30,
+                  backgroundImage: NetworkImage(post.imgUrl),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _PostButton(
-                        onPressed: () {},
-                        text: 'Ver Publicación',
+                      Text(
+                        post.title,
+                        style: textTheme.titleMedium,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        post.description,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: textTheme.bodyMedium,
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          _PostButton(
+                            onPressed: () {},
+                            text: 'Ver Publicación',
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
+                ),
+                role == 'E'
+                    ? Column(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => StepperPost(post: post),
+                                ),
+                              );
+                            },
+                          ),
+                          IconButton(
+                            onPressed: onDelete,
+                            icon: const Icon(Icons.delete),
+                          ),
+                        ],
+                      )
+                    : const SizedBox(),
+              ],
             ),
-            role == 'E'
-                ? Column(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.edit),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => StepperPost(post: post),
-                            ),
-                          );
-                        },
-                      ),
-                      IconButton(
-                        onPressed: onDelete,
-                        icon: const Icon(Icons.delete),
-                      ),
-                    ],
-                  )
-                : const SizedBox(),
-          ],
-        ),
+          ),
+          if (isDeleting)
+            const Center(
+              child: CircularProgressIndicator(),
+            ),
+        ],
       ),
     );
   }
@@ -181,9 +192,10 @@ class _PostButton extends StatelessWidget {
   final String text;
 
   final buttonStyle = ButtonStyle(
-      minimumSize: WidgetStateProperty.resolveWith(
-    (states) => const Size(110, 30),
-  ));
+    minimumSize: WidgetStateProperty.resolveWith(
+      (states) => const Size(110, 30),
+    ),
+  );
 
   _PostButton({
     required this.onPressed,
