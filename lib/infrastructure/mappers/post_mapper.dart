@@ -11,4 +11,14 @@ class PostMapper {
       imgUrl: postModel.imgUrl,
     );
   }
+
+  static PostModel entityToPostModel(Post post) {
+    return PostModel(
+      id: post.id,
+      title: post.title,
+      description: post.description,
+      subtitle: post.subtitle,
+      imgUrl: post.imgUrl,
+    );
+  }
 }
