@@ -15,31 +15,78 @@ class PostsdbDatasource extends PostsDataSource {
     final response = await http.get(uri);
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      final List<dynamic> postsResponse = json.decode(utf8.decode(response.bodyBytes));
-      final List<Post> posts = postsResponse.map((item) => PostMapper.postModelToEntity(PostModel.fromJson(item))).toList();
+      final List<dynamic> postsResponse =
+          json.decode(utf8.decode(response.bodyBytes));
+      final List<Post> posts = postsResponse
+          .map((item) => PostMapper.postModelToEntity(PostModel.fromJson(item)))
+          .toList();
 
       return posts;
     } else {
       // Handle errors as needed
-      throw Exception('Error fetching posts');
+      throw Exception('Error fetching posts: ${response.statusCode}, Response: ${response.body}');
     }
   }
-  
+
   @override
-  Future<Post> createPost(Post post) {
-    // TODO: implement createPost
-    throw UnimplementedError();
+  Future<Post> createPost(Post post) async {
+    final Uri uri = await UriEnvironment.getPostUri();
+    final PostModel postModel = PostMapper.entityToPostModel(post);
+
+    final response = await http.post(
+      uri,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(postModel.toJson()),
+    );
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return PostMapper.postModelToEntity(
+          PostModel.fromJson(json.decode(response.body)));
+    } else {
+      throw Exception('Failed to create post: ${response.statusCode}, Response: ${response.body}');
+    }
   }
-  
+
   @override
-  Future<void> deletePost(String id) {
-    // TODO: implement deletePost
-    throw UnimplementedError();
+  Future<Post> updatePost(Post post) async {
+    final Uri uri = Uri.parse(
+        'https://chambeape.azurewebsites.net/api/v1/posts/${post.id}');
+    final postModel = PostMapper.entityToPostModel(post);
+
+    final response = await http.put(
+      uri,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8'
+      },
+      body: jsonEncode(postModel.toJson()),
+    );
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      final updatedPost = PostModel.fromJson(json.decode(response.body));
+      return PostMapper.postModelToEntity(updatedPost);
+    } else {
+      throw Exception('Failed to update post: ${response.statusCode}, Response: ${response.body}');
+    }
   }
-  
+
   @override
-  Future<Post> updatePost(Post post) {
-    // TODO: implement updatePost
-    throw UnimplementedError();
+  Future<void> deletePost(String id) async {
+    final Uri uri =
+        Uri.parse('https://chambeape.azurewebsites.net/api/v1/posts/$id');
+
+    final response = await http.delete(
+      uri,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8'
+      },
+    );
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return;
+    } else {
+      throw Exception('Failed to delete post: ${response.statusCode}, Response: ${response.body}');
+    }
   }
 }
