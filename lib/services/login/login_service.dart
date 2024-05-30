@@ -23,8 +23,13 @@ Future<Login> login(String email, String password) async {
   );
 
   if (response.statusCode == 200) {
-    Login login = Login.fromJson(json.decode(response.body));
-    LoginResponse user = LoginResponse.fromJson(json.decode(response.body));
+    final responseBody = utf8.decode(response.bodyBytes);
+
+    final Map<String, dynamic> jsonResponse = json.decode(responseBody);
+
+    Login login = Login.fromJson(jsonResponse);
+    LoginResponse user = LoginResponse.fromJson(jsonResponse);
+
     SessionService().saveSession(user);
 
     return login;

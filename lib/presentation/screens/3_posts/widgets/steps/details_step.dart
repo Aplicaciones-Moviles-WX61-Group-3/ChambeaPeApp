@@ -108,26 +108,22 @@ class _DetailsStepWidgetState extends ConsumerState<DetailsStep> {
             ),
             const SizedBox(height: 16),
             // Campo para elegir imagen del dispositivo
-            Column(
-              children: [
-                if (stepperPostState.selectedImage != null)
-                  SizedBox(
-                    height: 200,
-                    child: Image.file(stepperPostState.selectedImage!),
-                  ),
-                _ImagePickerWidget(
-                  onTap: () async {
-                    final image = await getImage();
-                    if (image != null) {
-                      stepperPost.setImage(image);
-                      setState(() {
-                        selectedImage = image;
-                      });
-                    }
-                  },
-                ),
-              ],
+            _ImagePickerWidget(
+              selectedImage: selectedImage,
+              onTap: () async {
+                final image = await getImage();
+                if (image != null) {
+                  stepperPost.setImage(image);
+                  stepperPost.setHasImageSelected(true);
+                  setState(() {
+                    selectedImage = image;
+                  });
+                }
+              },
             ),
+            const SizedBox(height: 16),
+            if (!stepperPostState.hasImageSelected)
+              const Text('Por favor, seleccione una imagen', style: TextStyle(color: Colors.red)),
             const SizedBox(height: 16),
             widget.hasPost
                 ? _PrevImage(widget: widget)
@@ -141,9 +137,11 @@ class _DetailsStepWidgetState extends ConsumerState<DetailsStep> {
 
 class _ImagePickerWidget extends StatelessWidget {
   final VoidCallback onTap;
+  final File? selectedImage;
 
   const _ImagePickerWidget({
     required this.onTap,
+    this.selectedImage,
   });
 
   @override
@@ -151,7 +149,7 @@ class _ImagePickerWidget extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 70,
+        height: selectedImage != null ? 150 : 70,
         width: double.infinity,
         decoration: BoxDecoration(
           shape: BoxShape.rectangle,
@@ -160,15 +158,20 @@ class _ImagePickerWidget extends StatelessWidget {
               : Colors.grey.shade300,
           borderRadius: BorderRadius.circular(5),
         ),
-        child: const Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              Icon(Icons.add_circle),
-              SizedBox(width: 8),
-              Text("Seleccionar imagen"),
-            ],
-          ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: selectedImage != null
+              ? Image.file(
+                  selectedImage!,
+                  fit: BoxFit.cover,
+                )
+              : const Row(
+                  children: [
+                    Icon(Icons.add_circle),
+                    SizedBox(width: 8),
+                    Text("Seleccionar imagen"),
+                  ],
+                ),
         ),
       ),
     );

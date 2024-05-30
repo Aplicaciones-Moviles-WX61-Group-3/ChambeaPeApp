@@ -21,7 +21,7 @@ class LoginData {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String userData = prefs.getString('user') ?? '';
     final Map<String, dynamic> userDataJson = jsonDecode(userData);
-    final LoginResponse user = LoginResponse.fromJson(userDataJson); // Variable temporal
+    final LoginResponse user = LoginResponse.fromJson(userDataJson);
 
     return user;
   }

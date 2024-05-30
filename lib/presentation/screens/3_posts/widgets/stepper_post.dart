@@ -1,4 +1,5 @@
 import 'package:chambeape/domain/entities/posts_entity.dart';
+import 'package:chambeape/presentation/providers/posts/post_provider.dart';
 import 'package:chambeape/presentation/providers/posts/steps/step_provider.dart';
 import 'package:chambeape/presentation/screens/3_posts/widgets/step_barrel.dart';
 import 'package:flutter/material.dart';
@@ -16,11 +17,15 @@ class StepperPost extends ConsumerStatefulWidget {
 class _StepperPostState extends ConsumerState<StepperPost> {
   bool hasPost = false;
   int currStep = 0;
+  int postId = 0;
+  String postImageUri = '';
 
   @override
   void initState() {
     super.initState();
     hasPost = widget.post != null;
+    postId = widget.post?.id ?? 0;
+    postImageUri = widget.post?.imgUrl ?? '';
 
     if (hasPost && widget.post != null) {
       Future.microtask(() {
@@ -31,6 +36,7 @@ class _StepperPostState extends ConsumerState<StepperPost> {
         stepperPostProv.setLocation('');
         stepperPostProv.setNotification(false);
         stepperPostProv.setPremium(false);
+        stepperPostProv.setHasImageSelected(true);
       });
     } else {
       Future.microtask(() {
@@ -74,14 +80,21 @@ class _StepperPostState extends ConsumerState<StepperPost> {
               currentStep: currStep,
               onStepContinue: () async {
                 // Validar el formulario antes de pasar al siguiente paso
-                final formDetails = stepperPostState.formKeyPostDetails.currentState;
-                final formLocation = stepperPostState.formKeyPostLocation.currentState;
+                final formDetails =
+                    stepperPostState.formKeyPostDetails.currentState;
+                final formLocation =
+                    stepperPostState.formKeyPostLocation.currentState;
 
-                if (currStep == 0 && formDetails != null && formDetails.validate()) {
+                if (currStep == 0 &&
+                    formDetails != null &&
+                    formDetails.validate() &&
+                    stepperPostState.hasImageSelected) {
                   setState(() {
                     currStep += 1;
                   });
-                } else if (currStep == 1 && formLocation != null && formLocation.validate()) {
+                } else if (currStep == 1 &&
+                    formLocation != null &&
+                    formLocation.validate()) {
                   setState(() {
                     currStep += 1;
                   });
@@ -148,20 +161,25 @@ class _StepperPostState extends ConsumerState<StepperPost> {
                   FilledButton(
                     style: buttonStyle,
                     onPressed: () async {
-                      final formDetails = stepperPostState.formKeyPostDetails.currentState;
-                      final formLocation = stepperPostState.formKeyPostLocation.currentState;
+                      final formDetails =
+                          stepperPostState.formKeyPostDetails.currentState;
+                      final formLocation =
+                          stepperPostState.formKeyPostLocation.currentState;
 
-                      if (currStep == 0 && formDetails != null && formDetails.validate()) {
+                      if (currStep == 0 &&
+                          formDetails != null &&
+                          formDetails.validate() &&
+                          stepperPostState.hasImageSelected) {
                         setState(() {
                           currStep += 1;
                         });
-                      } else if (currStep == 1 && formLocation != null && formLocation.validate()) {
+                      } else if (currStep == 1 &&
+                          formLocation != null &&
+                          formLocation.validate()) {
                         setState(() {
                           currStep += 1;
                         });
                       } else if (currStep == 2) {
-                        // imprimir los datos del post
-                        print(stepperPostProv.getAll());                        
                         setState(() {
                           currStep += 1;
                         });
@@ -172,11 +190,34 @@ class _StepperPostState extends ConsumerState<StepperPost> {
                 if (currStep == totalSteps - 1)
                   FilledButton(
                     style: buttonStyle,
-                    onPressed: () {
+                    onPressed: () async {
                       // Guardar el post
                       print('Guardando post...');
                       final data = stepperPostProv.getAll();
-                      print(data);
+
+                      print(data['image'] );
+                      print(postImageUri); // Para el update de la imagen
+
+                      //  TODO Guardar el post
+                      Post dataPost = Post(
+                        id: postId,
+                        title: data['title'],
+                        description: data['description'],
+                        subtitle: data['category'],
+                        imgUrl: 'Metes la url de la imagen aquí',
+                      );
+
+                      print('id: ${dataPost.id}');
+                      print('title: ${dataPost.title}');
+                      print('description: ${dataPost.description}');
+                      print('subtitle: ${dataPost.subtitle}');
+                      print('imgUrl: ${dataPost.imgUrl}');
+
+                      // if (hasPost) {
+                      //   await ref.read(postsProvider.notifier).updatePost(dataPost);
+                      // } else{
+                      //   await ref.read(postsProvider.notifier).createPost(dataPost);
+                      // }
                     },
                     child: const Text('Guardar'),
                   ),
