@@ -1,4 +1,3 @@
-
 import 'package:chambeape/infrastructure/models/users.dart';
 
 class Workers {
@@ -61,11 +60,12 @@ class Workers {
       lastName: lastName,
       email: email,
       phoneNumber: phoneNumber,
-      birthdate: DateTime.now(), 
+      birthdate: DateTime.now(),
       gender: 'M',
       profilePic: profilePic,
       description: description,
-      userRole: 'W'
-      );
+      userRole: 'W',
+      dni: '',
+    );
   }
 }
