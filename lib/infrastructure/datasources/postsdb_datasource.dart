@@ -33,12 +33,19 @@ class PostsdbDatasource extends PostsDataSource {
     final Uri uri = await UriEnvironment.getPostUri();
     final PostModel postModel = PostMapper.entityToPostModel(post);
 
+    Map<String, dynamic> requestBody = {
+      'title': postModel.title,
+      'description': postModel.description,
+      'subtitle': postModel.subtitle,
+      'imgUrl': postModel.imgUrl
+    };
+
     final response = await http.post(
       uri,
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(postModel.toJson()),
+      body: jsonEncode(requestBody),
     );
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
