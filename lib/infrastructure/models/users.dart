@@ -1,5 +1,5 @@
 class Users {
-  final int id;
+  final int? id;
   final String firstName;
   final String lastName;
   final String email;
@@ -12,20 +12,22 @@ class Users {
   final String description;
   final String userRole;
   final String? isVisible;
+  final String dni;
 
   Users({
-    required this.id,
+    this.id,
     required this.firstName,
     required this.lastName,
     required this.email,
-    this.password,
     required this.phoneNumber,
     required this.birthdate,
     required this.gender,
-    this.hasPremium,
     required this.profilePic,
     required this.description,
     required this.userRole,
+    required this.dni,
+    this.hasPremium,
+    this.password,
     this.isVisible,
   });
 
@@ -44,6 +46,7 @@ class Users {
       description: json['description'],
       userRole: json['userRole'],
       isVisible: json['isVisible'],
+      dni: json['dni'],
     );
   }
 
@@ -62,6 +65,7 @@ class Users {
       'description': description,
       'userRole': userRole,
       'isVisible': isVisible,
+      'dni': dni,
     };
   }
 }
