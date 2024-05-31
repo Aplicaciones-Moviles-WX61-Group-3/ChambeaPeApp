@@ -1,4 +1,5 @@
 import 'package:chambeape/infrastructure/models/workers.dart';
+import 'package:chambeape/presentation/screens/5_profile/profile_view.dart';
 import 'package:chambeape/presentation/screens/chat/chat_view.dart';
 import 'package:flutter/material.dart';
 
@@ -68,7 +69,16 @@ class _UserCardWidgetState extends State<UserCardWidget> {
                         ),
                         const Spacer(),
                         _WorkersButton(
-                          onPressed: () {  },
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProfileView(
+                                  userId: widget.worker.id,
+                                ),
+                              ),
+                            );
+                          },
                           text: 'Ver Perfil',  
                         )
                       ],
@@ -100,7 +110,6 @@ class _WorkersButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FilledButton(
-      // Min width
       style: buttonStyle,
       onPressed: onPressed,
       child: Text(text),
