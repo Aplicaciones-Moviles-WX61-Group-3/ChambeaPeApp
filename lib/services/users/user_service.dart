@@ -33,4 +33,15 @@ class UserService {
           'Failed to post user: Status Code ${response.statusCode}, Response Body: ${response.body}');
     }
   }
+
+  Future<Users> getUserById(int id) async {
+    final response = await http.get(Uri.parse('$uri/$id'));
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return Users.fromJson(json.decode(utf8.decode(response.bodyBytes)));
+    } else {
+      throw Exception(
+          'Failed to fetch user by id: Status Code ${response.statusCode}, Response Body: ${response.body}');
+    }
+  }
 }
