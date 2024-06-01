@@ -1,10 +1,12 @@
 import 'package:chambeape/config/utils/login_user_data.dart';
 import 'package:chambeape/infrastructure/models/users.dart';
+import 'package:chambeape/presentation/screens/5_profile/widgets/profile_connect_button.dart';
+import 'package:chambeape/presentation/screens/5_profile/widgets/profile_description.dart';
+import 'package:chambeape/presentation/screens/5_profile/widgets/profile_my_works.dart';
 import 'package:chambeape/services/users/user_service.dart';
 import 'package:flutter/material.dart';
 
-class ProfileView extends StatelessWidget {
-  
+class ProfileView extends StatefulWidget {
   final int userId;
 
   const ProfileView({
@@ -14,9 +16,18 @@ class ProfileView extends StatelessWidget {
 
   static const String routeName = 'profile_view';
 
+  @override
+  State<ProfileView> createState() => _ProfileViewState();
+}
+
+class _ProfileViewState extends State<ProfileView> {
+  bool isCurrentUser = false;
+
+  int userIdToUse = 0;
+
   Future<Users> _loadUserById() async {
-    if (userId != 0) {
-      return await UserService().getUserById(userId);
+    if (widget.userId != 0) {
+      return await UserService().getUserById(widget.userId);
     } else {
       var session = await LoginData().loadSession();
       var userId = session.id;
@@ -24,12 +35,53 @@ class ProfileView extends StatelessWidget {
     }
   }
 
+  Future<bool> _isCurrentUserFunc() async {
+    var session = await LoginData().loadSession();
+    var isCurrentUser = session.id == widget.userId || widget.userId == 0;
+    return isCurrentUser;
+  }
+
+  Future<int> _getUserId() async{
+    if (widget.userId != 0) {
+      return widget.userId;
+    } else {
+      var session = await LoginData().loadSession();
+      return session.id;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _isCurrentUserFunc().then((value) {
+      setState(() {
+        isCurrentUser = value;
+      });
+    });
+    _getUserId().then((value) {
+      setState(() {
+        userIdToUse = value;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-
-    final text = Theme.of(context).textTheme; 
+    final text = Theme.of(context).textTheme;
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Perfil'),
+        actions: [
+          if (isCurrentUser)
+            IconButton(
+              onPressed: () {
+                // TODO Implementar la funcionalidad de editar perfil aquí
+              },
+              icon: const Icon(Icons.settings_outlined, size: 30),
+            ),
+        ],
+      ),
       body: Container(
         margin: const EdgeInsets.symmetric(vertical: 20),
         child: FutureBuilder<Users>(
@@ -38,47 +90,34 @@ class ProfileView extends StatelessWidget {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
-              return const Center(child: Text('Error loading user data'));
+              return const Center(
+                  child: Text('Error al cargar los datos del usuario'));
             } else if (snapshot.hasData) {
               final user = snapshot.data!;
-              return SizedBox(
-                width: double.infinity,
-                child: Stack(
-                  children: [
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      child: IconButton(
-                        onPressed: (){},
-                        icon: const Icon(Icons.settings_outlined, size: 30),
+              return SingleChildScrollView(
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(children: [
+                      CircleAvatar(
+                        radius: 50,
+                        backgroundImage: NetworkImage(user.profilePic),
                       ),
-                    ),
-                    Positioned(
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Column(
-                          children: [
-                            CircleAvatar(
-                              radius: 50,
-                              backgroundImage: NetworkImage(user.profilePic),
-                            ),
-                            const SizedBox(height: 10),
-                            Text('${user.firstName} ${user.lastName}', style: text.titleLarge?.
-                            copyWith(fontWeight: FontWeight.bold)),
-                            const SizedBox(height: 10),
-                             _ConectButton(text: text),
-                                    
-                            const SizedBox(height: 10),
-                            _Description(user: user, text: text),
-                            const SizedBox(height: 10),
-                          ]
-                        ),
-                      ),
-                    )
-                  ],
+                      const SizedBox(height: 10),
+                      Text('${user.firstName} ${user.lastName}',
+                          style: text.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center),
+                      const SizedBox(height: 10),
+                      if (!isCurrentUser) ConnectButton(text: text),
+                      const SizedBox(height: 10),
+                      Description(user: user, text: text),
+                      const SizedBox(height: 20),
+                      MyWorksDefault(text: text, userId: userIdToUse, isCurrentUser: isCurrentUser),
+                    ]),
+                  ),
                 ),
               );
             } else {
@@ -91,55 +130,3 @@ class ProfileView extends StatelessWidget {
   }
 }
 
-class _Description extends StatelessWidget {
-  final TextTheme text;
-
-  const _Description({
-    required this.user, 
-    required this.text,
-  });
-
-  final Users user;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 5,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Text('Descripción', style: text.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-            Text(user.description, style: text.bodyMedium, textAlign: TextAlign.center),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ConectButton extends StatelessWidget {
-  final TextTheme text;
-
-  const _ConectButton({
-    required this.text,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: FilledButton(
-        style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5), // Ajusta el radio del borde aquí
-          ),
-        ),
-        onPressed: () {
-          // TODO Implementar la funcionalidad de chatear aquí
-        },
-        child: Text('Chatear', style: text.bodyLarge?.copyWith(fontWeight: FontWeight.bold, color: Colors.white)),
-      ),
-    );
-  }
-}
