@@ -14,7 +14,6 @@ import 'package:chambeape/infrastructure/models/users.dart';
 import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 import 'package:timezone/standalone.dart' as tz;
 import 'package:timezone/timezone.dart';
