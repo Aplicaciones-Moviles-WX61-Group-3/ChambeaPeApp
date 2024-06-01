@@ -5,6 +5,7 @@ import 'package:chambeape/presentation/screens/0_login/widgets/custom_radio_list
 import 'package:chambeape/presentation/screens/0_login/widgets/image_picker_widget.dart';
 import 'package:chambeape/presentation/shared/enums/enum.dart';
 import 'package:chambeape/presentation/shared/utils/custom_validators.dart';
+import 'package:chambeape/services/media/MediaService.dart';
 import 'package:chambeape/services/users/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -137,7 +138,7 @@ class _RegisterViewState extends State<RegisterView> {
                   const SizedBox(height: 10),
                   ImagePickerWidget(
                     onTap: () async {
-                      final image = await getImage();
+                      final image = await MediaService().getImageFromGallery();
                       setState(() {
                         selectedImage = image;
                       });
@@ -181,8 +182,9 @@ class _RegisterViewState extends State<RegisterView> {
                     maxLines: null,
                     validator: (value) => customValidator(value, 'descripción'),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
+                  FilledButton(
+                    onPressed: () async{
+                      Uri profilePicUri = await MediaService().saveFileToGoogleCloud(selectedImage!);
                       DateTime birthDate =
                           DateTime.parse(birthDateController.text);
                       print(birthDate);
@@ -195,7 +197,7 @@ class _RegisterViewState extends State<RegisterView> {
                           birthdate: birthDate,
                           gender: selectedGender.toString().split('.').last,
                           profilePic:
-                              'https://www.shutterstock.com/image-vector/vector-flat-illustration-grayscale-avatar-600nw-2264922221.jpg',
+                              profilePicUri.toString(),
                           description: descriptionController.text,
                           userRole: selectedUserRole.toString().split('.').last,
                           dni: dniController.text,
