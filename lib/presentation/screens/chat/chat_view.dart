@@ -37,7 +37,7 @@ class _ChatViewState extends State<ChatView> {
   late ChatUser? chatCurrentUser, chatOtherUser;
   late Future<void> loadChatFuture;
   MediaService mediaService = MediaService();
-  late CloudApi cloudApi;
+  late CloudApi cloudApiInstance;
   late String fileName;
 
   @override
@@ -63,7 +63,7 @@ class _ChatViewState extends State<ChatView> {
     stompClient?.activate();
     await loadMessages();
     await loadChatUsers();
-    await initApi();
+    cloudApiInstance = await CloudApi.getInstance();
   }
 
   Future<Users?> getCurrentUser() async {
@@ -106,10 +106,10 @@ class _ChatViewState extends State<ChatView> {
     });
   }
 
-  Future<void> initApi() async {
-    String json = await rootBundle.loadString('assets/gcloud_credentials.json');
-    cloudApi = CloudApi(json);
-  }
+  // Future<void> initApi() async {
+  //   String json = await rootBundle.loadString('assets/gcloud_credentials.json');
+  //   cloudApi = CloudApi(json);
+  // }
 
   void onConnect(StompFrame frame) {
     stompClient?.subscribe(
@@ -313,7 +313,7 @@ class _ChatViewState extends State<ChatView> {
   }
 
   Future<Uri> saveFileToGoogleCloud(Uint8List fileBytes) async {
-    final response = await cloudApi.save(fileName, fileBytes);
+    final response = await cloudApiInstance.save(fileName, fileBytes);
     return response.downloadLink;
   }
 }
