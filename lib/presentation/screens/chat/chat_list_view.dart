@@ -1,12 +1,13 @@
 import 'dart:convert';
 
+import 'package:chambeape/config/utils/login_user_data.dart';
+import 'package:chambeape/infrastructure/models/login/login_response.dart';
 import 'package:chambeape/infrastructure/models/users.dart';
 import 'package:chambeape/presentation/screens/chat/chat_view.dart';
 import 'package:chambeape/services/chat/message_service.dart';
 import 'package:chambeape/services/users/user_service.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:chambeape/infrastructure/models/chat_message.dart' as Message;
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 
@@ -85,11 +86,10 @@ class _ChatListViewState extends State<ChatListView> {
                         ],
                       ), 
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ChatView(otherUser: user,),
-                          ),
+                        Navigator.pushNamed(
+                          context, 
+                          ChatView.routeName,
+                          arguments: user
                         );
                       },
                     ),
@@ -131,14 +131,6 @@ class _LastMessageState extends State<LastMessage> {
   @override
   void initState() {
     super.initState();
-    stompClient = StompClient(
-      config: StompConfig.sockJS(
-        url: 'https://chambeape-chat.azurewebsites.net/websocket',
-        onConnect: onConnect,
-        onWebSocketError: (dynamic error) => print(error.toString()),
-      ),
-    );
-    stompClient?.activate(); 
     otherUserIndex = widget.otherUserIndex;
     loadMessageDetailsFuture = loadMessageDetails();
   }
@@ -146,77 +138,100 @@ class _LastMessageState extends State<LastMessage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<void>(
-        future: loadMessageDetailsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: LinearProgressIndicator());
-          } 
-          else if (snapshot.hasError) {
-            print(snapshot.error.toString());
-            return const Center(child: Text('Error loading chat. Please try again later'));
-          } 
-          else {
-            TextStyle textStyle = TextStyle(
-                  color: Colors.grey.shade900,
-                  fontSize: 15,
-                );
-            switch(lastMessage.type){
-              case 'text':
-                return Text(
-                  lastMessage.content,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: textStyle,
-                );
-              case 'image':
-                return Row(children: [
-                Icon(
-                  Icons.image,
-                  size: 22,
-                  color: Colors.grey.shade800,
-                  ), 
-                Text(
-                  'Foto',
-                  style: textStyle
-                  )
-                ],);
-              default:
-                return Row(children: [
-                Icon(
-                  Icons.file_copy,
-                  size: 22,
-                  color: Colors.grey.shade800,
-                  ), 
-                Text(
-                  'Archivo',
-                  style: textStyle
-                  )
-                ],);
-            }  
-          }
+      future: loadMessageDetailsFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: LinearProgressIndicator());
+        } 
+        else if (snapshot.hasError) {
+          print(snapshot.error.toString());
+          return const Center(child: Text('Error loading chat. Please try again later'));
+        } 
+        else {
+          TextStyle textStyle = TextStyle(
+                color: Colors.grey.shade900,
+                fontSize: 15,
+              );
+          switch(lastMessage.type){
+            case 'text':
+              return Text(
+                lastMessage.content,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: textStyle,
+              );
+            case 'image':
+              return Row(children: [
+              Icon(
+                Icons.image,
+                size: 22,
+                color: Colors.grey.shade800,
+                ), 
+              Text(
+                'Foto',
+                style: textStyle
+                )
+              ],);
+            default:
+              return Row(children: [
+              Icon(
+                Icons.file_copy,
+                size: 22,
+                color: Colors.grey.shade800,
+                ), 
+              Text(
+                'Archivo',
+                style: textStyle
+                )
+              ],);
+          }  
         }
-      );
+      }
+    );
   }
 
-  Future<void> loadMessageDetails() async{
-    currentUser = await getCurrentUser();
-    chatroomId = generateChatRoomId(currentUser!.id.toString(), users[otherUserIndex].id.toString());
-    List<Message.ChatMessage> _lastMessage = await MessageService().getMessages(chatroomId, latest: true);
-    DateTime dateTime = DateTime.parse(_lastMessage[0].timestamp);
-    String formattedTime = '${dateTime.hour}:${dateTime.minute}';
-    setState(() {
-      lastMessage = _lastMessage[0];
-      lastMsgsTime[otherUserIndex] = formattedTime;
-    });
+  Future<void> loadMessageDetails() async {
+    try {
+      currentUser = await getCurrentUser();
+      if (currentUser == null) {
+        throw Exception("Current user not found.");
+      }
+      if (otherUserIndex >= users.length) {
+        throw Exception("Invalid user index.");
+      }
+      chatroomId = generateChatRoomId(currentUser!.id.toString(), users[otherUserIndex].id.toString());
+      List<Message.ChatMessage> _lastMessage = await MessageService().getMessages(chatroomId, latest: true);
+      if (_lastMessage.isEmpty) {
+        throw Exception("No messages found.");
+      }
+      DateTime dateTime = DateTime.parse(_lastMessage[0].timestamp);
+      String formattedTime = '${dateTime.hour}:${dateTime.minute}';
+      setState(() {
+        lastMessage = _lastMessage[0];
+        lastMsgsTime[otherUserIndex] = formattedTime;
+      });
+      // Activar el cliente Stomp después de que chatroomId haya sido inicializado
+      stompClient = StompClient(
+        config: StompConfig.sockJS(
+          url: 'https://chambeape-chat.azurewebsites.net/websocket',
+          onConnect: onConnect,
+          onWebSocketError: (dynamic error) => print(error.toString()),
+        ),
+      );
+      stompClient?.activate(); 
+    } catch (e) {
+      print("Error in loadMessageDetails: $e");
+      rethrow;
+    }
   }
 
   Future<Users?> getCurrentUser() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? userJson = prefs.getString('user');
-    if (userJson != null) {
-      return Users.fromJson(jsonDecode(userJson));
-    }
-    return null;
+    LoginResponse user = LoginData().user;
+    user = await LoginData().loadSession();
+    var userId = user.id;
+
+    Users currentUser = await UserService().getUserById(userId);
+    return currentUser;    
   }
 
   String generateChatRoomId(String currentUserId, String otherUserId) {

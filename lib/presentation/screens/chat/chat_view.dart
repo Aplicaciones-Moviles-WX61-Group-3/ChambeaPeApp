@@ -2,10 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:chambeape/config/utils/login_user_data.dart';
 import 'package:chambeape/infrastructure/models/chat_message.dart' as Message;
+import 'package:chambeape/infrastructure/models/login/login_response.dart';
 import 'package:chambeape/services/chat/message_service.dart';
 import 'package:chambeape/services/media/MediaService.dart';
 import 'package:chambeape/config/utils/CloudApi.dart';
+import 'package:chambeape/services/users/user_service.dart';
 import 'package:crypto/crypto.dart';
 import 'package:chambeape/infrastructure/models/users.dart';
 import 'package:dash_chat_2/dash_chat_2.dart';
@@ -30,9 +33,8 @@ class ChatView extends StatefulWidget {
 class _ChatViewState extends State<ChatView> {
   StompClient? stompClient;
   late String roomId;
-  late Message.ChatMessage lastMessage;
   late List<Message.ChatMessage> messages = [];
-  late Users? currentUser, otherUser;
+  late Users? currentUser;
   late ChatUser? chatCurrentUser, chatOtherUser;
   late Future<void> loadChatFuture;
   MediaService mediaService = MediaService();
@@ -40,8 +42,18 @@ class _ChatViewState extends State<ChatView> {
   late String fileName;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
+    loadChatFuture = initializeChat();
+  }
+
+  Future<void> initializeChat() async {
+    currentUser = await getCurrentUser();
+    if (currentUser == null) {
+      throw Exception("Current user not found.");
+    }
+    print(widget.otherUser.id.toString());
+    roomId = generateChatRoomId(currentUser!.id.toString(), widget.otherUser.id.toString());
     stompClient = StompClient(
       config: StompConfig.sockJS(
         url: 'https://chambeape-chat.azurewebsites.net/websocket',
@@ -49,41 +61,33 @@ class _ChatViewState extends State<ChatView> {
         onWebSocketError: (dynamic error) => print(error.toString()),
       ),
     );
-
-    stompClient?.activate(); 
-    loadChatFuture = loadChat();
-    initApi();
-  }
-
-  Future<void> loadChat() async{
-    otherUser = widget.otherUser;
-    currentUser = await getCurrentUser();
-    loadChatUsers();
-    roomId = generateChatRoomId(currentUser!.id.toString(), otherUser!.id.toString());
+    stompClient?.activate();
     await loadMessages();
+    await loadChatUsers();
+    await initApi();
   }
 
   Future<Users?> getCurrentUser() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? userJson = prefs.getString('user');
-    if (userJson != null) {
-      return Users.fromJson(jsonDecode(userJson));
-    }
-    return null;
+    LoginResponse user = LoginData().user;
+    user = await LoginData().loadSession();
+    var userId = user.id;
+
+    Users currentUser = await UserService().getUserById(userId);
+    return currentUser;    
   }
 
-  void loadChatUsers() {
-      chatCurrentUser = ChatUser(
-        id: currentUser!.id.toString(), 
-        firstName: currentUser!.firstName.split(' ')[0], 
-        lastName: currentUser!.lastName.split(' ')[0],
-        profileImage: currentUser!.profilePic,
+  Future<void> loadChatUsers() async {
+    chatCurrentUser = ChatUser(
+      id: currentUser!.id.toString(),
+      firstName: currentUser!.firstName.split(' ')[0],
+      lastName: currentUser!.lastName.split(' ')[0],
+      profileImage: currentUser!.profilePic,
     );
-      chatOtherUser = ChatUser(
-        id: otherUser!.id.toString(), 
-        firstName: otherUser!.firstName.split(' ')[0], 
-        lastName: otherUser!.lastName.split(' ')[0],
-        profileImage: otherUser!.profilePic,
+    chatOtherUser = ChatUser(
+      id: widget.otherUser.id.toString(),
+      firstName: widget.otherUser.firstName.split(' ')[0],
+      lastName: widget.otherUser.lastName.split(' ')[0],
+      profileImage: widget.otherUser.profilePic,
     );
   }
 
@@ -96,14 +100,14 @@ class _ChatViewState extends State<ChatView> {
     return digest.toString();
   }
 
-  Future<void> loadMessages() async{
+  Future<void> loadMessages() async {
     List<Message.ChatMessage> loadedMessages = await MessageService().getMessages(roomId);
     setState(() {
       messages = loadedMessages;
     });
   }
 
-  Future<void> initApi() async{
+  Future<void> initApi() async {
     String json = await rootBundle.loadString('assets/gcloud_credentials.json');
     cloudApi = CloudApi(json);
   }
@@ -114,7 +118,7 @@ class _ChatViewState extends State<ChatView> {
       callback: (frame) {
         if (frame.body != null) {
           setState(() {
-            lastMessage = Message.ChatMessage.fromJson(jsonDecode(frame.body!));
+            Message.ChatMessage lastMessage = Message.ChatMessage.fromJson(jsonDecode(frame.body!));
             messages.add(lastMessage);
           });
         }
@@ -126,10 +130,10 @@ class _ChatViewState extends State<ChatView> {
     String message;
     String type;
 
-    if (stompClient != null && stompClient!.connected){
-      if(chatMessage.medias != null && chatMessage.medias!.isNotEmpty){
+    if (stompClient != null && stompClient!.connected) {
+      if (chatMessage.medias != null && chatMessage.medias!.isNotEmpty) {
         message = chatMessage.medias!.first.url;
-        switch(chatMessage.medias!.first.type){
+        switch (chatMessage.medias!.first.type) {
           case MediaType.image:
             type = 'media/image';
             break;
@@ -138,47 +142,35 @@ class _ChatViewState extends State<ChatView> {
             break;
           default:
             type = 'media/file';
-            // Fluttertoast.showToast(
-            //     msg: "This file type is not supported.",
-            //     toastLength: Toast.LENGTH_SHORT,
-            //     gravity: ToastGravity.BOTTOM,
-            //     timeInSecForIosWeb: 1,
-            //     backgroundColor: Colors.grey[800],
-            //     textColor: Colors.white,
-            //     fontSize: 16.0
-            // );
-            // return;
             break;
         }
-      }
-      else{
+      } else {
         message = chatMessage.text;
         type = 'text';
       }
 
       stompClient?.send(
-          destination: '/app/chat/$roomId',
-          body: '{"content":"$message","type":"$type","user":"${currentUser!.id.toString()}"}',
-        );
+        destination: '/app/chat/$roomId',
+        body: '{"content":"$message","type":"$type","user":"${currentUser!.id.toString()}"}',
+      );
     }
   }
 
-  List<ChatMessage> getMessagesList(){
+  List<ChatMessage> getMessagesList() {
     List<ChatMessage> chatMessages = messages.map((e) {
       DateTime localTime = convertToLocalTime(e.timestamp);
 
       String messageText;
       List<ChatMedia>? messageMedias;
-      
-      if(e.type == 'text'){
+
+      if (e.type == 'text') {
         messageText = e.content;
         messageMedias = null;
-      }
-      else{
+      } else {
         messageText = '';
         String fileType = e.type.split('/')[1];
         MediaType mediaType;
-        switch(fileType){
+        switch (fileType) {
           case 'image':
             mediaType = MediaType.image;
             break;
@@ -194,17 +186,18 @@ class _ChatViewState extends State<ChatView> {
 
         messageMedias = [
           ChatMedia(
-            url: e.content, 
-            fileName: mediaType == MediaType.file ? fileName : '', 
-            type: mediaType)];
+            url: e.content,
+            fileName: mediaType == MediaType.file ? fileName : '',
+            type: mediaType)
+        ];
       }
 
       return ChatMessage(
-                  text: messageText,
-                  medias: messageMedias,
-                  user: e.user == chatCurrentUser!.id ? chatCurrentUser! : chatOtherUser!,
-                  createdAt: localTime
-                  );
+        text: messageText,
+        medias: messageMedias,
+        user: e.user == chatCurrentUser?.id ? chatCurrentUser! : chatOtherUser!,
+        createdAt: localTime,
+      );
     }).toList();
 
     chatMessages.sort((a, b) => b.createdAt.compareTo(a.createdAt));
@@ -232,10 +225,10 @@ class _ChatViewState extends State<ChatView> {
         title: Row(
           children: [
             CircleAvatar(
-              backgroundImage: NetworkImage(otherUser!.profilePic),
+              backgroundImage: NetworkImage(widget.otherUser.profilePic),
             ),
             const SizedBox(width: 10),
-            Text(otherUser!.firstName),
+            Text(widget.otherUser.firstName),
           ]),
       ),
       body: FutureBuilder<void>(
@@ -261,7 +254,7 @@ class _ChatViewState extends State<ChatView> {
                       )));
                     }
                   },
-                  ),
+                ),
                 inputOptions: InputOptions(
                   alwaysShowSend: true,
                   sendOnEnter: true,
@@ -281,8 +274,8 @@ class _ChatViewState extends State<ChatView> {
                       borderSide: BorderSide(color: Colors.grey[200]!),
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    )
-                  ),
+                  )
+                ),
                 currentUser: chatCurrentUser!,
                 onSend: sendMessage,
                 messages: getMessagesList(),
@@ -296,9 +289,9 @@ class _ChatViewState extends State<ChatView> {
   Widget mediaMessageButton() {
     return IconButton(
       icon: Icon(Icons.image, color: Theme.of(context).colorScheme.primary,),
-      onPressed: () async{
+      onPressed: () async {
         File? file = await mediaService.getImageOrVideoFromGallery();
-        if(file != null){
+        if (file != null) {
           Uint8List fileBytes = await file.readAsBytes();
           fileName = mediaService.getFileName(file.path); 
           Uri fileUrl = await saveFileToGoogleCloud(fileBytes);
@@ -308,23 +301,19 @@ class _ChatViewState extends State<ChatView> {
             user: chatCurrentUser!,
             createdAt: DateTime.now(),
             medias: [ChatMedia(
-              url: fileUrl.toString(), 
-              fileName: fileName, 
+              url: fileUrl.toString(),
+              fileName: fileName,
               type: mediaType
-              )]
+            )]
           );
 
           sendMessage(chatMessage);
-          
-        }
-        else{
-          //No image selected
         }
       },
     );
   }
 
-  Future<Uri> saveFileToGoogleCloud(Uint8List fileBytes) async{
+  Future<Uri> saveFileToGoogleCloud(Uint8List fileBytes) async {
     final response = await cloudApi.save(fileName, fileBytes);
     return response.downloadLink;
   }
