@@ -62,12 +62,19 @@ class PostsdbDatasource extends PostsDataSource {
         'https://chambeape.azurewebsites.net/api/v1/posts/${post.id}');
     final postModel = PostMapper.entityToPostModel(post);
 
+    Map<String, dynamic> requestBody = {
+      'title': post.title,
+      'description': post.description,
+      'subtitle': post.subtitle,
+      'imgUrl': post.imgUrl
+    };
+
     final response = await http.put(
       uri,
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8'
       },
-      body: jsonEncode(postModel.toJson()),
+      body: jsonEncode(requestBody),
     );
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
