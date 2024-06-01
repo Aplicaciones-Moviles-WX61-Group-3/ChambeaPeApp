@@ -44,7 +44,7 @@ class UserWorksService {
       Uri.parse('$uri/$userId/addImageUrl'),
     );
 
-    String? mimeType = lookupMimeType(imageFile.path); // Obtener el tipo MIME
+    String? mimeType = lookupMimeType(imageFile.path);
     if (mimeType == null) {
       throw Exception('Could not determine MIME type');
     }
@@ -56,7 +56,7 @@ class UserWorksService {
 
     request.files.add(
       await http.MultipartFile.fromPath(
-        'file', // Este debe ser el mismo nombre que espera Multer
+        'file',
         imageFile.path,
         contentType: http_parser.MediaType(mimeTypeParts[0], mimeTypeParts[1]),
       ),

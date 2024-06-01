@@ -25,25 +25,16 @@ class MyWorksDefault extends StatefulWidget {
 
 class _MyWorksDefaultState extends State<MyWorksDefault> {
   Future<void> _createUserIfNotExists() async {
-    // print('Creating user if not exists');
-    // print('User ID: ${widget.userId}');
     await UserWorksService().createUserIfNotExists(widget.userId);
   }
 
   Future<UsersWorkImg> _loadUserImages() async {
-    // print('Loading user images');
-    // print('User ID: ${widget.userId}');
     var userImages = await UserWorksService().getImageUrlsByUserId(widget.userId);
     return userImages;
   }
-  // MediaService().getImageFromGallery();
-
   Future<void> _uploadUserImage(int userId, File? image) async {
     if (image != null) {
       await UserWorksService().uploadUserImage(userId, image);
-      print('Image uploaded');
-      print('User ID: $userId');
-      print('Image: $image');
     }
   }
   
