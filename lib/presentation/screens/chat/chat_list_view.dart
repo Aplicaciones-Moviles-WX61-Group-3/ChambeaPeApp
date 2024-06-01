@@ -160,7 +160,7 @@ class _LastMessageState extends State<LastMessage> {
                 overflow: TextOverflow.ellipsis,
                 style: textStyle,
               );
-            case 'image':
+            case 'media/image':
               return Row(children: [
               Icon(
                 Icons.image,

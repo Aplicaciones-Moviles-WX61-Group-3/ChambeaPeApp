@@ -37,7 +37,6 @@ class _ChatViewState extends State<ChatView> {
   late ChatUser? chatCurrentUser, chatOtherUser;
   late Future<void> loadChatFuture;
   MediaService mediaService = MediaService();
-  late CloudApi cloudApiInstance;
   late String fileName;
 
   @override
@@ -63,7 +62,6 @@ class _ChatViewState extends State<ChatView> {
     stompClient?.activate();
     await loadMessages();
     await loadChatUsers();
-    cloudApiInstance = await CloudApi.getInstance();
   }
 
   Future<Users?> getCurrentUser() async {
@@ -105,11 +103,6 @@ class _ChatViewState extends State<ChatView> {
       messages = loadedMessages;
     });
   }
-
-  // Future<void> initApi() async {
-  //   String json = await rootBundle.loadString('assets/gcloud_credentials.json');
-  //   cloudApi = CloudApi(json);
-  // }
 
   void onConnect(StompFrame frame) {
     stompClient?.subscribe(
@@ -291,10 +284,9 @@ class _ChatViewState extends State<ChatView> {
       onPressed: () async {
         File? file = await mediaService.getImageOrVideoFromGallery();
         if (file != null) {
-          Uint8List fileBytes = await file.readAsBytes();
-          fileName = mediaService.getFileName(file.path); 
-          Uri fileUrl = await saveFileToGoogleCloud(fileBytes);
-          MediaType mediaType = mediaService.getMessageMediaType(fileName);
+          fileName = mediaService.getFileName(file.path);
+          MediaType mediaType = mediaService.getChatMessageMediaType(fileName);
+          Uri fileUrl = await mediaService.saveFileToGoogleCloud(file); 
 
           ChatMessage chatMessage = ChatMessage(
             user: chatCurrentUser!,
@@ -310,10 +302,5 @@ class _ChatViewState extends State<ChatView> {
         }
       },
     );
-  }
-
-  Future<Uri> saveFileToGoogleCloud(Uint8List fileBytes) async {
-    final response = await cloudApiInstance.save(fileName, fileBytes);
-    return response.downloadLink;
   }
 }
