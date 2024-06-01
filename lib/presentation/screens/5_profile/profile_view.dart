@@ -1,14 +1,27 @@
 import 'package:chambeape/config/utils/login_user_data.dart';
-import 'package:chambeape/infrastructure/models/login/login_response.dart';
+import 'package:chambeape/infrastructure/models/users.dart';
+import 'package:chambeape/services/users/user_service.dart';
 import 'package:flutter/material.dart';
 
 class ProfileView extends StatelessWidget {
-  const ProfileView({super.key});
+  
+  final int userId;
+
+  const ProfileView({
+    super.key,
+    this.userId = 0,
+  });
 
   static const String routeName = 'profile_view';
 
-  Future<LoginResponse> _loadUser() async {
-    return await LoginData().loadSession();
+  Future<Users> _loadUserById() async {
+    if (userId != 0) {
+      return await UserService().getUserById(userId);
+    } else {
+      var session = await LoginData().loadSession();
+      var userId = session.id;
+      return await UserService().getUserById(userId);
+    }
   }
 
   @override
@@ -19,8 +32,8 @@ class ProfileView extends StatelessWidget {
     return Scaffold(
       body: Container(
         margin: const EdgeInsets.symmetric(vertical: 20),
-        child: FutureBuilder<LoginResponse>(
-          future: _loadUser(),
+        child: FutureBuilder<Users>(
+          future: _loadUserById(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -86,7 +99,7 @@ class _Description extends StatelessWidget {
     required this.text,
   });
 
-  final LoginResponse user;
+  final Users user;
 
   @override
   Widget build(BuildContext context) {

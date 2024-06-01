@@ -1,31 +1,30 @@
 import 'package:chambeape/config/menu/menu_items.dart';
+import 'package:chambeape/infrastructure/models/users.dart';
+import 'package:chambeape/presentation/providers/navigation_provider.dart';
 import 'package:chambeape/presentation/screens/screens.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CustomNavbar extends StatefulWidget {
+class CustomNavbar extends ConsumerWidget {
 
   static const routeName = 'custom_navbar';
 
   const CustomNavbar({super.key});
 
   @override
-  State<CustomNavbar> createState() => _CustomNavbarState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectedIndex = ref.watch(navigationProvider);
+    final navigationNotifier = ref.read(navigationProvider.notifier);
+    final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-class _CustomNavbarState extends State<CustomNavbar> {
+    final screens = [
+      const HomeView(),
+      const PostView(),
+      const ChatListView(),
+      const WorkersView(),
+      const ProfileView()
+    ];
 
-  int selectedIndex = 0;
-
-  final screens = [
-    const HomeView(),
-    const PostView(),
-    const ChatListView(),
-    const WorkersView(),
-    const ProfileView()
-  ];
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.amber.shade700,
@@ -36,21 +35,31 @@ class _CustomNavbarState extends State<CustomNavbar> {
           child: Image.asset('assets/images/logo_white.png'),
         ),
       ),
-      body: screens[selectedIndex],
+      body: Navigator(
+        key: navigatorKey,
+        onGenerateRoute: (settings) {
+          Widget page = screens[selectedIndex];
+          if (settings.name == ProfileView.routeName) {
+            page = const ProfileView();
+          } else if (settings.name == ChatView.routeName) {
+            final chatUser = settings.arguments as Users;
+            page = ChatView(otherUser: chatUser);
+          }
+          return MaterialPageRoute(builder: (_) => page);
+        },
+      ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.shifting,
         currentIndex: selectedIndex,
         onTap: (index) {
-          setState(() {
-            selectedIndex = index;
-          });
+          navigationNotifier.setIndex(index);
         },
         items: appMenuItems.map((item) => BottomNavigationBarItem(
           icon: Icon(item.iconDeactivated),
           activeIcon: Icon(item.iconActive),
           label: item.title
         )).toList(),
-      )
+      ),
     );
   }
 }
