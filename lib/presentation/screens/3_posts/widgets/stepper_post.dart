@@ -4,6 +4,7 @@ import 'package:chambeape/presentation/providers/posts/steps/step_provider.dart'
 import 'package:chambeape/presentation/screens/3_posts/widgets/step_barrel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:chambeape/services/media/MediaService.dart';
 
 class StepperPost extends ConsumerStatefulWidget {
   final Post? post;
@@ -36,7 +37,7 @@ class _StepperPostState extends ConsumerState<StepperPost> {
         stepperPostProv.setLocation('');
         stepperPostProv.setNotification(false);
         stepperPostProv.setPremium(false);
-        stepperPostProv.setHasImageSelected(true);
+        stepperPostProv.setHasImageSelected(false);
       });
     } else {
       Future.microtask(() {
@@ -198,13 +199,14 @@ class _StepperPostState extends ConsumerState<StepperPost> {
                       print(data['image'] );
                       print(postImageUri); // Para el update de la imagen
 
-                      //  TODO Guardar el post
+                      Uri imageUri = await MediaService().saveFileToGoogleCloud(stepperPostState.selectedImage!);
+
                       Post dataPost = Post(
                         id: postId,
                         title: data['title'],
                         description: data['description'],
                         subtitle: data['category'],
-                        imgUrl: 'Metes la url de la imagen aquí',
+                        imgUrl: imageUri.toString(),
                       );
 
                       print('id: ${dataPost.id}');
@@ -213,11 +215,13 @@ class _StepperPostState extends ConsumerState<StepperPost> {
                       print('subtitle: ${dataPost.subtitle}');
                       print('imgUrl: ${dataPost.imgUrl}');
 
-                      // if (hasPost) {
-                      //   await ref.read(postsProvider.notifier).updatePost(dataPost);
-                      // } else{
-                      //   await ref.read(postsProvider.notifier).createPost(dataPost);
-                      // }
+                      if (hasPost) {
+                        await ref.read(postsProvider.notifier).updatePost(dataPost);
+                      } else{
+                        await ref.read(postsProvider.notifier).createPost(dataPost);
+                      }
+
+                      Navigator.of(context).pop();
                     },
                     child: const Text('Guardar'),
                   ),

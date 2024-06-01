@@ -2,9 +2,9 @@ import 'dart:io';
 import 'package:chambeape/config/utils/dropdown_items.dart';
 import 'package:chambeape/presentation/providers/posts/steps/step_provider.dart';
 import 'package:chambeape/presentation/screens/3_posts/widgets/stepper_post.dart';
+import 'package:chambeape/services/media/MediaService.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 
 class DetailsStep extends ConsumerStatefulWidget {
   final bool hasPost;
@@ -23,15 +23,7 @@ class DetailsStep extends ConsumerStatefulWidget {
 class _DetailsStepWidgetState extends ConsumerState<DetailsStep> {
   File? selectedImage;
   String? dropdownValue;
-
-  Future<File?> getImage() async {
-    final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (pickedImage != null) {
-      return File(pickedImage.path);
-    } else {
-      return null;
-    }
-  }
+  MediaService mediaService = MediaService();
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +103,7 @@ class _DetailsStepWidgetState extends ConsumerState<DetailsStep> {
             _ImagePickerWidget(
               selectedImage: selectedImage,
               onTap: () async {
-                final image = await getImage();
+                final image = await mediaService.getImageFromGallery();
                 if (image != null) {
                   stepperPost.setImage(image);
                   stepperPost.setHasImageSelected(true);
