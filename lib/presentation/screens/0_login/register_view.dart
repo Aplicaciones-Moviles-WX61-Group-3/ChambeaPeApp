@@ -147,11 +147,12 @@ class _RegisterViewState extends State<RegisterView> {
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
-                      controller: emailController,
-                      decoration: const InputDecoration(
-                        labelText: 'Correo',
-                      ),
-                      validator: (value) => emailValidator(value)),
+                    controller: emailController,
+                    decoration: const InputDecoration(
+                      labelText: 'Correo',
+                    ),
+                    validator: (value) => emailValidator(value),
+                  ),
                   const SizedBox(height: 10),
                   TextFormField(
                     controller: passwordController,
@@ -183,8 +184,9 @@ class _RegisterViewState extends State<RegisterView> {
                     validator: (value) => customValidator(value, 'descripción'),
                   ),
                   FilledButton(
-                    onPressed: () async{
-                      Uri profilePicUri = await MediaService().saveFileToGoogleCloud(selectedImage!);
+                    onPressed: () async {
+                      Uri profilePicUri = await MediaService()
+                          .saveFileToGoogleCloud(selectedImage!);
                       DateTime birthDate =
                           DateTime.parse(birthDateController.text);
                       print(birthDate);
@@ -196,8 +198,7 @@ class _RegisterViewState extends State<RegisterView> {
                           phoneNumber: phoneController.text,
                           birthdate: birthDate,
                           gender: selectedGender.toString().split('.').last,
-                          profilePic:
-                              profilePicUri.toString(),
+                          profilePic: profilePicUri.toString(),
                           description: descriptionController.text,
                           userRole: selectedUserRole.toString().split('.').last,
                           dni: dniController.text,
