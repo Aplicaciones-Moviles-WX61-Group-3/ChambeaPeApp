@@ -1,6 +1,7 @@
 import 'package:chambeape/config/routes/app_routes.dart';
 import 'package:chambeape/presentation/screens/0_login/register_view.dart';
 import 'package:chambeape/presentation/shared/custom_navbar.dart';
+import 'package:chambeape/presentation/shared/utils/custom_validators.dart';
 import 'package:chambeape/services/login/login_service.dart';
 import 'package:flutter/material.dart';
 
@@ -16,6 +17,8 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  bool obscureText = true;
 
   @override
   Widget build(BuildContext context) {
@@ -24,65 +27,83 @@ class _LoginViewState extends State<LoginView> {
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                // Agregar el logo de la aplicación
-                Image.asset(
-                  Theme.of(context).brightness == Brightness.dark
-                      ? 'assets/images/logo_white_letters.png'
-                      : 'assets/images/logo.png',
-                  width: 200,
-                  height: 200,
-                ),
-                TextField(
-                  controller: emailController,
-                  decoration: const InputDecoration(
-                    labelText: 'Ingresa tu correo',
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  // Agregar el logo de la aplicación
+                  Image.asset(
+                    Theme.of(context).brightness == Brightness.dark
+                        ? 'assets/images/logo_white_letters.png'
+                        : 'assets/images/logo.png',
+                    width: 200,
+                    height: 200,
                   ),
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: passwordController,
-                  decoration: const InputDecoration(
-                    labelText: 'Ingresa tu contraseña',
+                  TextFormField(
+                    controller: emailController,
+                    decoration: const InputDecoration(
+                      labelText: 'Ingresa tu correo',
+                    ),
+                    validator: (value) => emailValidator(value),
                   ),
-                  obscureText: true,
-                ),
-                const SizedBox(height: 10),
-                LoginButton(
-                  text: 'Iniciar sesión',
-                  onPressed: () async {
-                    try {
-                      await login(
-                          emailController.text, passwordController.text);
-                      appRouterNotLogged.replaceNamed(CustomNavbar.routeName);
-                    } catch (e) {
-                      // TODO Implementar la funcionalidad de mostrar un mensaje de error aquí
-                    }
-                  },
-                ),
-                const SizedBox(height: 10),
-                LoginButton(
-                  text: 'Registrarse',
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const RegisterView(),
-                        ));
-                  },
-                ),
-                TextButton(
-                  onPressed: () {
-                    // TODO Implementar la funcionalidad de recuperación de contraseña aquí
-                  },
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.amber.shade700,
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    controller: passwordController,
+                    decoration: InputDecoration(
+                        labelText: 'Ingresa tu contraseña',
+                        suffixIcon: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                obscureText = !obscureText;
+                              });
+                            },
+                            icon: Icon(
+                              obscureText
+                                  ? Icons.visibility_outlined
+                                  : Icons.visibility_off_outlined,
+                            ))),
+                    obscureText: obscureText,
+                    validator: (value) => customValidator(value, 'contraseña'),
                   ),
-                  child: const Text('¿Olvidaste tu contraseña?'),
-                )
-              ],
+                  const SizedBox(height: 10),
+                  LoginButton(
+                    text: 'Iniciar sesión',
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        try {
+                          await login(
+                              emailController.text, passwordController.text);
+                          appRouterNotLogged
+                              .replaceNamed(CustomNavbar.routeName);
+                        } catch (e) {
+                          // TODO Implementar la funcionalidad de mostrar un mensaje de error aquí
+                        }
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  LoginButton(
+                    text: 'Registrarse',
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const RegisterView(),
+                          ));
+                    },
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      // TODO Implementar la funcionalidad de recuperación de contraseña aquí
+                    },
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.amber.shade700,
+                    ),
+                    child: const Text('¿Olvidaste tu contraseña?'),
+                  )
+                ],
+              ),
             ),
           ),
         ),
