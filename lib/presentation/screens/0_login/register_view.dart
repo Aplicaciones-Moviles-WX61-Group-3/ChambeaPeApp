@@ -47,10 +47,12 @@ class _RegisterViewState extends State<RegisterView> {
       initialDate: DateTime.now(),
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
+      locale: const Locale('es', 'ES'),
     );
 
     if (pickedDate != null) {
-      birthDateController.text = pickedDate.toString().split(" ")[0];
+      birthDateController.text =
+          '${pickedDate.day.toString().padLeft(2, '0')}/${pickedDate.month.toString().padLeft(2, '0')}/${pickedDate.year.toString()}';
     }
   }
 
@@ -185,12 +187,17 @@ class _RegisterViewState extends State<RegisterView> {
                   ),
                   FilledButton(
                     onPressed: () async {
-                      Uri profilePicUri = await MediaService()
-                          .saveFileToGoogleCloud(selectedImage!);
-                      DateTime birthDate =
-                          DateTime.parse(birthDateController.text);
-                      print(birthDate);
-                      if (_formKey.currentState!.validate()) {
+                      if (_formKey.currentState!.validate() &&
+                          selectedImage != null) {
+                        Uri profilePicUri = await MediaService()
+                            .saveFileToGoogleCloud(selectedImage!);
+                        List<String> dateParts =
+                            birthDateController.text.split('/');
+                        int day = int.parse(dateParts[0]);
+                        int month = int.parse(dateParts[1]);
+                        int year = int.parse(dateParts[2]);
+
+                        DateTime birthDate = DateTime(year, month, day);
                         Users newUser = Users(
                           firstName: nameController.text,
                           lastName: lastNameController.text,
@@ -214,7 +221,6 @@ class _RegisterViewState extends State<RegisterView> {
                             Navigator.pop(context);
                           },
                         ).catchError((error) {
-                          print(newUser.toJson());
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
@@ -222,6 +228,12 @@ class _RegisterViewState extends State<RegisterView> {
                             ),
                           );
                         });
+                      } else if (selectedImage == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Por favor selecciona una imagen'),
+                          ),
+                        );
                       }
                     },
                     child: const Text('Registrar'),

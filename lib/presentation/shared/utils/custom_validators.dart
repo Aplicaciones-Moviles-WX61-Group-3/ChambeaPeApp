@@ -32,14 +32,28 @@ String? dniValidator(String? value) {
 }
 
 String? birthDateValidator(String? value) {
+  print(value);
   if (value == null || value.isEmpty || value.trim().isEmpty) {
     return 'Por favor ingresa tu fecha de nacimiento';
   }
   final birthDateRegExp = RegExp(
-    r'^\d{4}-\d{2}-\d{2}$',
+    r'^\d{2}/\d{2}/\d{4}$',
   );
-  if (!birthDateRegExp.hasMatch(value)) {
+  List<String> dateParts = value.split('/');
+  if (dateParts.length != 3 || !birthDateRegExp.hasMatch(value)) {
     return 'Por favor ingresa una fecha de nacimiento válida';
   }
+
+  int day = int.parse(dateParts[0]);
+  int month = int.parse(dateParts[1]);
+  int year = int.parse(dateParts[2]);
+
+  DateTime birthDate = DateTime(year, month, day);
+  DateTime eighteenYearsAgo = DateTime.now().subtract(Duration(days: 18 * 365));
+
+  if (birthDate.isAfter(eighteenYearsAgo)) {
+    return 'Debes ser mayor de edad';
+  }
+
   return null;
 }
