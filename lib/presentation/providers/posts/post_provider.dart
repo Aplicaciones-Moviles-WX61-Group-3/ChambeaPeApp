@@ -18,7 +18,6 @@ typedef CreatePostCallback = Future<Post> Function(Post post);
 typedef UpdatePostCallback = Future<Post> Function(Post post);
 typedef DeletePostCallback = Future<void> Function(String id);
 
-
 class PostsNotifier extends StateNotifier<List<Post>> {
   bool isLoading = false;
   bool _isDeleting = false;
@@ -66,6 +65,7 @@ class PostsNotifier extends StateNotifier<List<Post>> {
   }
 
   Future<void> deletePost(String id) async {
+    //TODO: Fix delete post - Loaders por cada post
     if (_isDeleting) return;
 
     _isDeleting = true;
