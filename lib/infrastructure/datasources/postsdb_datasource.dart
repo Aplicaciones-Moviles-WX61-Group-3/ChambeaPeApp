@@ -29,6 +29,26 @@ class PostsdbDatasource extends PostsDataSource {
   }
 
   @override
+  Future<List<Post>> getPostsByEmployerId(int employerId) async {
+    final Uri uri = Uri.parse('${UriEnvironment.baseUrl}/employers/$employerId/posts');
+
+    final response = await http.get(uri);
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      final List<dynamic> postsResponse =
+          json.decode(utf8.decode(response.bodyBytes));
+      final List<Post> posts = postsResponse
+          .map((item) => PostMapper.postModelToEntity(PostModel.fromJson(item)))
+          .toList();
+      print('SUCCESS:' + posts.toString());
+      return posts;
+    } else {
+      // Handle errors as needed
+      throw Exception('Error fetching posts: ${response.statusCode}, Response: ${response.body}');
+    }
+  }
+
+  @override
   Future<Post> createPost(Post post) async {
     final Uri uri = await UriEnvironment.getPostUri();
     final PostModel postModel = PostMapper.entityToPostModel(post);

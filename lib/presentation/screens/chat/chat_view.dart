@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:chambeape/config/utils/login_user_data.dart';
 import 'package:chambeape/infrastructure/models/chat_message.dart' as Message;
 import 'package:chambeape/infrastructure/models/login/login_response.dart';
+import 'package:chambeape/presentation/screens/chat/negotiation_dialog_view.dart';
 import 'package:chambeape/services/chat/message_service.dart';
 import 'package:chambeape/services/media/MediaService.dart';
 import 'package:chambeape/services/users/user_service.dart';
@@ -47,7 +48,6 @@ class _ChatViewState extends State<ChatView> {
     if (currentUser == null) {
       throw Exception("Current user not found.");
     }
-    print(widget.otherUser.id.toString());
     roomId = generateChatRoomId(
         currentUser!.id.toString(), widget.otherUser.id.toString());
     stompClient = StompClient(
@@ -222,6 +222,20 @@ class _ChatViewState extends State<ChatView> {
           const SizedBox(width: 10),
           Text(widget.otherUser.firstName),
         ]),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.monetization_on_sharp, color: Colors.amber.shade700,),
+            iconSize: 30,
+            onPressed: () {
+              showDialog(
+                context: context, 
+                builder: (BuildContext context) {
+                  return NegotiationDialogView(currentUser: currentUser!, otherUser: widget.otherUser,);
+                }
+                );
+            },
+          ),
+        ],
       ),
       body: FutureBuilder<void>(
         future: loadChatFuture,
