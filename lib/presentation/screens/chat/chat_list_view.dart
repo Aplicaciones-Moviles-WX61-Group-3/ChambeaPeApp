@@ -210,7 +210,6 @@ class _LastMessageState extends State<LastMessage> {
         lastMessage = _lastMessage[0];
         lastMsgsTime[otherUserIndex] = formattedTime;
       });
-      // Activar el cliente Stomp después de que chatroomId haya sido inicializado
       stompClient = StompClient(
         config: StompConfig.sockJS(
           url: 'https://chambeape-chat.azurewebsites.net/websocket',
