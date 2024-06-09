@@ -53,15 +53,17 @@ class PostsNotifier extends StateNotifier<List<Post>> {
     state = [...state, newPost];
     isLoading = false;
   }
-
+  
   Future<void> updatePost(Post post) async {
     if (isLoading) return;
 
     isLoading = true;
-    final updatedPost = await updatePostCallback(post);
-    state = [...state];
-    isLoading = false;
-    //TODO: Fix update post
+    try {
+      final updatedPost = await updatePostCallback(post);
+      state = state.map((p) => p.id == updatedPost.id ? updatedPost : p).toList();
+    } finally {
+      isLoading = false;
+    }
   }
 
   Future<void> deletePost(String id) async {

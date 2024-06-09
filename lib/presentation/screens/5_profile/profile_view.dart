@@ -3,6 +3,7 @@ import 'package:chambeape/infrastructure/models/users.dart';
 import 'package:chambeape/presentation/screens/5_profile/widgets/profile_connect_button.dart';
 import 'package:chambeape/presentation/screens/5_profile/widgets/profile_description.dart';
 import 'package:chambeape/presentation/screens/5_profile/widgets/profile_my_works.dart';
+import 'package:chambeape/presentation/screens/screens.dart';
 import 'package:chambeape/services/users/user_service.dart';
 import 'package:flutter/material.dart';
 
@@ -76,7 +77,7 @@ class _ProfileViewState extends State<ProfileView> {
           if (isCurrentUser)
             IconButton(
               onPressed: () {
-                // TODO Implementar la funcionalidad de editar perfil aquí
+                Navigator.pushNamed(context, OptionsView.routeName);
               },
               icon: const Icon(Icons.settings_outlined, size: 30),
             ),

@@ -31,7 +31,11 @@ class MyApp extends ConsumerWidget {
       title: 'ChambeaPe',
       theme: appTheme.getTheme(),
       routerConfig: hasSession ? appRouterLogged : appRouterNotLogged,
-      localizationsDelegates: const [GlobalMaterialLocalizations.delegate],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       supportedLocales: const [Locale('es', 'ES')],
     );
   }

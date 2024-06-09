@@ -24,13 +24,15 @@ class PostsdbDatasource extends PostsDataSource {
       return posts;
     } else {
       // Handle errors as needed
-      throw Exception('Error fetching posts: ${response.statusCode}, Response: ${response.body}');
+      throw Exception(
+          'Error fetching posts: ${response.statusCode}, Response: ${response.body}');
     }
   }
 
   @override
   Future<List<Post>> getPostsByEmployerId(int employerId) async {
-    final Uri uri = Uri.parse('${UriEnvironment.baseUrl}/employers/$employerId/posts');
+    final Uri uri =
+        Uri.parse('${UriEnvironment.baseUrl}/employers/$employerId/posts');
 
     final response = await http.get(uri);
 
@@ -44,7 +46,8 @@ class PostsdbDatasource extends PostsDataSource {
       return posts;
     } else {
       // Handle errors as needed
-      throw Exception('Error fetching posts: ${response.statusCode}, Response: ${response.body}');
+      throw Exception(
+          'Error fetching posts: ${response.statusCode}, Response: ${response.body}');
     }
   }
 
@@ -72,7 +75,8 @@ class PostsdbDatasource extends PostsDataSource {
       return PostMapper.postModelToEntity(
           PostModel.fromJson(json.decode(response.body)));
     } else {
-      throw Exception('Failed to create post: ${response.statusCode}, Response: ${response.body}');
+      throw Exception(
+          'Failed to create post: ${response.statusCode}, Response: ${response.body}');
     }
   }
 
@@ -83,10 +87,10 @@ class PostsdbDatasource extends PostsDataSource {
     final postModel = PostMapper.entityToPostModel(post);
 
     Map<String, dynamic> requestBody = {
-      'title': post.title,
-      'description': post.description,
-      'subtitle': post.subtitle,
-      'imgUrl': post.imgUrl
+      'title': postModel.title,
+      'description': postModel.description,
+      'subtitle': postModel.subtitle,
+      'imgUrl': postModel.imgUrl
     };
 
     final response = await http.put(
@@ -98,10 +102,15 @@ class PostsdbDatasource extends PostsDataSource {
     );
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      final updatedPost = PostModel.fromJson(json.decode(response.body));
-      return PostMapper.postModelToEntity(updatedPost);
+      if (response.body.isNotEmpty) {
+        var responseJson = json.decode(response.body);
+        return PostMapper.postModelToEntity(PostModel.fromJson(responseJson));
+      } else {
+        return post;
+      }
     } else {
-      throw Exception('Failed to update post: ${response.statusCode}, Response: ${response.body}');
+      throw Exception(
+          'Failed to update post: ${response.statusCode}, Response: ${response.body}');
     }
   }
 
@@ -120,7 +129,8 @@ class PostsdbDatasource extends PostsDataSource {
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return;
     } else {
-      throw Exception('Failed to delete post: ${response.statusCode}, Response: ${response.body}');
+      throw Exception(
+          'Failed to delete post: ${response.statusCode}, Response: ${response.body}');
     }
   }
 }

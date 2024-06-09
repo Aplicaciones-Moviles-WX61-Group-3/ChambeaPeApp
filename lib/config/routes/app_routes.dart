@@ -52,5 +52,10 @@ final routes = <GoRoute>[
       path: '/chat',
       name: ChatListView.routeName,
       builder: (context, state) => const ChatListView(),
-    )
+    ),
+    GoRoute(
+      path: '/options',
+      name: OptionsView.routeName,
+      builder: (context, state) => const OptionsView(),
+    ),
   ];

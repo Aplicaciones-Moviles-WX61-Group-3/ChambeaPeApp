@@ -32,4 +32,11 @@ class SessionService {
     }
     return false;
   }
+
+  Future<void> logout() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('token');
+    prefs.remove('user');
+    prefs.remove('expiryDate');
+  }
 }
