@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CustomNavbar extends ConsumerWidget {
-
   static const routeName = 'custom_navbar';
 
   const CustomNavbar({super.key});
@@ -21,7 +20,7 @@ class CustomNavbar extends ConsumerWidget {
       const HomeView(),
       const PostView(),
       const ChatListView(),
-      const WorkersView(),
+      const DealsView(),
       const ProfileView()
     ];
 
@@ -56,11 +55,12 @@ class CustomNavbar extends ConsumerWidget {
         onTap: (index) {
           navigationNotifier.setIndex(index);
         },
-        items: appMenuItems.map((item) => BottomNavigationBarItem(
-          icon: Icon(item.iconDeactivated),
-          activeIcon: Icon(item.iconActive),
-          label: item.title
-        )).toList(),
+        items: appMenuItems
+            .map((item) => BottomNavigationBarItem(
+                icon: Icon(item.iconDeactivated),
+                activeIcon: Icon(item.iconActive),
+                label: item.title))
+            .toList(),
       ),
     );
   }

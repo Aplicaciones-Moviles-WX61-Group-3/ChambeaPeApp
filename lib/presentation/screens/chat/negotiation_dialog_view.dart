@@ -11,7 +11,8 @@ import 'package:intl/intl.dart';
 
 class NegotiationDialogView extends StatefulWidget {
   final Users? currentUser, otherUser;
-  const NegotiationDialogView({super.key, required this.currentUser, required this.otherUser});
+  const NegotiationDialogView(
+      {super.key, required this.currentUser, required this.otherUser});
 
   @override
   State<NegotiationDialogView> createState() => _NegotiationDialogViewState();
@@ -31,9 +32,9 @@ class _NegotiationDialogViewState extends State<NegotiationDialogView> {
   late List<Post> posts;
   late int employerId, workerId;
   bool negotiationExists = false;
-  
+
   Future<void> _loadNegotiationDetails() async {
-    if(widget.currentUser!.userRole == 'W'){
+    if (widget.currentUser!.userRole == 'W') {
       employerId = widget.otherUser!.id ?? 0;
       workerId = widget.currentUser!.id ?? 0;
     } else {
@@ -41,46 +42,47 @@ class _NegotiationDialogViewState extends State<NegotiationDialogView> {
       workerId = widget.otherUser!.id ?? 0;
     }
     print('Employer ID: $employerId, Worker ID: $workerId');
-    negotiation = await NegotiationService().getNegotiationByWorkerIdAndEmployerId(
-    workerId, employerId);
+    negotiation = await NegotiationService()
+        .getNegotiationByWorkerIdAndEmployerId(workerId, employerId);
     posts = await PostsdbDatasource().getPostsByEmployerId(employerId);
-    if(negotiation.id != 0){
-      startDateController.text = DateFormat('dd/MM/yyyy').format(negotiation.startDay);
-      endDateController.text = DateFormat('dd/MM/yyyy').format(negotiation.endDay);
+    if (negotiation.id != 0) {
+      startDateController.text =
+          DateFormat('dd/MM/yyyy').format(negotiation.startDay);
+      endDateController.text =
+          DateFormat('dd/MM/yyyy').format(negotiation.endDay);
       remunerationController.text = negotiation.salary.toString();
-      postDropdownValue = posts.firstWhere((element) => element.id == negotiation.postId).title;
+      postDropdownValue =
+          posts.firstWhere((element) => element.id == negotiation.postId).title;
       negotiationExists = true;
-    }
-    else{
+    } else {
       postDropdownValue = posts[0].title;
       negotiationExists = false;
     }
-    print('Negotiation: ${negotiation.id}'); 
-    
+    print('Negotiation: ${negotiation.id}');
   }
 
-  Negotiation _parseNegotiation(){
-    List<String> startDateParts =
-                            startDateController.text.split('/');
-                        int startDay = int.parse(startDateParts[0]);
-                        int startMonth = int.parse(startDateParts[1]);
-                        int startYear = int.parse(startDateParts[2]);
+  Negotiation _parseNegotiation() {
+    List<String> startDateParts = startDateController.text.split('/');
+    int startDay = int.parse(startDateParts[0]);
+    int startMonth = int.parse(startDateParts[1]);
+    int startYear = int.parse(startDateParts[2]);
 
-    List<String> endDateParts =
-                          endDateController.text.split('/');
-                      int endDay = int.parse(endDateParts[0]);
-                      int endMonth = int.parse(endDateParts[1]);
-                      int endYear = int.parse(endDateParts[2]);
+    List<String> endDateParts = endDateController.text.split('/');
+    int endDay = int.parse(endDateParts[0]);
+    int endMonth = int.parse(endDateParts[1]);
+    int endYear = int.parse(endDateParts[2]);
 
     return Negotiation(
-      id: negotiationExists ? negotiation.id : 0,
-      workerId: workerId,
-      employerId: employerId,
-      startDay: DateTime(startYear, startMonth, startDay),
-      endDay: DateTime(endYear, endMonth, endDay),
-      salary: double.parse(remunerationController.text),
-      postId: posts.firstWhere((element) => element.title == postDropdownValue).id ?? 0
-    );
+        id: negotiationExists ? negotiation.id : 0,
+        workerId: workerId,
+        employerId: employerId,
+        startDay: DateTime(startYear, startMonth, startDay),
+        endDay: DateTime(endYear, endMonth, endDay),
+        salary: double.parse(remunerationController.text),
+        postId: posts
+                .firstWhere((element) => element.title == postDropdownValue)
+                .id ??
+            0);
   }
 
   bool _createNegotiation() {
@@ -101,20 +103,21 @@ class _NegotiationDialogViewState extends State<NegotiationDialogView> {
     return false;
   }
 
-  Future<void> _selectDate(TextEditingController dateController, {required DateType dateType}) async {
+  Future<void> _selectDate(TextEditingController dateController,
+      {required DateType dateType}) async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
-      lastDate: dateType == DateType.start ? 
-        DateTime.now().add(Duration(days: _maxNegotiationStartDaysAhead)) : 
-        DateTime.now().add(Duration(days: _maxNegotiationEndDaysAhead)),
+      lastDate: dateType == DateType.start
+          ? DateTime.now().add(Duration(days: _maxNegotiationStartDaysAhead))
+          : DateTime.now().add(Duration(days: _maxNegotiationEndDaysAhead)),
       locale: const Locale('es', 'ES'),
     );
 
     if (pickedDate != null) {
       dateController.text =
-        '${pickedDate.day.toString().padLeft(2, '0')}/${pickedDate.month.toString().padLeft(2, '0')}/${pickedDate.year.toString()}';
+          '${pickedDate.day.toString().padLeft(2, '0')}/${pickedDate.month.toString().padLeft(2, '0')}/${pickedDate.year.toString()}';
     }
   }
 
@@ -141,114 +144,119 @@ class _NegotiationDialogViewState extends State<NegotiationDialogView> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Enviar negociación'),
-      content: FutureBuilder<void>(
-        future: _loadNegotiationDetails(),
-        builder: (context, snapshot){
-          if(snapshot.connectionState == ConnectionState.waiting){
-            return const Center(child: CircularProgressIndicator());
-          }
-          else if (snapshot.hasError) {
-            print(snapshot.error.toString());
-            return const Center(child: Text('Error al cargar la información'));
-          }
-          else {
-            return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            negotiation.id == 0 ? const Text('Crea una nueva negociación') : const Text('Ajusta la negociación existente'),
-            const SizedBox(height: 15),
-            Form(
-              key: _formKey,
-              child: Column(
+        title: const Text('Enviar negociación'),
+        content: FutureBuilder<void>(
+          future: _loadNegotiationDetails(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              print(snapshot.error.toString());
+              return const Center(
+                  child: Text('Error al cargar la información'));
+            } else {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  DropdownButtonFormField<String>(
-                    isExpanded: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Publicación',
+                  negotiation.id == 0
+                      ? const Text('Crea una nueva negociación')
+                      : const Text('Ajusta la negociación existente'),
+                  const SizedBox(height: 15),
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        DropdownButtonFormField<String>(
+                          isExpanded: true,
+                          decoration: const InputDecoration(
+                            labelText: 'Publicación',
+                          ),
+                          value: postDropdownValue,
+                          items:
+                              posts.map<DropdownMenuItem<String>>((Post value) {
+                            return DropdownMenuItem<String>(
+                              value: value.title,
+                              child: Text(value.title),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            postDropdownValue = newValue;
+                          },
+                          validator: (String? value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Por favor, seleccione una publicación';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          controller: startDateController,
+                          decoration: const InputDecoration(
+                            labelText: 'Fecha de inicio',
+                            prefixIcon: Icon(Icons.calendar_today_outlined),
+                          ),
+                          onTap: () {
+                            _selectDate(startDateController,
+                                dateType: DateType.start);
+                          },
+                          validator: (value) => negotiationDateValidator(
+                              value, _maxNegotiationStartDaysAhead,
+                              dateType: DateType.start),
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          controller: endDateController,
+                          decoration: const InputDecoration(
+                            labelText: 'Fecha de fin',
+                            prefixIcon: Icon(Icons.calendar_today_outlined),
+                          ),
+                          onTap: () {
+                            _selectDate(endDateController,
+                                dateType: DateType.end);
+                          },
+                          validator: (value) => negotiationDateValidator(
+                              value, _maxNegotiationStartDaysAhead,
+                              dateType: DateType.end),
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                            controller: remunerationController,
+                            decoration: const InputDecoration(
+                              prefixText: 'S/ ',
+                              labelText: 'Remuneración',
+                              prefixIcon: Icon(Icons.monetization_on_outlined),
+                            ),
+                            validator: (value) => remunerationValidator(value),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d*\.?\d*')),
+                            ]),
+                      ],
                     ),
-                    value: postDropdownValue,
-                    items:posts.map<DropdownMenuItem<String>>((Post value) {
-                      return DropdownMenuItem<String>(
-                        value: value.title,
-                        child: Text(value.title),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      postDropdownValue = newValue;
-                    },
-                    validator: (String? value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor, seleccione una publicación';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 10),
-                  TextFormField(
-                    controller: startDateController,
-                    decoration: const InputDecoration(
-                      labelText: 'Fecha de inicio',
-                      prefixIcon: Icon(Icons.calendar_today_outlined),
-                    ),
-                    onTap: () {
-                      _selectDate(startDateController, dateType: DateType.start);
-                    },
-                    validator: (value) => 
-                    negotiationDateValidator(value, _maxNegotiationStartDaysAhead, dateType: DateType.start),
-                  ),
-                  const SizedBox(height: 10),
-                  TextFormField(
-                    controller: endDateController,
-                    decoration: const InputDecoration(
-                      labelText: 'Fecha de fin',
-                      prefixIcon: Icon(Icons.calendar_today_outlined),
-                    ),
-                    onTap: () {
-                      _selectDate(endDateController, dateType: DateType.end);
-                    },
-                    validator: (value) => 
-                    negotiationDateValidator(value, _maxNegotiationStartDaysAhead, dateType: DateType.end),
-                  ),
-                  const SizedBox(height: 10),
-                  TextFormField(
-                    controller: remunerationController,
-                    decoration: const InputDecoration(
-                      prefixText: 'S/ ',
-                      labelText: 'Remuneración',
-                      prefixIcon: Icon(Icons.monetization_on_outlined),
-                    ),
-                    validator: (value) => remunerationValidator(value),
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
-                    ]
                   ),
                 ],
-              ),
-            ),
-          ],
-        );
-          }
-        },
-      ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          }, 
-          child: const Text('Cancelar')
-        ),
-        TextButton(
-          onPressed: () {
-            bool formIsValid = negotiationExists ? _updateNegotiation() : _createNegotiation();
-            if(formIsValid){
-              Navigator.of(context).pop();
+              );
             }
-          }, 
-          child: const Text('Enviar')
+          },
         ),
-      ]
-    );
+        actions: [
+          TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancelar')),
+          TextButton(
+              onPressed: () {
+                bool formIsValid = negotiationExists
+                    ? _updateNegotiation()
+                    : _createNegotiation();
+                if (formIsValid) {
+                  Navigator.of(context).pop();
+                }
+              },
+              child: const Text('Enviar')),
+        ]);
   }
 }

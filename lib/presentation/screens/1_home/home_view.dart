@@ -50,14 +50,7 @@ class _HomeViewState extends State<HomeView> {
               return SingleChildScrollView(
                 child: Column(
                   children: [
-                    SearchWidget(
-                      controller: TextEditingController(),
-                      hintText: 'Buscar',
-                      trailing: [
-                        IconButton(
-                            onPressed: () {}, icon: const Icon(Icons.search))
-                      ],
-                    ),
+                    const SizedBox(height: 20),
                     const Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
@@ -73,20 +66,18 @@ class _HomeViewState extends State<HomeView> {
                       thickness: 3,
                     ),
                     UserGridWidget(
-                      crossAxisCount: 3,
-                      imageUrls: employerImageUrls,
-                      title: 'Top Empleadores'
-                    ),
+                        crossAxisCount: 3,
+                        imageUrls: employerImageUrls,
+                        title: 'Top Empleadores'),
                     const SizedBox(height: 20.0),
                     Divider(
                       color: Colors.amber.shade700.withOpacity(0.2),
                       thickness: 3,
                     ),
                     UserGridWidget(
-                      crossAxisCount: 3,
-                      imageUrls: workerImageUrls,
-                      title: 'Top Chambeadores'
-                    ),
+                        crossAxisCount: 3,
+                        imageUrls: workerImageUrls,
+                        title: 'Top Chambeadores'),
                     const SizedBox(height: 20.0),
                   ],
                 ),
