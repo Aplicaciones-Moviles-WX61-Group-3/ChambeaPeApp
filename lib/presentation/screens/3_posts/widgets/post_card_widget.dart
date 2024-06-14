@@ -1,6 +1,7 @@
 import 'package:chambeape/config/utils/login_user_data.dart';
 import 'package:chambeape/domain/entities/posts_entity.dart';
 import 'package:chambeape/infrastructure/models/login/login_response.dart';
+import 'package:chambeape/presentation/screens/3_posts/widgets/post_detail.dart';
 import 'package:chambeape/presentation/screens/3_posts/widgets/stepper_post.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,7 +33,8 @@ class _PostCardWidgetState extends ConsumerState<PostCardWidget> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final role = user.userRole;
-    final isDeleting = ref.watch(postsProvider.notifier.select((notifier) => notifier.isDeleting));
+    final isDeleting = ref.watch(
+        postsProvider.notifier.select((notifier) => notifier.isDeleting));
 
     if (widget.posts.isEmpty) {
       return Center(
@@ -65,7 +67,8 @@ class _PostCardWidgetState extends ConsumerState<PostCardWidget> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Confirmar Eliminación'),
-          content: const Text('¿Estás seguro de que deseas eliminar esta publicación?'),
+          content: const Text(
+              '¿Estás seguro de que deseas eliminar esta publicación?'),
           actions: [
             TextButton(
               onPressed: () {
@@ -75,7 +78,9 @@ class _PostCardWidgetState extends ConsumerState<PostCardWidget> {
             ),
             TextButton(
               onPressed: () async {
-                await ref.read(postsProvider.notifier).deletePost(post.id.toString());
+                await ref
+                    .read(postsProvider.notifier)
+                    .deletePost(post.id.toString());
                 // ignore: use_build_context_synchronously
                 Navigator.of(context).pop();
               },
@@ -87,7 +92,6 @@ class _PostCardWidgetState extends ConsumerState<PostCardWidget> {
     );
   }
 }
-
 
 class _PostCard extends StatelessWidget {
   const _PostCard({
@@ -145,7 +149,17 @@ class _PostCard extends StatelessWidget {
                       Row(
                         children: [
                           _PostButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PostDetailPage(
+                                    post: post,
+                                    role: role,
+                                  ),
+                                ),
+                              );
+                            },
                             text: 'Ver Publicación',
                           ),
                         ],

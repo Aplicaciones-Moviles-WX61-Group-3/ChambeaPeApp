@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:chambeape/infrastructure/models/negotiation.dart';
+import 'package:chambeape/presentation/shared/enums/enum.dart';
 import 'package:http/http.dart' as http;
 
 class NegotiationService {
@@ -35,19 +36,22 @@ class NegotiationService {
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       dynamic body = json.decode(utf8.decode(response.bodyBytes));
-      Negotiation negotiation = Negotiation.fromJson(body);
-      return negotiation;
-    }
-    else if(response.statusCode == 404 || response.statusCode == 500) {
-      return Negotiation(
+      if(body.isNotEmpty){
+        Negotiation negotiation = Negotiation.fromJson(body[0]);
+        return negotiation;
+      }
+      else{
+        return Negotiation(
         id: 0, 
         workerId: 0, 
         employerId: 0, 
         startDay: DateTime.now(), 
         endDay: DateTime.now().add(const Duration(days: 1)), 
-        salary: 0, 
+        salary: 0,
+        state: NegotiationStatus.PENDING.name, 
         postId: 0
       );
+      }
     }
     else {
       throw Exception(
