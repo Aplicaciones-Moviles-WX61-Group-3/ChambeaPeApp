@@ -171,82 +171,102 @@ class _NegotiationDialogViewState extends State<NegotiationDialogView> {
                 }
               }
               else {
-                return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                negotiation.id == 0 ? const Text('Crea una nueva negociación') : const Text('Ajusta la negociación existente'),
-                const SizedBox(height: 15),
-                Form(
-                  key: _formKey,
-                  child: Column(
+                return SingleChildScrollView(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom,
+                    ),
+                    child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      DropdownButtonFormField<String>(
-                        isExpanded: true,
-                        decoration: const InputDecoration(
-                          labelText: 'Publicación',
-                        ),
-                        value: postDropdownValue,
-                        items:posts.map<DropdownMenuItem<String>>((Post value) {
-                          return DropdownMenuItem<String>(
-                            value: value.title,
-                            child: Text(value.title),
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          postDropdownValue = newValue;
-                        },
-                        validator: (String? value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor, seleccione una publicación';
-                          }
-                          return null;
-                        },
+                    negotiation.id == 0 ? const Text('Crea una nueva negociación') : const Text('Ajusta la negociación existente'),
+                    const SizedBox(height: 15),
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          DropdownButtonFormField<String>(
+                            isExpanded: true,
+                            decoration: InputDecoration(
+                              enabled: negotiationEnabled,
+                              labelText: 'Publicación',
+                              disabledBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey, width: 2),
+                              ),
+                            ),
+                            value: postDropdownValue,
+                            items:posts.map<DropdownMenuItem<String>>((Post value) {
+                              return DropdownMenuItem<String>(
+                                value: value.title,
+                                child: Row(
+                                  children: [
+                                    const Icon(Icons.event_note_outlined,),
+                                    const SizedBox(width: 10,),
+                                    Flexible(child: Text(value.title, overflow: TextOverflow.ellipsis,)),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: negotiationEnabled ? (String? newValue) {
+                              postDropdownValue = newValue;
+                            } : null,
+                            validator: (String? value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Por favor, seleccione una publicación';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 10),
+                          TextFormField(
+                            controller: startDateController,
+                            decoration: const InputDecoration(
+                              labelText: 'Fecha de inicio',
+                              prefixIcon: Icon(Icons.calendar_today_outlined),
+                            ),
+                            onTap: () {
+                              _selectDate(startDateController, dateType: DateType.start);
+                            },
+                            validator: (value) => 
+                            negotiationDateValidator(value, _maxNegotiationStartDaysAhead, dateType: DateType.start),
+                            enabled: negotiationEnabled,
+                          ),
+                          const SizedBox(height: 10),
+                          TextFormField(
+                            controller: endDateController,
+                            decoration: const InputDecoration(
+                              labelText: 'Fecha de fin',
+                              prefixIcon: Icon(Icons.calendar_today_outlined),
+                            ),
+                            onTap: () {
+                              _selectDate(endDateController, dateType: DateType.end);
+                            },
+                            validator: (value) => 
+                            negotiationDateValidator(value, _maxNegotiationStartDaysAhead, dateType: DateType.end),
+                            enabled: negotiationEnabled,
+                          ),
+                          const SizedBox(height: 10),
+                          TextFormField(
+                            controller: remunerationController,
+                            decoration: const InputDecoration(
+                              prefixText: 'S/ ',
+                              labelText: 'Remuneración',
+                              prefixIcon: Icon(Icons.monetization_on_outlined),
+                            ),
+                            validator: (value) => remunerationValidator(value),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                            ],
+                            enabled: negotiationEnabled,
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 10),
-                      TextFormField(
-                        controller: startDateController,
-                        decoration: const InputDecoration(
-                          labelText: 'Fecha de inicio',
-                          prefixIcon: Icon(Icons.calendar_today_outlined),
-                        ),
-                        onTap: () {
-                          _selectDate(startDateController, dateType: DateType.start);
-                        },
-                        validator: (value) => 
-                        negotiationDateValidator(value, _maxNegotiationStartDaysAhead, dateType: DateType.start),
-                      ),
-                      const SizedBox(height: 10),
-                      TextFormField(
-                        controller: endDateController,
-                        decoration: const InputDecoration(
-                          labelText: 'Fecha de fin',
-                          prefixIcon: Icon(Icons.calendar_today_outlined),
-                        ),
-                        onTap: () {
-                          _selectDate(endDateController, dateType: DateType.end);
-                        },
-                        validator: (value) => 
-                        negotiationDateValidator(value, _maxNegotiationStartDaysAhead, dateType: DateType.end),
-                      ),
-                      const SizedBox(height: 10),
-                      TextFormField(
-                        controller: remunerationController,
-                        decoration: const InputDecoration(
-                          prefixText: 'S/ ',
-                          labelText: 'Remuneración',
-                          prefixIcon: Icon(Icons.monetization_on_outlined),
-                        ),
-                        validator: (value) => remunerationValidator(value),
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
-                        ]
-                      ),
-                    ],
+                    ),
+                                  ],
+                                ),
                   ),
-                ),
-              ],
-            );
+                );
               }
             },
           ),
