@@ -5,6 +5,7 @@ class Negotiation {
     DateTime startDay;
     DateTime endDay;
     double salary;
+    String state;
     int postId;
 
     Negotiation({
@@ -14,6 +15,7 @@ class Negotiation {
         required this.startDay,
         required this.endDay,
         required this.salary,
+        required this.state,
         required this.postId,
     });
 
@@ -24,6 +26,7 @@ class Negotiation {
         startDay: DateTime.parse(json["startDay"]),
         endDay: DateTime.parse(json["endDay"]),
         salary: json["salary"],
+        state: json["state"],
         postId: json["postId"],
     );
 
@@ -34,6 +37,7 @@ class Negotiation {
         "startDay": startDay.toIso8601String(),
         "endDay": endDay.toIso8601String(),
         "salary": salary,
+        "state": state,
         "postId": postId,
     };
 }

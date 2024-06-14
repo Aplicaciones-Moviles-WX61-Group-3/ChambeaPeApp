@@ -5,6 +5,7 @@ import 'package:chambeape/config/utils/login_user_data.dart';
 import 'package:chambeape/infrastructure/models/chat_message.dart' as Message;
 import 'package:chambeape/infrastructure/models/login/login_response.dart';
 import 'package:chambeape/presentation/screens/chat/negotiation_dialog_view.dart';
+import 'package:chambeape/presentation/shared/enums/enum.dart';
 import 'package:chambeape/services/chat/message_service.dart';
 import 'package:chambeape/services/media/MediaService.dart';
 import 'package:chambeape/services/users/user_service.dart';
@@ -36,6 +37,7 @@ class _ChatViewState extends State<ChatView> {
   late Future<void> loadChatFuture;
   MediaService mediaService = MediaService();
   late String fileName;
+  bool allowNegotiation = false;
 
   @override
   void initState() {
@@ -48,6 +50,8 @@ class _ChatViewState extends State<ChatView> {
     if (currentUser == null) {
       throw Exception("Current user not found.");
     }
+    allowNegotiation = currentUser!.userRole == UserRole.E.name;
+
     roomId = generateChatRoomId(
         currentUser!.id.toString(), widget.otherUser.id.toString());
     stompClient = StompClient(
@@ -214,6 +218,7 @@ class _ChatViewState extends State<ChatView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Row(children: [
           CircleAvatar(
@@ -223,7 +228,7 @@ class _ChatViewState extends State<ChatView> {
           Text(widget.otherUser.firstName),
         ]),
         actions: [
-          IconButton(
+          allowNegotiation ? IconButton(
             icon: Icon(Icons.monetization_on_sharp, color: Colors.amber.shade700,),
             iconSize: 30,
             onPressed: () {
@@ -234,7 +239,7 @@ class _ChatViewState extends State<ChatView> {
                 }
                 );
             },
-          ),
+          ): Container(),
         ],
       ),
       body: FutureBuilder<void>(
