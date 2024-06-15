@@ -40,8 +40,8 @@ final routes = <GoRoute>[
   ),
   GoRoute(
     path: '/deals',
-    name: DealsView.routeName,
-    builder: (context, state) => const DealsView(),
+    name: DealView.routeName,
+    builder: (context, state) => const DealView(),
   ),
   GoRoute(
     path: '/profile',

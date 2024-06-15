@@ -1,11 +1,11 @@
 import 'package:chambeape/domain/entities/posts_entity.dart';
 
 abstract class PostsRepository {
-  Future<List<Post>> getPosts();
+  Future<List<PostState>> getPosts();
 
-  Future<Post> createPost(Post post);
+  Future<PostState> createPost(PostState post);
 
-  Future<Post> updatePost(Post post);
+  Future<PostState> updatePost(PostState post);
 
   Future<void> deletePost(String id);
 }

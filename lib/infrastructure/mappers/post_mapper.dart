@@ -2,8 +2,8 @@ import 'package:chambeape/domain/entities/posts_entity.dart';
 import 'package:chambeape/infrastructure/models/post_model.dart';
 
 class PostMapper {
-  static Post postModelToEntity(PostModel postModel) {
-    return Post(
+  static PostState postModelToEntity(PostModel postModel) {
+    return PostState(
       id: postModel.id,
       title: postModel.title,
       description: postModel.description,
@@ -12,7 +12,7 @@ class PostMapper {
     );
   }
 
-  static PostModel entityToPostModel(Post post) {
+  static PostModel entityToPostModel(PostState post) {
     return PostModel(
       id: post.id,
       title: post.title,

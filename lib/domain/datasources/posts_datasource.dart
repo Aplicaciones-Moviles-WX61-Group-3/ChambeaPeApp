@@ -1,14 +1,13 @@
-
 import 'package:chambeape/domain/entities/posts_entity.dart';
 
 abstract class PostsDataSource {
-  Future<List<Post>> getPosts();
+  Future<List<PostState>> getPosts();
 
-  Future<List<Post>> getPostsByEmployerId(int employerId);
+  Future<List<PostState>> getPostsByEmployerId(int employerId);
 
-  Future<Post> createPost(Post post);
+  Future<PostState> createPost(PostState post);
 
-  Future<Post> updatePost(Post post);
+  Future<PostState> updatePost(PostState post);
 
   Future<void> deletePost(String id);
 }

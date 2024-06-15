@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 
 class PostsdbDatasource extends PostsDataSource {
   @override
-  Future<List<Post>> getPosts() async {
+  Future<List<PostState>> getPosts() async {
     final Uri uri = await UriEnvironment.getPostUri();
 
     final response = await http.get(uri);
@@ -17,7 +17,7 @@ class PostsdbDatasource extends PostsDataSource {
     if (response.statusCode >= 200 && response.statusCode < 300) {
       final List<dynamic> postsResponse =
           json.decode(utf8.decode(response.bodyBytes));
-      final List<Post> posts = postsResponse
+      final List<PostState> posts = postsResponse
           .map((item) => PostMapper.postModelToEntity(PostModel.fromJson(item)))
           .toList();
 
@@ -30,7 +30,7 @@ class PostsdbDatasource extends PostsDataSource {
   }
 
   @override
-  Future<List<Post>> getPostsByEmployerId(int employerId) async {
+  Future<List<PostState>> getPostsByEmployerId(int employerId) async {
     final Uri uri =
         Uri.parse('${UriEnvironment.baseUrl}/employers/$employerId/posts');
 
@@ -39,7 +39,7 @@ class PostsdbDatasource extends PostsDataSource {
     if (response.statusCode >= 200 && response.statusCode < 300) {
       final List<dynamic> postsResponse =
           json.decode(utf8.decode(response.bodyBytes));
-      final List<Post> posts = postsResponse
+      final List<PostState> posts = postsResponse
           .map((item) => PostMapper.postModelToEntity(PostModel.fromJson(item)))
           .toList();
       print('SUCCESS:' + posts.toString());
@@ -52,7 +52,7 @@ class PostsdbDatasource extends PostsDataSource {
   }
 
   @override
-  Future<Post> createPost(Post post) async {
+  Future<PostState> createPost(PostState post) async {
     final Uri uri = await UriEnvironment.getPostUri();
     final PostModel postModel = PostMapper.entityToPostModel(post);
 
@@ -81,7 +81,7 @@ class PostsdbDatasource extends PostsDataSource {
   }
 
   @override
-  Future<Post> updatePost(Post post) async {
+  Future<PostState> updatePost(PostState post) async {
     final Uri uri = Uri.parse(
         'https://chambeape.azurewebsites.net/api/v1/posts/${post.id}');
     final postModel = PostMapper.entityToPostModel(post);
