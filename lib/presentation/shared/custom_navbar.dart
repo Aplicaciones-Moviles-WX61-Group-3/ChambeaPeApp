@@ -20,7 +20,7 @@ class CustomNavbar extends ConsumerWidget {
       const HomeView(),
       const PostView(),
       const ChatListView(),
-      const DealsView(),
+      const DealView(),
       const ProfileView()
     ];
 

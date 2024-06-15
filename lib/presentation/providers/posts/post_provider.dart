@@ -2,7 +2,8 @@ import 'package:chambeape/domain/entities/posts_entity.dart';
 import 'package:chambeape/presentation/providers/posts/posts_repository_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final postsProvider = StateNotifierProvider<PostsNotifier, List<Post>>((ref) {
+final postsProvider =
+    StateNotifierProvider<PostsNotifier, List<PostState>>((ref) {
   final repository = ref.watch(postsRepositoryProvider);
 
   return PostsNotifier(
@@ -13,12 +14,12 @@ final postsProvider = StateNotifierProvider<PostsNotifier, List<Post>>((ref) {
   );
 });
 
-typedef GetPostsCallback = Future<List<Post>> Function();
-typedef CreatePostCallback = Future<Post> Function(Post post);
-typedef UpdatePostCallback = Future<Post> Function(Post post);
+typedef GetPostsCallback = Future<List<PostState>> Function();
+typedef CreatePostCallback = Future<PostState> Function(PostState post);
+typedef UpdatePostCallback = Future<PostState> Function(PostState post);
 typedef DeletePostCallback = Future<void> Function(String id);
 
-class PostsNotifier extends StateNotifier<List<Post>> {
+class PostsNotifier extends StateNotifier<List<PostState>> {
   bool isLoading = false;
   bool _isDeleting = false;
 
@@ -45,7 +46,7 @@ class PostsNotifier extends StateNotifier<List<Post>> {
     isLoading = false;
   }
 
-  Future<void> createPost(Post post) async {
+  Future<void> createPost(PostState post) async {
     if (isLoading) return;
 
     isLoading = true;
@@ -53,14 +54,15 @@ class PostsNotifier extends StateNotifier<List<Post>> {
     state = [...state, newPost];
     isLoading = false;
   }
-  
-  Future<void> updatePost(Post post) async {
+
+  Future<void> updatePost(PostState post) async {
     if (isLoading) return;
 
     isLoading = true;
     try {
       final updatedPost = await updatePostCallback(post);
-      state = state.map((p) => p.id == updatedPost.id ? updatedPost : p).toList();
+      state =
+          state.map((p) => p.id == updatedPost.id ? updatedPost : p).toList();
     } finally {
       isLoading = false;
     }

@@ -1,12 +1,12 @@
 import 'dart:convert';
 
 import 'package:chambeape/infrastructure/models/negotiation.dart';
+import 'package:chambeape/infrastructure/models/negotiation_state.dart';
 import 'package:chambeape/presentation/shared/enums/enum.dart';
 import 'package:http/http.dart' as http;
 
 class NegotiationService {
-  final uri = Uri.parse(
-      'https://chambeape.azurewebsites.net/api/v1/contracts');
+  final uri = Uri.parse('https://chambeape.azurewebsites.net/api/v1/contracts');
 
   Future<Negotiation> createNegotiation(Negotiation negotiation) async {
     final response = await http.post(
@@ -25,7 +25,8 @@ class NegotiationService {
     }
   }
 
-  Future<Negotiation> getNegotiationByWorkerIdAndEmployerId(int workerId, int employerId) async {
+  Future<Negotiation> getNegotiationByWorkerIdAndEmployerId(
+      int workerId, int employerId) async {
     final queryParameters = {
       'workerId': workerId.toString(),
       'employerId': employerId.toString(),
@@ -36,24 +37,21 @@ class NegotiationService {
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       dynamic body = json.decode(utf8.decode(response.bodyBytes));
-      if(body.isNotEmpty){
+      if (body.isNotEmpty) {
         Negotiation negotiation = Negotiation.fromJson(body[0]);
         return negotiation;
-      }
-      else{
+      } else {
         return Negotiation(
-        id: 0, 
-        workerId: 0, 
-        employerId: 0, 
-        startDay: DateTime.now(), 
-        endDay: DateTime.now().add(const Duration(days: 1)), 
-        salary: 0,
-        state: NegotiationStatus.PENDING.name, 
-        postId: 0
-      );
+            id: 0,
+            workerId: 0,
+            employerId: 0,
+            startDay: DateTime.now(),
+            endDay: DateTime.now().add(const Duration(days: 1)),
+            salary: 0,
+            state: NegotiationStatus.PENDING.name,
+            postId: 0);
       }
-    }
-    else {
+    } else {
       throw Exception(
           'Failed to fetch negotiation: Status Code ${response.statusCode}, Response Body: ${response.body}');
     }
@@ -61,7 +59,8 @@ class NegotiationService {
 
   Future<List<Negotiation>> getAllNegotiationsByUserId(String userId) async {
     final response = await http.get(
-      Uri.parse('$uri/user/$userId'),);
+      Uri.parse('$uri/user/$userId'),
+    );
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       List<dynamic> body = json.decode(utf8.decode(response.bodyBytes));
@@ -91,4 +90,39 @@ class NegotiationService {
     }
   }
 
+  Future<List<NegotiationState>> getAllNegotiationsAndPostsByUserId(
+      int userId) async {
+    final response = await http.get(
+      Uri.parse('$uri/user/$userId/states'),
+    );
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      List<dynamic> body = json.decode(utf8.decode(response.bodyBytes));
+      List<NegotiationState> negotiations = [];
+
+      for (var list in body) {
+        for (var item in list) {
+          negotiations.add(NegotiationState.fromJson(item));
+        }
+      }
+
+      return negotiations;
+    } else {
+      throw Exception(
+          'Failed to fetch negotiations: Status Code ${response.statusCode}, Response Body: ${response.body}');
+    }
+  }
+
+  Future<void> deleteNegotiation(int negotiationId) async {
+    final response = await http.delete(
+      Uri.parse('$uri/$negotiationId'),
+    );
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return;
+    } else {
+      throw Exception(
+          'Failed to delete negotiation: Status Code ${response.statusCode}, Response Body: ${response.body}');
+    }
+  }
 }

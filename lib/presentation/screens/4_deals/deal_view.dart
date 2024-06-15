@@ -1,8 +1,7 @@
 import 'package:chambeape/config/utils/login_user_data.dart';
 import 'package:chambeape/infrastructure/models/negotiation_state.dart';
 import 'package:chambeape/infrastructure/models/login/login_response.dart';
-import 'package:chambeape/infrastructure/models/post_state.dart';
-import 'package:chambeape/presentation/screens/4_deals/widgets/post_card_deal_widget.dart';
+import 'package:chambeape/presentation/screens/4_deals/widgets/deal_card.dart';
 import 'package:chambeape/services/negotiation/negotiation_service.dart';
 import 'package:flutter/material.dart';
 
@@ -49,18 +48,8 @@ class _DealViewState extends State<DealView> {
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const Center(child: Text('No negotiations found.'));
                 } else {
-                  List<PostState> postsAccepted = [];
-                  List<PostState> postsPending = [];
-                  for (var negotiation in snapshot.data!) {
-                    if (negotiation.state == 'ACCEPTED') {
-                      postsAccepted.add(negotiation.post);
-                    } else if (negotiation.state == 'PENDING') {
-                      postsPending.add(negotiation.post);
-                    }
-                  }
-                  return PostCardDealWidget(
-                    postsAccepted: postsAccepted,
-                    postsPending: postsPending,
+                  return DealCardWidget(
+                    negotiations: snapshot.data!,
                   );
                 }
               },

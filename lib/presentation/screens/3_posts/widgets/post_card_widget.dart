@@ -8,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chambeape/presentation/providers/posts/post_provider.dart';
 
 class PostCardWidget extends ConsumerStatefulWidget {
-  final List<Post> posts;
+  final List<PostState> posts;
 
   const PostCardWidget({super.key, required this.posts});
 
@@ -60,7 +60,7 @@ class _PostCardWidgetState extends ConsumerState<PostCardWidget> {
     }
   }
 
-  void _showDeleteConfirmationDialog(BuildContext context, Post post) {
+  void _showDeleteConfirmationDialog(BuildContext context, PostState post) {
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -102,7 +102,7 @@ class _PostCard extends StatelessWidget {
     required this.isDeleting,
   });
 
-  final Post post;
+  final PostState post;
   final TextTheme textTheme;
   final String role;
   final VoidCallback onDelete;

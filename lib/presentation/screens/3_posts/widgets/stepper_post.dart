@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chambeape/services/media/MediaService.dart';
 
 class StepperPost extends ConsumerStatefulWidget {
-  final Post? post;
+  final PostState? post;
 
   const StepperPost({super.key, this.post});
 
@@ -196,12 +196,13 @@ class _StepperPostState extends ConsumerState<StepperPost> {
                       print('Guardando post...');
                       final data = stepperPostProv.getAll();
 
-                      print(data['image'] );
+                      print(data['image']);
                       print(postImageUri); // Para el update de la imagen
 
-                      Uri imageUri = await MediaService().saveFileToGoogleCloud(stepperPostState.selectedImage!);
+                      Uri imageUri = await MediaService().saveFileToGoogleCloud(
+                          stepperPostState.selectedImage!);
 
-                      Post dataPost = Post(
+                      PostState dataPost = PostState(
                         id: postId,
                         title: data['title'],
                         description: data['description'],
@@ -216,9 +217,13 @@ class _StepperPostState extends ConsumerState<StepperPost> {
                       print('imgUrl: ${dataPost.imgUrl}');
 
                       if (hasPost) {
-                        await ref.read(postsProvider.notifier).updatePost(dataPost);
-                      } else{
-                        await ref.read(postsProvider.notifier).createPost(dataPost);
+                        await ref
+                            .read(postsProvider.notifier)
+                            .updatePost(dataPost);
+                      } else {
+                        await ref
+                            .read(postsProvider.notifier)
+                            .createPost(dataPost);
                       }
 
                       Navigator.of(context).pop();
