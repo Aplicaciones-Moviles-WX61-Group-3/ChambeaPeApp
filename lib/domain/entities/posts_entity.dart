@@ -1,11 +1,11 @@
-class PostState {
+class Post {
   int id;
   String title;
   String description;
   String subtitle;
   String imgUrl;
 
-  PostState(
+  Post(
       {required this.id,
       required this.title,
       required this.description,

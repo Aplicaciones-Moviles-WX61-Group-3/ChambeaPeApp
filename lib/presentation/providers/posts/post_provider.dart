@@ -2,8 +2,7 @@ import 'package:chambeape/domain/entities/posts_entity.dart';
 import 'package:chambeape/presentation/providers/posts/posts_repository_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final postsProvider =
-    StateNotifierProvider<PostsNotifier, List<PostState>>((ref) {
+final postsProvider = StateNotifierProvider<PostsNotifier, List<Post>>((ref) {
   final repository = ref.watch(postsRepositoryProvider);
 
   return PostsNotifier(
@@ -14,12 +13,12 @@ final postsProvider =
   );
 });
 
-typedef GetPostsCallback = Future<List<PostState>> Function();
-typedef CreatePostCallback = Future<PostState> Function(PostState post);
-typedef UpdatePostCallback = Future<PostState> Function(PostState post);
+typedef GetPostsCallback = Future<List<Post>> Function();
+typedef CreatePostCallback = Future<Post> Function(Post post);
+typedef UpdatePostCallback = Future<Post> Function(Post post);
 typedef DeletePostCallback = Future<void> Function(String id);
 
-class PostsNotifier extends StateNotifier<List<PostState>> {
+class PostsNotifier extends StateNotifier<List<Post>> {
   bool isLoading = false;
   bool _isDeleting = false;
 
@@ -46,7 +45,7 @@ class PostsNotifier extends StateNotifier<List<PostState>> {
     isLoading = false;
   }
 
-  Future<void> createPost(PostState post) async {
+  Future<void> createPost(Post post) async {
     if (isLoading) return;
 
     isLoading = true;
@@ -55,7 +54,7 @@ class PostsNotifier extends StateNotifier<List<PostState>> {
     isLoading = false;
   }
 
-  Future<void> updatePost(PostState post) async {
+  Future<void> updatePost(Post post) async {
     if (isLoading) return;
 
     isLoading = true;

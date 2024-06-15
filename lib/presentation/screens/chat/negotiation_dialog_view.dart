@@ -30,7 +30,7 @@ class _NegotiationDialogViewState extends State<NegotiationDialogView> {
   String? postDropdownValue = '';
   late Future<void> loadNegotiationDetails;
   late Negotiation negotiation;
-  List<PostState> posts = [];
+  List<Post> posts = [];
   late int employerId, workerId;
   bool negotiationExists = false;
   late String negotiationStatus;
@@ -201,7 +201,7 @@ class _NegotiationDialogViewState extends State<NegotiationDialogView> {
                                 ),
                                 value: postDropdownValue,
                                 items: posts.map<DropdownMenuItem<String>>(
-                                    (PostState value) {
+                                    (Post value) {
                                   return DropdownMenuItem<String>(
                                     value: value.title,
                                     child: Row(

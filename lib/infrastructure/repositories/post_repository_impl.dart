@@ -8,12 +8,12 @@ class PostRepositoryImpl extends PostsRepository {
   PostRepositoryImpl(this.datasource);
 
   @override
-  Future<List<PostState>> getPosts() {
+  Future<List<Post>> getPosts() {
     return datasource.getPosts();
   }
 
   @override
-  Future<PostState> createPost(PostState post) {
+  Future<Post> createPost(Post post) {
     return datasource.createPost(post);
   }
 
@@ -23,7 +23,7 @@ class PostRepositoryImpl extends PostsRepository {
   }
 
   @override
-  Future<PostState> updatePost(PostState post) {
+  Future<Post> updatePost(Post post) {
     return datasource.updatePost(post);
   }
 }

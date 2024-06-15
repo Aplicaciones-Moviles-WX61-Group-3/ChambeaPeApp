@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chambeape/services/media/MediaService.dart';
 
 class StepperPost extends ConsumerStatefulWidget {
-  final PostState? post;
+  final Post? post;
 
   const StepperPost({super.key, this.post});
 
@@ -202,7 +202,7 @@ class _StepperPostState extends ConsumerState<StepperPost> {
                       Uri imageUri = await MediaService().saveFileToGoogleCloud(
                           stepperPostState.selectedImage!);
 
-                      PostState dataPost = PostState(
+                      Post dataPost = Post(
                         id: postId,
                         title: data['title'],
                         description: data['description'],

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:chambeape/domain/entities/posts_entity.dart';
 
 class PostDetailPage extends StatelessWidget {
-  final PostState post;
+  final Post post;
   final String role;
 
   const PostDetailPage({super.key, required this.post, required this.role});

@@ -32,7 +32,7 @@ class _DealDialogState extends State<DealDialog> {
     state: NegotiationStatus.PENDING.name,
     postId: 0,
   );
-  List<PostState> posts = [];
+  List<Post> posts = [];
   late int employerId, workerId;
   bool dataLoaded = false;
 
