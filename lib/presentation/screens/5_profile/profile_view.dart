@@ -42,7 +42,7 @@ class _ProfileViewState extends State<ProfileView> {
     return isCurrentUser;
   }
 
-  Future<int> _getUserId() async{
+  Future<int> _getUserId() async {
     if (widget.userId != 0) {
       return widget.userId;
     } else {
@@ -116,7 +116,10 @@ class _ProfileViewState extends State<ProfileView> {
                       const SizedBox(height: 10),
                       Description(user: user, text: text),
                       const SizedBox(height: 20),
-                      MyWorksDefault(text: text, userId: userIdToUse, isCurrentUser: isCurrentUser),
+                      MyWorksDefault(
+                          text: text,
+                          userId: userIdToUse,
+                          isCurrentUser: isCurrentUser),
                     ]),
                   ),
                 ),
@@ -130,4 +133,3 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 }
-

@@ -14,28 +14,23 @@ class MenuItem {
 
 const appMenuItems = <MenuItem>[
   MenuItem(
-    title: 'Inicio',
-    iconActive: Icons.home,
-    iconDeactivated: Icons.home_outlined
-  ),
+      title: 'Inicio',
+      iconActive: Icons.home,
+      iconDeactivated: Icons.home_outlined),
   MenuItem(
-    title: 'Posts',
-    iconActive: Icons.post_add,
-    iconDeactivated: Icons.post_add_outlined
-  ),
+      title: 'Posts',
+      iconActive: Icons.post_add,
+      iconDeactivated: Icons.post_add_outlined),
   MenuItem(
-    title: 'Chat',
-    iconActive: Icons.chat,
-    iconDeactivated: Icons.chat_outlined
-  ),
+      title: 'Chat',
+      iconActive: Icons.chat,
+      iconDeactivated: Icons.chat_outlined),
   MenuItem(
-    title: 'Workers',
-    iconActive: Icons.work,
-    iconDeactivated: Icons.work_outline
-  ),
+      title: 'Negociaciones',
+      iconActive: Icons.business_center,
+      iconDeactivated: Icons.business_center_outlined),
   MenuItem(
-    title: 'Perfil',
-    iconActive: Icons.person,
-    iconDeactivated: Icons.person_outline
-  )
+      title: 'Perfil',
+      iconActive: Icons.person,
+      iconDeactivated: Icons.person_outline)
 ];

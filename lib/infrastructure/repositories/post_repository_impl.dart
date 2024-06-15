@@ -11,17 +11,17 @@ class PostRepositoryImpl extends PostsRepository {
   Future<List<Post>> getPosts() {
     return datasource.getPosts();
   }
-  
+
   @override
   Future<Post> createPost(Post post) {
     return datasource.createPost(post);
   }
-  
+
   @override
   Future<void> deletePost(String id) {
     return datasource.deletePost(id);
   }
-  
+
   @override
   Future<Post> updatePost(Post post) {
     return datasource.updatePost(post);

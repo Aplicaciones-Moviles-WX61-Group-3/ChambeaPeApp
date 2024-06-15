@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 class WorkersView extends StatefulWidget {
   const WorkersView({super.key});
 
-
   static const String routeName = 'workers_view';
 
   @override
@@ -43,7 +42,6 @@ class _WorkersViewState extends State<WorkersView> {
           }
         },
       ),
-      
     );
   }
 }

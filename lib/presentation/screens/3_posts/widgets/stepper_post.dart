@@ -196,10 +196,11 @@ class _StepperPostState extends ConsumerState<StepperPost> {
                       print('Guardando post...');
                       final data = stepperPostProv.getAll();
 
-                      print(data['image'] );
+                      print(data['image']);
                       print(postImageUri); // Para el update de la imagen
 
-                      Uri imageUri = await MediaService().saveFileToGoogleCloud(stepperPostState.selectedImage!);
+                      Uri imageUri = await MediaService().saveFileToGoogleCloud(
+                          stepperPostState.selectedImage!);
 
                       Post dataPost = Post(
                         id: postId,
@@ -216,9 +217,13 @@ class _StepperPostState extends ConsumerState<StepperPost> {
                       print('imgUrl: ${dataPost.imgUrl}');
 
                       if (hasPost) {
-                        await ref.read(postsProvider.notifier).updatePost(dataPost);
-                      } else{
-                        await ref.read(postsProvider.notifier).createPost(dataPost);
+                        await ref
+                            .read(postsProvider.notifier)
+                            .updatePost(dataPost);
+                      } else {
+                        await ref
+                            .read(postsProvider.notifier)
+                            .createPost(dataPost);
                       }
 
                       Navigator.of(context).pop();
