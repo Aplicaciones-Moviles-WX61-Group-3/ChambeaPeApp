@@ -15,10 +15,16 @@ class SessionService {
     String userJson = jsonEncode(loggedUser.toJson());
     await prefs.setString('user', userJson);
     await prefs.setString('expiryDate', expiryDate.toIso8601String());
+    await prefs.setBool('loggedOut', false);
   }
 
   Future<bool> loadSession() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    final bool? loggedOut = prefs.getBool('loggedOut');
+    if (loggedOut == true) {
+      return false;
+    }
 
     final String? token = prefs.getString('token');
     final String? expiryDateString = prefs.getString('expiryDate');
@@ -35,6 +41,7 @@ class SessionService {
 
   Future<void> logout() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('loggedOut', true);
     prefs.remove('token');
     prefs.remove('user');
     prefs.remove('expiryDate');
