@@ -98,7 +98,6 @@ class _WorkerPosts extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Posts'),
         actions: [
-          // Icono para "Mis Postulaciones"
           IconButton.filled(
             icon: const Icon(Icons.assignment_outlined, color: Colors.white),
             onPressed: () {

@@ -67,4 +67,24 @@ class PostulationService {
           'Failed to fetch postulations: Status Code ${response.statusCode}, Response Body: ${response.body}');
     }
   }
+
+  Future<List<dynamic>> getPostulationsByWorkerId(int workerId) async {
+  final uri = Uri.parse('${UriEnvironment.baseUrl}/postulations')
+      .replace(queryParameters: {'userId': workerId.toString()});
+
+  final response = await http.get(
+    uri,
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+  );
+
+  if (response.statusCode >= 200 && response.statusCode < 300) {
+    List<dynamic> postulations = json.decode(utf8.decode(response.bodyBytes));
+    return postulations;
+  } else {
+    throw Exception(
+        'Failed to fetch postulations: Status Code ${response.statusCode}, Response Body: ${response.body}');
+  }
+}
 }
