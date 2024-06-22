@@ -1,3 +1,4 @@
+export 'package:chambeape/presentation/screens/postulations/postulation_view.dart';
 export 'package:chambeape/presentation/screens/options/options_view.dart';
 export 'package:chambeape/presentation/screens/1_home/home_view.dart';
 export 'package:chambeape/presentation/screens/0_login/login_view.dart';

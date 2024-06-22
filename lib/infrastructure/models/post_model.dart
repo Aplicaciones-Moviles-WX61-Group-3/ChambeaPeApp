@@ -4,13 +4,16 @@ class PostModel {
   String description;
   String subtitle;
   String imgUrl;
+  int employerId;
 
-  PostModel(
-      {required this.id,
-      required this.title,
-      required this.description,
-      required this.subtitle,
-      required this.imgUrl});
+  PostModel({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.subtitle,
+    required this.imgUrl,
+    required this.employerId,
+  });
 
   factory PostModel.fromJson(Map<String, dynamic> json) {
     return PostModel(
@@ -18,7 +21,9 @@ class PostModel {
         title: json['title'],
         description: json['description'],
         subtitle: json['subtitle'],
-        imgUrl: json['imgUrl']);
+        imgUrl: json['imgUrl'],
+        employerId: json['employerId']
+      );
   }
 
   Map<String, dynamic> toJson() {
@@ -27,7 +32,8 @@ class PostModel {
       'title': title,
       'description': description,
       'subtitle': subtitle,
-      'imgUrl': imgUrl
+      'imgUrl': imgUrl,
+      'employerId': employerId
     };
   }
 }

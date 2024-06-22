@@ -10,9 +10,9 @@ import 'package:http/http.dart' as http;
 class PostsdbDatasource extends PostsDataSource {
   @override
   Future<List<Post>> getPosts() async {
-    final Uri uri = await UriEnvironment.getPostUri();
+    const String uri = '${UriEnvironment.baseUrl}/posts';
 
-    final response = await http.get(uri);
+    final response = await http.get(Uri.parse(uri));
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       final List<dynamic> postsResponse =

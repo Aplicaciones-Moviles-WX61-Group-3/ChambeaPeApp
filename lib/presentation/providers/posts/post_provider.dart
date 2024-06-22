@@ -7,6 +7,7 @@ final postsProvider = StateNotifierProvider<PostsNotifier, List<Post>>((ref) {
 
   return PostsNotifier(
     fetchPosts: repository.getPosts,
+    fetchPostsByEmployerId: repository.getPostsByEmployerId,
     createPostCallback: repository.createPost,
     updatePostCallback: repository.updatePost,
     deletePostCallback: repository.deletePost,
@@ -14,6 +15,7 @@ final postsProvider = StateNotifierProvider<PostsNotifier, List<Post>>((ref) {
 });
 
 typedef GetPostsCallback = Future<List<Post>> Function();
+typedef GetPostsByEmployerIdCallback = Future<List<Post>> Function(int employerId);
 typedef CreatePostCallback = Future<Post> Function(Post post);
 typedef UpdatePostCallback = Future<Post> Function(Post post);
 typedef DeletePostCallback = Future<void> Function(String id);
@@ -23,12 +25,14 @@ class PostsNotifier extends StateNotifier<List<Post>> {
   bool _isDeleting = false;
 
   final GetPostsCallback fetchPosts;
+  final GetPostsByEmployerIdCallback fetchPostsByEmployerId;
   final CreatePostCallback createPostCallback;
   final UpdatePostCallback updatePostCallback;
   final DeletePostCallback deletePostCallback;
 
   PostsNotifier({
     required this.fetchPosts,
+    required this.fetchPostsByEmployerId,
     required this.createPostCallback,
     required this.updatePostCallback,
     required this.deletePostCallback,
@@ -41,6 +45,15 @@ class PostsNotifier extends StateNotifier<List<Post>> {
 
     isLoading = true;
     final posts = await fetchPosts();
+    state = posts;
+    isLoading = false;
+  }
+
+  Future<void> getPostsByEmployerId(int employerId) async {
+    if (isLoading) return;
+
+    isLoading = true;
+    final posts = await fetchPostsByEmployerId(employerId);
     state = posts;
     isLoading = false;
   }

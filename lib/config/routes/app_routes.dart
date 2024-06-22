@@ -58,4 +58,9 @@ final routes = <GoRoute>[
     name: OptionsView.routeName,
     builder: (context, state) => const OptionsView(),
   ),
+  GoRoute(
+    path: '/postulation',
+    name: PostulationView.routeName,
+    builder: (context, state) => const PostulationView(),
+  ),
 ];

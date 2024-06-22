@@ -13,6 +13,11 @@ class PostRepositoryImpl extends PostsRepository {
   }
 
   @override
+  Future<List<Post>> getPostsByEmployerId(int employerId) {
+    return datasource.getPostsByEmployerId(employerId);
+  }
+
+  @override
   Future<Post> createPost(Post post) {
     return datasource.createPost(post);
   }

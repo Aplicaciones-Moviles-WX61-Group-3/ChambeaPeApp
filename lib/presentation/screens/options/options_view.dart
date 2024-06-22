@@ -14,9 +14,11 @@ class OptionsView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDarkMode = ref.watch(themeNotifierProvider).isDarkMode;
 
-    Future<void> logout() async {
+    Future<void> handleLogout() async {
       await SessionService().logout();
-      context.goNamed(LoginView.routeName);  // Usa GoRouter para la redirección
+      if (context.mounted) {
+        context.goNamed(LoginView.routeName);  // Usa GoRouter para la redirección
+      }
     }
 
     return Scaffold(
@@ -40,7 +42,7 @@ class OptionsView extends ConsumerWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: FilledButton(
-                onPressed: logout, // Utiliza la función logout aquí
+                onPressed: handleLogout,
                 child: const Text('Cerrar sesión'),
               ),
             ),

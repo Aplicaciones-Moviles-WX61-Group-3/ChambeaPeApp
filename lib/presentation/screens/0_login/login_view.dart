@@ -1,9 +1,9 @@
-import 'package:chambeape/config/routes/app_routes.dart';
 import 'package:chambeape/presentation/screens/0_login/register_view.dart';
 import 'package:chambeape/presentation/shared/custom_navbar.dart';
 import 'package:chambeape/presentation/shared/utils/custom_validators.dart';
 import 'package:chambeape/services/login/login_service.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -19,6 +19,19 @@ class _LoginViewState extends State<LoginView> {
   final TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool obscureText = true;
+
+  Future<void> _handleLogin() async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        await login(emailController.text, passwordController.text);
+        if (context.mounted) {
+          context.goNamed(CustomNavbar.routeName);
+        }
+      } catch (e) {
+        // TODO Implementar la funcionalidad de mostrar un mensaje de error aquí
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,18 +82,7 @@ class _LoginViewState extends State<LoginView> {
                   const SizedBox(height: 10),
                   LoginButton(
                     text: 'Iniciar sesión',
-                    onPressed: () async {
-                      if (_formKey.currentState!.validate()) {
-                        try {
-                          await login(
-                              emailController.text, passwordController.text);
-                          appRouterNotLogged
-                              .replaceNamed(CustomNavbar.routeName);
-                        } catch (e) {
-                          // TODO Implementar la funcionalidad de mostrar un mensaje de error aquí
-                        }
-                      }
-                    },
+                    onPressed: _handleLogin,
                   ),
                   const SizedBox(height: 10),
                   LoginButton(

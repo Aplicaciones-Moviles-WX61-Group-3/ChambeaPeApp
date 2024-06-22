@@ -1,4 +1,6 @@
+import 'package:chambeape/config/utils/login_user_data.dart';
 import 'package:chambeape/domain/entities/posts_entity.dart';
+import 'package:chambeape/infrastructure/models/login/login_response.dart';
 import 'package:chambeape/presentation/providers/posts/post_provider.dart';
 import 'package:chambeape/presentation/providers/posts/steps/step_provider.dart';
 import 'package:chambeape/presentation/screens/3_posts/widgets/step_barrel.dart';
@@ -21,12 +23,20 @@ class _StepperPostState extends ConsumerState<StepperPost> {
   int postId = 0;
   String postImageUri = '';
 
+  LoginResponse user = LoginData().user;
+
   @override
   void initState() {
     super.initState();
     hasPost = widget.post != null;
     postId = widget.post?.id ?? 0;
     postImageUri = widget.post?.imgUrl ?? '';
+
+    LoginData().loadSession().then((value) {
+      setState(() {
+        user = value;
+      });
+    });
 
     if (hasPost && widget.post != null) {
       Future.microtask(() {
@@ -208,6 +218,7 @@ class _StepperPostState extends ConsumerState<StepperPost> {
                         description: data['description'],
                         subtitle: data['category'],
                         imgUrl: imageUri.toString(),
+                        employerId: user.id,
                       );
 
                       print('id: ${dataPost.id}');

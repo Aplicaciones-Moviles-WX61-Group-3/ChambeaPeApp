@@ -45,6 +45,8 @@ class CustomNavbar extends ConsumerWidget {
             page = ChatView(otherUser: chatUser);
           } else if (settings.name == OptionsView.routeName) {
             page = const OptionsView();
+          } else if (settings.name == PostulationView.routeName) {
+            page = const PostulationView();
           }
           return MaterialPageRoute(builder: (_) => page);
         },

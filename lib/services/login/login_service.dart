@@ -30,7 +30,7 @@ Future<Login> login(String email, String password) async {
     Login login = Login.fromJson(jsonResponse);
     LoginResponse user = LoginResponse.fromJson(jsonResponse);
 
-    SessionService().saveSession(user);
+    await SessionService().saveSession(user);
 
     return login;
   } else {
