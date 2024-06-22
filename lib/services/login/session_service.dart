@@ -41,9 +41,9 @@ class SessionService {
 
   Future<void> logout() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool('loggedOut', true);
-    prefs.remove('token');
-    prefs.remove('user');
-    prefs.remove('expiryDate');
+    await prefs.setBool('loggedOut', true);
+    await prefs.remove('token');
+    await prefs.remove('user');
+    await prefs.remove('expiryDate');
   }
 }
