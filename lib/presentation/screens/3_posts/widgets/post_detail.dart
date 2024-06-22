@@ -13,7 +13,7 @@ class PostDetailPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Descripción'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,11 +48,14 @@ class PostDetailPage extends StatelessWidget {
                 style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
               ),
             ] else if (role == 'W') ...[
-              const Spacer(),
+              const SizedBox(height: 16),
               Center(
-                child: ElevatedButton(
-                  onPressed: () {},
-                  child: const Text('Postular'),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: () {},
+                    child: const Text('Postular', style: TextStyle(fontSize: 18)),
+                  ),
                 ),
               ),
             ],
