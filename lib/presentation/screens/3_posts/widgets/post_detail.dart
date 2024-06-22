@@ -105,7 +105,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
               ),
               const SizedBox(height: 8),
               SizedBox(
-                height: 200, // Ajusta esta altura según tus necesidades
+                height: 200,
                 child: _buildPostulationsList(),
               ),
             ] else if (widget.role == 'W') ...[
@@ -165,7 +165,6 @@ class _PostDetailPageState extends State<PostDetailPage> {
                 await PostulationService()
                     .createPostulation(widget.post.id, widget.workerId);
                 Navigator.pop(context);
-                // Actualizar el estado para reflejar que el usuario se ha postulado
                 setState(() {});
               },
               child: const Text('Postular'),
@@ -192,9 +191,10 @@ class _PostDetailPageState extends State<PostDetailPage> {
               child: const Text('Cancelar'),
             ),
             FilledButton(
-              onPressed: () {
+              onPressed: () async {
+                await PostulationService()
+                    .deletePostulation(widget.post.id, widget.workerId);
                 Navigator.pop(context);
-                // Actualizar el estado para reflejar que el usuario ha eliminado la postulación
                 setState(() {});
               },
               child: const Text('Eliminar'),
