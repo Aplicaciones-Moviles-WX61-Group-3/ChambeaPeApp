@@ -4,6 +4,7 @@ import 'package:chambeape/infrastructure/models/login/login_response.dart';
 import 'package:chambeape/presentation/providers/posts/post_provider.dart';
 import 'package:chambeape/presentation/screens/3_posts/widgets/post_card_widget.dart';
 import 'package:chambeape/presentation/screens/3_posts/widgets/stepper_post.dart';
+import 'package:chambeape/presentation/screens/postulations/postulation_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -101,7 +102,7 @@ class _WorkerPosts extends StatelessWidget {
           IconButton.filled(
             icon: const Icon(Icons.assignment_outlined, color: Colors.white),
             onPressed: () {
-              // Navegar a la vista de "Mis Postulaciones"
+              Navigator.pushNamed(context, PostulationView.routeName);
             },
           ),
           const SizedBox(width: 10),
