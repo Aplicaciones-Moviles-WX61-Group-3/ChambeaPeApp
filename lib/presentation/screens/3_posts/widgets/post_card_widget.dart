@@ -33,6 +33,7 @@ class _PostCardWidgetState extends ConsumerState<PostCardWidget> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final role = user.userRole;
+    final userId = user.id;
     final isDeleting = ref.watch(
         postsProvider.notifier.select((notifier) => notifier.isDeleting));
 
@@ -52,6 +53,7 @@ class _PostCardWidgetState extends ConsumerState<PostCardWidget> {
             post: post,
             textTheme: textTheme,
             role: role,
+            userId: userId,
             onDelete: () => _showDeleteConfirmationDialog(context, post),
             isDeleting: isDeleting,
           );
@@ -98,6 +100,7 @@ class _PostCard extends StatelessWidget {
     required this.post,
     required this.textTheme,
     required this.role,
+    required this.userId,
     required this.onDelete,
     required this.isDeleting,
   });
@@ -105,6 +108,7 @@ class _PostCard extends StatelessWidget {
   final Post post;
   final TextTheme textTheme;
   final String role;
+  final int userId;
   final VoidCallback onDelete;
   final bool isDeleting;
 
@@ -156,6 +160,7 @@ class _PostCard extends StatelessWidget {
                                   builder: (context) => PostDetailPage(
                                     post: post,
                                     role: role,
+                                    workerId: userId,
                                   ),
                                 ),
                               );

@@ -96,6 +96,16 @@ class _WorkerPosts extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Posts'),
+        actions: [
+          // Icono para "Mis Postulaciones"
+          IconButton.filled(
+            icon: const Icon(Icons.assignment_outlined, color: Colors.white),
+            onPressed: () {
+              // Navegar a la vista de "Mis Postulaciones"
+            },
+          ),
+          const SizedBox(width: 10),
+        ],
       ),
       body: PostCardWidget(posts: posts),
     );
