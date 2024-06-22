@@ -9,6 +9,7 @@ class PostMapper {
       description: postModel.description,
       subtitle: postModel.subtitle,
       imgUrl: postModel.imgUrl,
+      employerId: postModel.employerId,
     );
   }
 
@@ -19,6 +20,7 @@ class PostMapper {
       description: post.description,
       subtitle: post.subtitle,
       imgUrl: post.imgUrl,
+      employerId: post.employerId,
     );
   }
 }
