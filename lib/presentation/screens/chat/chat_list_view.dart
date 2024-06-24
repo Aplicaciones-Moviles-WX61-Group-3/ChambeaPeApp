@@ -29,7 +29,7 @@ class _ChatListViewState extends State<ChatListView> {
   @override
   void initState() {
     super.initState();
-    futureUsers = UserService().getUsers();
+    futureUsers = UserService().getExistingChatUsers();
     lastMsgsTime = List.filled(30, ' ');
   }
 
@@ -51,6 +51,10 @@ class _ChatListViewState extends State<ChatListView> {
           else if (snapshot.hasData) {
             users = snapshot.data!;
             
+            if(users.isEmpty){
+              return const Center(child: Text('Aún no has iniciado ningún chat'));
+            }
+
             return ListView.builder(
               itemCount: users.length,
               itemBuilder: (context, index) {
