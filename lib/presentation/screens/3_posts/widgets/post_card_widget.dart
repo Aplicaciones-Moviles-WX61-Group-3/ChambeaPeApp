@@ -82,7 +82,7 @@ class _PostCardWidgetState extends ConsumerState<PostCardWidget> {
               onPressed: () async {
                 await ref
                     .read(postsProvider.notifier)
-                    .deletePost(post.id.toString());
+                    .deletePost(post.id.toString(), user.userRole, user.id);
                 // ignore: use_build_context_synchronously
                 Navigator.of(context).pop();
               },

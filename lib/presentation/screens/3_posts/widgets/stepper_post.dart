@@ -230,11 +230,11 @@ class _StepperPostState extends ConsumerState<StepperPost> {
                       if (hasPost) {
                         await ref
                             .read(postsProvider.notifier)
-                            .updatePost(dataPost);
+                            .updatePost(dataPost, user.userRole);
                       } else {
                         await ref
                             .read(postsProvider.notifier)
-                            .createPost(dataPost);
+                            .createPost(dataPost, user.userRole);
                       }
 
                       Navigator.of(context).pop();

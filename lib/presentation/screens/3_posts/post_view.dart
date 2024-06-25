@@ -19,18 +19,23 @@ class PostView extends ConsumerStatefulWidget {
 
 class _PostViewState extends ConsumerState<PostView> {
   late Future<LoginResponse> _futureUser;
+  bool _initialized = false;
 
   @override
   void initState() {
     super.initState();
-    _futureUser = LoginData().loadSession().then((value) {
-      if (value.userRole == 'E') {
-        ref.read(postsProvider.notifier).getPostsByEmployerId(value.id);
+    _futureUser = LoginData().loadSession();
+  }
+
+  Future<void> _initializePosts(LoginResponse user) async {
+    if (!_initialized) {
+      if (user.userRole == 'E') {
+        await ref.read(postsProvider.notifier).getPostsByEmployerId(user.id);
       } else {
-        ref.read(postsProvider.notifier).getPosts();
+        await ref.read(postsProvider.notifier).getPosts();
       }
-      return value;
-    });
+      _initialized = true;
+    }
   }
 
   @override
@@ -48,6 +53,7 @@ class _PostViewState extends ConsumerState<PostView> {
           return const Center(child: Text('No se encontró la sesión de usuario'));
         } else {
           final user = snapshot.data!;
+          _initializePosts(user); // Inicializa los posts si no se ha hecho antes
           final role = user.userRole;
           return role == 'E'
               ? _EmployerPosts(posts: posts)

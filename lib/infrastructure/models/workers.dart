@@ -66,7 +66,7 @@ class Workers {
       email: email,
       phoneNumber: phoneNumber,
       birthdate: DateTime.now(),
-      gender: 'M',
+      gender: gender,
       profilePic: profilePic,
       description: description,
       userRole: 'W',
