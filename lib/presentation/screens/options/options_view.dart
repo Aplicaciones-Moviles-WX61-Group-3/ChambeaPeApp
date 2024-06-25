@@ -7,6 +7,7 @@ import 'package:chambeape/services/login/session_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 class OptionsView extends ConsumerStatefulWidget {
   static const String routeName = 'options_view';
 
@@ -50,19 +51,19 @@ class _OptionsViewState extends ConsumerState<OptionsView> {
               ref.read(themeNotifierProvider.notifier).toggleDarkMode();
             },
           ),
+          const Text(
+            'Historial de actividad',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600
+            ),
+          ),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Historial de actividad',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
                   const SizedBox(height: 10),
                   FutureBuilder<List<Users>>(
                     future: _userHistory,
@@ -70,9 +71,12 @@ class _OptionsViewState extends ConsumerState<OptionsView> {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(child: CircularProgressIndicator());
                       } else if (snapshot.hasError) {
-                        return const Center(child: Text('Error al cargar el historial de actividad'));
+                        return const Center(
+                            child: Text(
+                                'Error al cargar el historial de actividad'));
                       } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return const Center(child: Text('No hay historial de actividad'));
+                        return const Center(
+                            child: Text('No hay historial de actividad'));
                       } else {
                         return Column(
                           children: snapshot.data!.map((user) {
