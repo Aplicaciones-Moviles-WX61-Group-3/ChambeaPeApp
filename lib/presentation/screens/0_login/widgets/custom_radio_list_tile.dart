@@ -52,7 +52,10 @@ class _CustomRadioListTileState<T> extends State<CustomRadioListTile<T>> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: RadioListTile<T>(
-                  title: Text(widget.label1),
+                  title: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(widget.label1),
+                  ),
                   value: widget.value1,
                   groupValue: _groupValue,
                   onChanged: (T? value) {
@@ -73,7 +76,10 @@ class _CustomRadioListTileState<T> extends State<CustomRadioListTile<T>> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: RadioListTile<T>(
-                  title: Text(widget.label2),
+                  title: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(widget.label2),
+                  ),
                   value: widget.value2,
                   groupValue: _groupValue,
                   onChanged: (T? value) {
