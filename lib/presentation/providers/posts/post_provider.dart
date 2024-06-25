@@ -15,7 +15,8 @@ final postsProvider = StateNotifierProvider<PostsNotifier, List<Post>>((ref) {
 });
 
 typedef GetPostsCallback = Future<List<Post>> Function();
-typedef GetPostsByEmployerIdCallback = Future<List<Post>> Function(int employerId);
+typedef GetPostsByEmployerIdCallback = Future<List<Post>> Function(
+    int employerId);
 typedef CreatePostCallback = Future<Post> Function(Post post);
 typedef UpdatePostCallback = Future<Post> Function(Post post);
 typedef DeletePostCallback = Future<void> Function(String id);
@@ -44,51 +45,71 @@ class PostsNotifier extends StateNotifier<List<Post>> {
     if (isLoading) return;
 
     isLoading = true;
-    final posts = await fetchPosts();
-    state = posts;
-    isLoading = false;
+    try {
+      final posts = await fetchPosts();
+      state = posts;
+    } finally {
+      isLoading = false;
+    }
   }
 
   Future<void> getPostsByEmployerId(int employerId) async {
     if (isLoading) return;
 
     isLoading = true;
-    final posts = await fetchPostsByEmployerId(employerId);
-    state = posts;
-    isLoading = false;
+    try {
+      final posts = await fetchPostsByEmployerId(employerId);
+      state = posts;
+    } finally {
+      isLoading = false;
+    }
   }
 
-  Future<void> createPost(Post post) async {
-    if (isLoading) return;
-
-    isLoading = true;
-    final newPost = await createPostCallback(post);
-    state = [...state, newPost];
-    isLoading = false;
-  }
-
-  Future<void> updatePost(Post post) async {
+  Future<void> createPost(Post post, String role) async {
     if (isLoading) return;
 
     isLoading = true;
     try {
-      final updatedPost = await updatePostCallback(post);
-      state =
-          state.map((p) => p.id == updatedPost.id ? updatedPost : p).toList();
+      await createPostCallback(post);
+      if (role == 'E') {
+        final posts = await fetchPostsByEmployerId(post.employerId);
+        state = posts;
+      } else {
+        final posts = await fetchPosts();
+        state = posts;
+      }
+    } finally {
+      // Restablece el estado de carga a falso, indicando que la operación ha terminado
+      isLoading = false;
+    }
+  }
+  Future<void> updatePost(Post post, String role ) async {
+    if (isLoading) return;
+
+    isLoading = true;
+    try {
+      await updatePostCallback(post);
+      if (role == 'E') {
+        final posts = await fetchPostsByEmployerId(post.employerId);
+        state = posts;
+      } else {
+        final posts = await fetchPosts();
+        state = posts;
+      }
     } finally {
       isLoading = false;
     }
   }
 
   Future<void> deletePost(String id) async {
-    //TODO: Fix delete post - Loaders por cada post
     if (_isDeleting) return;
 
     _isDeleting = true;
-    state = [...state];
-    await deletePostCallback(id);
-    state = state.where((p) => p.id != int.parse(id)).toList();
-    _isDeleting = false;
-    state = [...state];
+    try {
+      await deletePostCallback(id);
+      state = state.where((p) => p.id != id).toList();
+    } finally {
+      _isDeleting = false;
+    }
   }
 }
