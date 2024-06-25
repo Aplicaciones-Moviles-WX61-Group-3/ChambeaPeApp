@@ -53,9 +53,20 @@ class DbHelper {
     final db = await database;
     final Map<String, dynamic> userMap = user.toJson();
     userMap['insertDate'] = DateTime.now().toIso8601String();
-    int id = await db.insert('users', userMap);
-    await _limitUserCount(db);
-    return id;
+
+    // Intenta insertar el usuario, si ya existe actualiza el registro
+    try {
+      int id = await db.insert('users', userMap);
+      await _limitUserCount(db);
+      return id;
+    } on DatabaseException catch (e) {
+      if (e.isUniqueConstraintError()) {
+        await updateUser(user); // Si hay un error de clave única, actualiza el usuario existente
+        return user.id!;
+      } else {
+        rethrow;
+      }
+    }
   }
 
   Future<List<Users>> getUsers() async {

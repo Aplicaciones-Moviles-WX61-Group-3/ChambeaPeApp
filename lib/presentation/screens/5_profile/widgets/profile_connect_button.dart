@@ -1,13 +1,23 @@
+import 'package:chambeape/infrastructure/models/users.dart';
+import 'package:chambeape/presentation/screens/chat/chat_view.dart';
 import 'package:flutter/material.dart';
 
-class ConnectButton extends StatelessWidget {
+class ConnectButton extends StatefulWidget {
   final TextTheme text;
 
+  final Users user;
+
   const ConnectButton({
-    super.key, 
+    super.key,
     required this.text,
+    required this.user,
   });
 
+  @override
+  State<ConnectButton> createState() => _ConnectButtonState();
+}
+
+class _ConnectButtonState extends State<ConnectButton> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -20,10 +30,17 @@ class ConnectButton extends StatelessWidget {
           ),
         ),
         onPressed: () {
-          // TODO Implementar la funcionalidad de chatear aquí
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChatView(
+                otherUser: widget.user,
+              ),
+            ),
+          );
         },
         child: Text('Chatear',
-            style: text.bodyLarge
+            style: widget.text.bodyLarge
                 ?.copyWith(fontWeight: FontWeight.bold, color: Colors.white)),
       ),
     );

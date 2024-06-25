@@ -23,12 +23,15 @@ class ProfileView extends StatefulWidget {
 
 class _ProfileViewState extends State<ProfileView> {
   bool isCurrentUser = false;
+  late Users profileUser;
 
   int userIdToUse = 0;
 
   Future<Users> _loadUserById() async {
     if (widget.userId != 0) {
-      return await UserService().getUserById(widget.userId);
+      var user = await UserService().getUserById(widget.userId);
+      profileUser = user;
+      return user;
     } else {
       var session = await LoginData().loadSession();
       var userId = session.id;
@@ -112,7 +115,7 @@ class _ProfileViewState extends State<ProfileView> {
                           ),
                           textAlign: TextAlign.center),
                       const SizedBox(height: 10),
-                      if (!isCurrentUser) ConnectButton(text: text),
+                      if (!isCurrentUser) ConnectButton(text: text, user: user),
                       const SizedBox(height: 10),
                       Description(user: user, text: text),
                       const SizedBox(height: 20),
