@@ -70,7 +70,6 @@ class _UserCardWidgetState extends State<UserCardWidget> {
                       const Spacer(),
                       _WorkersButton(
                         onPressed: () async {
-                          // Inserta el usuario en la base de datos cuando se presiona "Ver Perfil"
                           await dbHelper.insertUser(widget.worker.toUser());
 
                           Navigator.push(
