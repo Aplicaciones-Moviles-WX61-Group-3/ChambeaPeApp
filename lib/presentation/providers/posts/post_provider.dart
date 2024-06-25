@@ -83,7 +83,8 @@ class PostsNotifier extends StateNotifier<List<Post>> {
       isLoading = false;
     }
   }
-  Future<void> updatePost(Post post, String role ) async {
+
+  Future<void> updatePost(Post post, String role) async {
     if (isLoading) return;
 
     isLoading = true;
@@ -101,13 +102,19 @@ class PostsNotifier extends StateNotifier<List<Post>> {
     }
   }
 
-  Future<void> deletePost(String id) async {
+  Future<void> deletePost(String id, String role, int employerId) async {
     if (_isDeleting) return;
 
     _isDeleting = true;
     try {
       await deletePostCallback(id);
-      state = state.where((p) => p.id != id).toList();
+      if (role == 'E') {
+        final posts = await fetchPostsByEmployerId(employerId);
+        state = posts;
+      } else {
+        final posts = await fetchPosts();
+        state = posts;
+      }
     } finally {
       _isDeleting = false;
     }
