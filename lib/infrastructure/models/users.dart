@@ -1,3 +1,5 @@
+import 'package:chambeape/infrastructure/models/workers.dart';
+
 class Users {
   final int? id;
   final String firstName;
@@ -67,5 +69,22 @@ class Users {
       'isVisible': isVisible,
       'dni': dni,
     };
+  }
+
+  Workers toWorker() {
+    return Workers(
+      id: id ?? 0,
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      phoneNumber: phoneNumber,
+      birthdate: birthdate,
+      gender: gender,
+      profilePic: profilePic,
+      description: description,
+      userRole: userRole,
+      dni: dni, 
+      hasPremium: hasPremium ?? 0,
+    );
   }
 }
